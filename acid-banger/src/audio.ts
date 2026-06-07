@@ -70,10 +70,7 @@ export function pitch(note: FullNote | number) {
   }
 }
 
-// @ts-ignore
-export function Audio(
-  au: AudioContext = new (window.AudioContext || window.webkitAudioContext)(),
-) {
+export function Audio(au: AudioContext = new window.AudioContext()) {
   function masterChannel() {
     const gain = au.createGain();
     gain.gain.value = 0.5;
