@@ -1,0 +1,16 @@
+{
+  "name": "drum-machine",
+  "unitType": "instrument",
+  "category": "drumMachine",
+  "preferredSize": "800,500",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "",
+  "protocol": "wafer-v01",
+  "unitTypesVersion": "0.0.1",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/secanakbulut/drum-machine",
+  "originalAuthor": "Secan Akbulut",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wus-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "PolyForm Noncommercial License 1.0.0"
+}

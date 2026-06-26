@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "abbr": "SIN",
+    "type": "sine"
+  },
+  {
+    "id": 2,
+    "abbr": "SQU",
+    "type": "square"
+  },
+  {
+    "id": 3,
+    "abbr": "TRI",
+    "type": "triangle"
+  },
+  {
+    "id": 4,
+    "abbr": "SAW",
+    "type": "sawtooth"
+  }
+]

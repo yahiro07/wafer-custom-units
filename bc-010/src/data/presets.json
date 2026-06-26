@@ -1,0 +1,452 @@
+[
+  {
+    "id": "0-rom",
+    "name": "init",
+    "octave": {
+      "octave": 5
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "sawtooth"
+      },
+      "envelope": {
+        "attack": 0.0001,
+        "decay": 0.2,
+        "sustain": 0.2,
+        "release": 1
+      }
+    },
+    "filterParams": {
+      "frequency": 0,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 500,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "1-rom",
+    "name": "chewy",
+    "octave": {
+      "octave": 3
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "square"
+      },
+      "envelope": {
+        "attack": 0.5,
+        "decay": 0.6,
+        "sustain": 0.7,
+        "release": 7
+      }
+    },
+    "filterParams": {
+      "frequency": 18,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 181,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "2-rom",
+    "name": "piccolo",
+    "octave": {
+      "octave": 6
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "triangle"
+      },
+      "envelope": {
+        "attack": 0.2719,
+        "decay": 0.2,
+        "sustain": 0.2,
+        "release": 8
+      }
+    },
+    "filterParams": {
+      "frequency": 0,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 500,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "3-rom",
+    "name": "wooly",
+    "octave": {
+      "octave": 3
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "sawtooth"
+      },
+      "envelope": {
+        "attack": 0.2274,
+        "decay": 1,
+        "sustain": 0.0492,
+        "release": 2
+      }
+    },
+    "filterParams": {
+      "frequency": 2,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 331,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "4-rom",
+    "name": "sariut",
+    "octave": {
+      "octave": 5
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "square"
+      },
+      "envelope": {
+        "attack": 0.0001,
+        "decay": 0.1259,
+        "sustain": 0.1104,
+        "release": 3
+      }
+    },
+    "filterParams": {
+      "frequency": 18,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 181,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "5-rom",
+    "name": "dolee",
+    "octave": {
+      "octave": 3
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "triangle"
+      },
+      "envelope": {
+        "attack": 0.1548,
+        "decay": 0.6,
+        "sustain": 0.7,
+        "release": 7
+      }
+    },
+    "filterParams": {
+      "frequency": 0,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 181,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "6-rom",
+    "name": "bleep",
+    "octave": {
+      "octave": 5
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "square"
+      },
+      "envelope": {
+        "attack": 0.0001,
+        "decay": 0.0903,
+        "sustain": 0.0001,
+        "release": 1
+      }
+    },
+    "filterParams": {
+      "frequency": 0,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 1496,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "7-rom",
+    "name": "siltal",
+    "octave": {
+      "octave": 3
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "square"
+      },
+      "envelope": {
+        "attack": 0.0001,
+        "decay": 0.0001,
+        "sustain": 0.1964,
+        "release": 1
+      }
+    },
+    "filterParams": {
+      "frequency": 0,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 1496,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "8-rom",
+    "name": "low rumble",
+    "octave": {
+      "octave": 1
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "square"
+      },
+      "envelope": {
+        "attack": 0.0001,
+        "decay": 0.0001,
+        "sustain": 0.1964,
+        "release": 1
+      }
+    },
+    "filterParams": {
+      "frequency": 2,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 106,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "9-rom",
+    "name": "keypad",
+    "octave": {
+      "octave": 5
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "sine"
+      },
+      "envelope": {
+        "attack": 0.1527,
+        "decay": 0.2,
+        "sustain": 0.2,
+        "release": 1
+      }
+    },
+    "filterParams": {
+      "frequency": 0,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 1496,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "10-rom",
+    "name": "mounds",
+    "octave": {
+      "octave": 2
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "triangle"
+      },
+      "envelope": {
+        "attack": 0.1527,
+        "decay": 0.2,
+        "sustain": 0.2,
+        "release": 1
+      }
+    },
+    "filterParams": {
+      "frequency": 17,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 136,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "11-rom",
+    "name": "harp",
+    "octave": {
+      "octave": 5
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "triangle"
+      },
+      "envelope": {
+        "attack": 0.0055,
+        "decay": 0.6,
+        "sustain": 0.7,
+        "release": 10
+      }
+    },
+    "filterParams": {
+      "frequency": 0,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 81,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "12-rom",
+    "name": "frost",
+    "octave": {
+      "octave": 8
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "sawtooth"
+      },
+      "envelope": {
+        "attack": 0.0001,
+        "decay": 0.8985,
+        "sustain": 0.7,
+        "release": 1
+      }
+    },
+    "filterParams": {
+      "frequency": 0,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 181,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "13-rom",
+    "name": "unsolved",
+    "octave": {
+      "octave": 4
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "square"
+      },
+      "envelope": {
+        "attack": 0.5726,
+        "decay": 0.6,
+        "sustain": 0.7,
+        "release": 7
+      }
+    },
+    "filterParams": {
+      "frequency": 0,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 181,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  },
+  {
+    "id": "14-rom",
+    "name": "rain",
+    "octave": {
+      "octave": 3
+    },
+    "synthesizer": {
+      "oscillator": {
+        "type": "sawtooth"
+      },
+      "envelope": {
+        "attack": 0.0001,
+        "decay": 0.1824,
+        "sustain": 0.0001,
+        "release": 1
+      }
+    },
+    "filterParams": {
+      "frequency": 18,
+      "type": "sine",
+      "depth": 1,
+      "baseFrequency": 931,
+      "octaves": 2.6,
+      "filter": {
+        "type": "lowpass",
+        "rolloff": -12,
+        "Q": 1
+      }
+    }
+  }
+]

@@ -1,0 +1,92 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+@font-face {
+  font-family: "Cute Font";
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+000-5FF;
+  /* Latin glyphs */
+  src: url("./../fonts/CuteFont-Regular.woff2") format("woff2"), /* Super Modern Browsers */
+  url("./../fonts/CuteFont-Regular.woff") format("woff"), /* Pretty Modern Browsers */
+  url("./../fonts/CuteFont-Regular.ttf") format("truetype");
+  /* Safari, Android, iOS */
+}
+
+html, body, .app {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+body {
+  background-color: #40522D;
+  box-sizing: border-box;
+  font-display: swap;
+}
+
+/* Once font is loaded, set opacity to 1 and fade app in. */
+
+#root.font-loaded {
+  font-family: 'Cute Font', monospace;
+  opacity: 1;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+  content: '';
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Prevent transitions. Used on the body until font is loaded and then it's removed. */
+
+.preload * {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
+}
+
+/* Use fallback font and set opacity to 0 until font loaded */
+
+#root {
+  opacity: 0;
+  -webkit-transition: opacity 0.5s ease;
+  -moz-transition: opacity 0.5s ease;
+  -ms-transition: opacity 0.5s ease;
+  -o-transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease;
+  font-family: monospace;
+}

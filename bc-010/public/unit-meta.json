@@ -1,0 +1,16 @@
+{
+  "name": "bc-010",
+  "unitType": "instrument",
+  "category": "synthesizer",
+  "preferredSize": "750,500",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "note",
+  "protocol": "wafer-v01",
+  "unitTypesVersion": "0.0.1",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/bcimbali/bc-010",
+  "originalAuthor": "Brett Cimbalik",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wus-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}
