@@ -2,7 +2,6 @@
   "name": "Vissonance",
   "unitType": "effect",
   "categoryHint": "visualizer",
-  "preferredSize": "700,400",
   "outputSignalTypes": "audio",
   "inputSignalTypes": "audio",
   "protocol": "wafer-v01",

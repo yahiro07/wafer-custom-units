@@ -2,7 +2,6 @@
   "name": "webaudio-synth-v2",
   "unitType": "instrument",
   "category": "synthesizer",
-  "preferredSize": "700,400",
   "outputSignalTypes": "audio",
   "inputSignalTypes": "note",
   "protocol": "wafer-v01",

@@ -2,7 +2,6 @@
   "name": "webaudio-tinysynth-simple",
   "unitType": "instrument",
   "category": "synthesizer",
-  "preferredSize": "520,280",
   "outputSignalTypes": "audio",
   "inputSignalTypes": "note",
   "protocol": "wafer-v01",

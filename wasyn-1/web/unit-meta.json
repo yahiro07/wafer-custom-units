@@ -2,7 +2,6 @@
   "name": "wasyn-1",
   "unitType": "instrument",
   "category": "synthesizer",
-  "preferredSize": "720,360",
   "outputSignalTypes": "audio",
   "inputSignalTypes": "note",
   "protocol": "wafer-v01",

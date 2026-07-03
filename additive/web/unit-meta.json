@@ -2,7 +2,6 @@
   "name": "additive",
   "unitType": "instrument",
   "category": "synthesizer",
-  "preferredSize": "1100,640",
   "outputSignalTypes": "audio",
   "inputSignalTypes": "note",
   "protocol": "wafer-v01",
