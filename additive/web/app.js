@@ -472,6 +472,7 @@ document.addEventListener("DOMContentLoaded", () => {
         categoryHint: "synthesizer",
         outputs: ["audio"],
         inputs: ["note"],
+        viewSize: [1100, 640],
       },
       noteInput: {
         noteOn(noteNumber) {

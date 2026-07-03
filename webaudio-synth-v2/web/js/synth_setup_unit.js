@@ -5,6 +5,7 @@ function setupWaferUnit() {
       categoryHint: "synthesizer",
       outputs: ["audio"],
       inputs: ["note"],
+      viewSize: [700, 400],
     },
     noteInput: {
       noteOn(noteNumber) {

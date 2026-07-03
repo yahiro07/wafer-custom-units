@@ -19,6 +19,7 @@ if (!Detector.webgl) {
         categoryHint: "visualizer",
         outputs: ["audio"],
         inputs: ["audio"],
+        viewSize: [700, 400],
       },
     });
   } else {

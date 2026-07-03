@@ -20,6 +20,7 @@ var app = {
         categoryHint: "synthesizer",
         outputs: ["audio"],
         inputs: ["note"],
+        viewSize: [720, 360],
       },
       noteInput: {
         noteOn(noteNumber, velocity) {
