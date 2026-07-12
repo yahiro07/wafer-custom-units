@@ -29,27 +29,21 @@ const MarlotronDuo = {
   },
 
   async loadDependencies() {
-    // Load interface.js
-    const interfaceScript = document.createElement("script");
-    interfaceScript.src = "components/marlotron-duo/lib/interface.js";
-    document.head.appendChild(interfaceScript);
-
-    // Load synth-core.js
-    const synthCoreScript = document.createElement("script");
-    synthCoreScript.src = "components/marlotron-duo/lib/synth-core.js";
-    document.head.appendChild(synthCoreScript);
-
-    // Load dial.js
-    const dialScript = document.createElement("script");
-    dialScript.src = "components/marlotron-duo/lib/dial.js";
-    document.head.appendChild(dialScript);
-
+    const scriptFileNames = [
+      "audio-bridge.js",
+      "interface.js",
+      "synth-core.js",
+      "dial.js",
+    ];
     // Wait for all scripts to load
-    await Promise.all([
-      new Promise((resolve) => (interfaceScript.onload = resolve)),
-      new Promise((resolve) => (synthCoreScript.onload = resolve)),
-      new Promise((resolve) => (dialScript.onload = resolve)),
-    ]);
+    await Promise.all(
+      scriptFileNames.map((fileName) => {
+        const script = document.createElement("script");
+        script.src = `components/marlotron-duo/lib/${fileName}`;
+        document.head.appendChild(script);
+        return new Promise((resolve) => (script.onload = resolve));
+      }),
+    );
   },
 };
 
