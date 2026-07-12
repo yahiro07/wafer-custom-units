@@ -8,6 +8,7 @@ import SidePanel from "@/components/SidePanel";
 import { useSynthSelectors } from "@/store/synthStore";
 import styles from "./Synth.module.css";
 import RightPanel from "@/components/RightPanel";
+import { unitInterface } from "@/synth/audio/wafer-unit-interface";
 
 function Synth() {
   // Use optimized selectors to prevent unnecessary re-renders
@@ -53,8 +54,11 @@ function Synth() {
       setCurrentOctave,
     });
 
-  // Initialize MIDI handling
-  useMidiHandling();
+  if (!unitInterface) {
+    // Initialize MIDI handling
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useMidiHandling();
+  }
 
   // Initialize synth
   useEffect(() => {
