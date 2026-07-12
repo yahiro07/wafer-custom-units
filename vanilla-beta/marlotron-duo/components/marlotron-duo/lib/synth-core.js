@@ -244,10 +244,10 @@ window.playSynthNote = function (note, time = Tone.now()) {
 
   // Enable appropriate oscillators
   if (window.synthMode === "vco1") {
-    vco1Output.gain.setValueAtTime(1, Tone.now());
+    vco1Output.gain.setValueAtTime(1, time);
   } else if (window.synthMode === "vco1and2") {
-    vco1Output.gain.setValueAtTime(1, Tone.now());
-    vco2Output.gain.setValueAtTime(1, Tone.now());
+    vco1Output.gain.setValueAtTime(1, time);
+    vco2Output.gain.setValueAtTime(1, time);
   }
 
   updateOscillatorFrequencies();
@@ -277,7 +277,7 @@ unitInterface?.completeSetup({
       lastInputNote = noteNumber;
     },
     noteOff(noteNumber, time) {
-      if (lastInputNote === noteNumber) {
+      if (noteNumber === lastInputNote) {
         time = convertHostAudioContextTimeToToneJsAudioContextTime(time);
         stopSynthNote(time);
         lastInputNote = null;
