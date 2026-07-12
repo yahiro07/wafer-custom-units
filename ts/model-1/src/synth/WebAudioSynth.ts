@@ -9,6 +9,8 @@ import {
 import { noteToFrequency, getRangeMultiplier } from "./utils/frequency";
 import { createOscillator, createGainNode } from "./audio/nodes";
 import { setupEffects } from "./audio/effects";
+import whiteNoiseProcessorWorkletUrl from "./white-noise-processor?worker&url";
+import pinkNoiseProcessorWorkletUrl from "./pink-noise-processor?worker&url";
 
 type SynthContext = {
   context: AudioContext;
@@ -207,7 +209,7 @@ function createInitialState(): SynthState {
 
 function createLFOConnections(
   noteData: NoteData,
-  routing: LFORouting
+  routing: LFORouting,
 ): LFOConnection[] {
   if (!noteData.lfoGains || !noteData.filterNode) {
     return [];
@@ -267,7 +269,7 @@ function createOscillatorChain(
   baseFrequency: number,
   startTime: number,
   lastFrequency: number | null,
-  glide: number
+  glide: number,
 ): {
   oscillator: OscillatorNode | null;
   gain: GainNode | null;
@@ -359,7 +361,7 @@ function createOscillatorChain(
       // Schedule the glide
       oscillator.frequency.linearRampToValueAtTime(
         finalFrequency,
-        scheduleTime + glideTime
+        scheduleTime + glideTime,
       );
     } else {
       // If glide is disabled, set frequency immediately
@@ -380,7 +382,7 @@ function createOscillatorChain(
 function createNoiseChain(
   context: AudioContext,
   settings: NoiseSettings,
-  targetFrequency: number
+  targetFrequency: number,
 ): {
   noiseNode: AudioWorkletNode | null;
   noiseGain: GainNode | null;
@@ -487,7 +489,7 @@ function updateLFOGains(
   modAmount: number,
   lfoDepth: number,
   baseCutoff: number,
-  currentTime: number
+  currentTime: number,
 ): void {
   if (!noteData.lfoGains) {
     return;
@@ -559,7 +561,7 @@ function updateLFOGains(
     // Use linearRampToValueAtTime for smoother transitions
     gain.linearRampToValueAtTime(
       targetValue,
-      currentTime + delayTime + smoothingTime
+      currentTime + delayTime + smoothingTime,
     );
   });
 }
@@ -567,7 +569,7 @@ function updateLFOGains(
 function updateModulation(
   synthContext: SynthContext,
   state: SynthState,
-  modAmount: number
+  modAmount: number,
 ): void {
   if (!state.noteData || !state.noteData.lfo || !state.noteData.lfoGains) {
     return;
@@ -575,7 +577,7 @@ function updateModulation(
 
   const baseCutoff = Math.min(
     Math.max(state.settings.filter.cutoff, 20),
-    1541.27 // Maximum safe value for BiquadFilter gain
+    1541.27, // Maximum safe value for BiquadFilter gain
   );
 
   // If modulation is disabled (modAmount is 0), just disconnect gains
@@ -600,14 +602,14 @@ function updateModulation(
     modAmount,
     state.settings.lfo.depth,
     baseCutoff,
-    synthContext.context.currentTime
+    synthContext.context.currentTime,
   );
 }
 
 function updateSettings(
   state: SynthState,
   synthContext: SynthContext,
-  newSettings: Partial<SynthSettings>
+  newSettings: Partial<SynthSettings>,
 ): void {
   state.settings = { ...state.settings, ...newSettings };
 
@@ -628,7 +630,7 @@ function updateSettings(
               noteData.oscillatorPanners[index].pan.value = oscSettings.pan;
             }
           }
-        }
+        },
       );
 
       // Update oscillator settings
@@ -663,7 +665,7 @@ function updateSettings(
               const newOsc = createOscillator(
                 synthContext.context,
                 oscSettings,
-                noteToFrequency(state.currentNote!, state.settings.octave)
+                noteToFrequency(state.currentNote!, state.settings.octave),
               );
               const newGain = createGainNode(synthContext.context, volume);
               const newPanner = synthContext.context.createStereoPanner();
@@ -695,7 +697,7 @@ function updateSettings(
               }
             }
           }
-        }
+        },
       );
     }
   }
@@ -772,7 +774,7 @@ function updateSettings(
     }
     if (newSettings.reverb.decay !== undefined && synthContext.reverbNode) {
       synthContext.reverbNode.buffer = synthContext.createImpulseResponse(
-        newSettings.reverb.decay
+        newSettings.reverb.decay,
       );
     }
     if (newSettings.reverb.eq !== undefined) {
@@ -873,7 +875,7 @@ function updateSettings(
       if (state.noteData?.noiseFilter && state.currentNote) {
         const noteFreq = noteToFrequency(
           state.currentNote,
-          state.settings.octave
+          state.settings.octave,
         );
         let freq;
 
@@ -893,7 +895,7 @@ function updateSettings(
   if (state.noteData && state.currentNote) {
     const baseFrequency = noteToFrequency(
       state.currentNote,
-      state.settings.octave
+      state.settings.octave,
     );
 
     state.noteData.oscillators.forEach((osc, index) => {
@@ -914,7 +916,7 @@ function updateSettings(
           const newOsc = createOscillator(
             synthContext.context,
             oscSettings,
-            baseFrequency
+            baseFrequency,
           );
           const newGain = createGainNode(synthContext.context, volume);
           newOsc.connect(newGain);
@@ -1011,7 +1013,7 @@ function handleNoteTransition(
   state: SynthState,
   synthContext: SynthContext,
   fromNote: Note | null,
-  toNote: Note
+  toNote: Note,
 ): void {
   const now = synthContext.context.currentTime;
 
@@ -1063,7 +1065,7 @@ function triggerAttack(
   state: SynthState,
   synthContext: SynthContext,
   note: Note,
-  lastFrequency: number | null = null
+  lastFrequency: number | null = null,
 ): void {
   const now = synthContext.context.currentTime;
 
@@ -1128,7 +1130,7 @@ function triggerAttack(
   state.currentNote = note;
 
   const hasActiveOscillators = state.settings.oscillators.some(
-    (osc: { volume?: number }) => (osc.volume ?? 0) > 0
+    (osc: { volume?: number }) => (osc.volume ?? 0) > 0,
   );
   const hasNoise = state.settings.noise.volume > 0;
   if (!hasActiveOscillators && !hasNoise) {
@@ -1145,7 +1147,7 @@ function triggerAttack(
   const filter = synthContext.context.createBiquadFilter();
   const baseCutoff = Math.min(
     Math.max(state.settings.filter.cutoff, 20),
-    1541.27 // Maximum safe value for BiquadFilter gain
+    1541.27, // Maximum safe value for BiquadFilter gain
   );
   filter.type = state.settings.filter.type;
   filter.frequency.value = baseCutoff;
@@ -1177,9 +1179,9 @@ function triggerAttack(
         targetFrequency,
         now,
         glideStartFrequency,
-        state.settings.glide
+        state.settings.glide,
       );
-    }
+    },
   );
 
   // Create noise chain if enabled
@@ -1188,7 +1190,7 @@ function triggerAttack(
     noiseChain = createNoiseChain(
       synthContext.context,
       state.settings.noise,
-      targetFrequency
+      targetFrequency,
     );
   }
 
@@ -1214,11 +1216,11 @@ function triggerAttack(
   noteGain.gain.setValueAtTime(0, now);
   noteGain.gain.linearRampToValueAtTime(
     1,
-    now + state.settings.envelope.attack
+    now + state.settings.envelope.attack,
   );
   noteGain.gain.linearRampToValueAtTime(
     state.settings.envelope.sustain,
-    now + state.settings.envelope.attack + state.settings.envelope.decay
+    now + state.settings.envelope.attack + state.settings.envelope.decay,
   );
 
   // Create LFO
@@ -1278,7 +1280,7 @@ function triggerAttack(
       modAmount,
       state.settings.lfo.depth,
       baseCutoff,
-      now
+      now,
     );
   }
 }
@@ -1286,7 +1288,7 @@ function triggerAttack(
 function triggerRelease(
   state: SynthState,
   synthContext: SynthContext,
-  note: Note
+  note: Note,
 ): void {
   if (
     !state.noteData ||
@@ -1310,7 +1312,7 @@ function triggerRelease(
     noteDataToCleanup.gainNode.gain.setValueAtTime(currentValue, now);
     noteDataToCleanup.gainNode.gain.linearRampToValueAtTime(
       0,
-      now + state.settings.envelope.release
+      now + state.settings.envelope.release,
     );
   }
 
@@ -1318,14 +1320,14 @@ function triggerRelease(
   if (noteDataToCleanup.filterNode && state.settings.filter.contourAmount > 0) {
     const baseCutoff = Math.min(
       Math.max(state.settings.filter.cutoff, 20),
-      1541.27
+      1541.27,
     );
     const currentCutoff = noteDataToCleanup.filterNode.frequency.value;
     noteDataToCleanup.filterNode.frequency.cancelScheduledValues(now);
     noteDataToCleanup.filterNode.frequency.setValueAtTime(currentCutoff, now);
     noteDataToCleanup.filterNode.frequency.linearRampToValueAtTime(
       baseCutoff,
-      now + state.settings.envelope.release
+      now + state.settings.envelope.release,
     );
   }
 
@@ -1357,86 +1359,89 @@ function triggerRelease(
     noteDataToCleanup.noiseGain.gain.setValueAtTime(currentValue, now);
     noteDataToCleanup.noiseGain.gain.linearRampToValueAtTime(
       0,
-      now + state.settings.envelope.release
+      now + state.settings.envelope.release,
     );
   }
 
   // Schedule cleanup after the release is complete
-  setTimeout(() => {
-    // Only cleanup if this is still the note that was released
-    if (
-      !state.noteState ||
-      !state.noteState.isReleased ||
-      state.currentNote !== note
-    ) {
-      return;
-    }
+  setTimeout(
+    () => {
+      // Only cleanup if this is still the note that was released
+      if (
+        !state.noteState ||
+        !state.noteState.isReleased ||
+        state.currentNote !== note
+      ) {
+        return;
+      }
 
-    // Cleanup oscillators
-    noteDataToCleanup.oscillators.forEach((osc) => {
-      if (osc) {
+      // Cleanup oscillators
+      noteDataToCleanup.oscillators.forEach((osc) => {
+        if (osc) {
+          try {
+            osc.stop();
+            osc.disconnect();
+          } catch (e) {
+            console.warn("Error cleaning up oscillator:", e);
+          }
+        }
+      });
+
+      // Cleanup noise
+      if (noteDataToCleanup.noiseNode) {
         try {
-          osc.stop();
-          osc.disconnect();
+          noteDataToCleanup.noiseNode.disconnect();
         } catch (e) {
-          console.warn("Error cleaning up oscillator:", e);
+          console.warn("Error cleaning up noise node:", e);
         }
       }
-    });
-
-    // Cleanup noise
-    if (noteDataToCleanup.noiseNode) {
-      try {
-        noteDataToCleanup.noiseNode.disconnect();
-      } catch (e) {
-        console.warn("Error cleaning up noise node:", e);
+      if (noteDataToCleanup.noiseGain) {
+        try {
+          noteDataToCleanup.noiseGain.disconnect();
+        } catch (e) {
+          console.warn("Error cleaning up noise gain:", e);
+        }
       }
-    }
-    if (noteDataToCleanup.noiseGain) {
-      try {
-        noteDataToCleanup.noiseGain.disconnect();
-      } catch (e) {
-        console.warn("Error cleaning up noise gain:", e);
+      if (noteDataToCleanup.noisePanner) {
+        try {
+          noteDataToCleanup.noisePanner.disconnect();
+        } catch (e) {
+          console.warn("Error cleaning up noise panner:", e);
+        }
       }
-    }
-    if (noteDataToCleanup.noisePanner) {
-      try {
-        noteDataToCleanup.noisePanner.disconnect();
-      } catch (e) {
-        console.warn("Error cleaning up noise panner:", e);
+      if (noteDataToCleanup.noiseFilter) {
+        try {
+          noteDataToCleanup.noiseFilter.disconnect();
+        } catch (e) {
+          console.warn("Error cleaning up noise filter:", e);
+        }
       }
-    }
-    if (noteDataToCleanup.noiseFilter) {
-      try {
-        noteDataToCleanup.noiseFilter.disconnect();
-      } catch (e) {
-        console.warn("Error cleaning up noise filter:", e);
+
+      // Cleanup filter
+      if (noteDataToCleanup.filterNode) {
+        noteDataToCleanup.filterNode.disconnect();
       }
-    }
 
-    // Cleanup filter
-    if (noteDataToCleanup.filterNode) {
-      noteDataToCleanup.filterNode.disconnect();
-    }
+      // Cleanup main nodes
+      if (noteDataToCleanup.gainNode) {
+        noteDataToCleanup.gainNode.disconnect();
+      }
 
-    // Cleanup main nodes
-    if (noteDataToCleanup.gainNode) {
-      noteDataToCleanup.gainNode.disconnect();
-    }
-
-    // Only clear state if this is still the current note
-    if (state.currentNote === note) {
-      state.currentNote = null;
-      state.noteState = null;
-      state.noteData = null;
-    }
-  }, state.settings.envelope.release * 1000 + 150); // Increased buffer to ensure complete release
+      // Only clear state if this is still the current note
+      if (state.currentNote === note) {
+        state.currentNote = null;
+        state.noteState = null;
+        state.noteData = null;
+      }
+    },
+    state.settings.envelope.release * 1000 + 150,
+  ); // Increased buffer to ensure complete release
 }
 
 function dispose(state: SynthState, synthContext: SynthContext): void {
   if (state.activeNotes) {
     state.activeNotes.forEach((_, note: Note) =>
-      triggerRelease(state, synthContext, note)
+      triggerRelease(state, synthContext, note),
     );
   }
   if (state.noteStates) {
@@ -1454,10 +1459,10 @@ export async function createSynth() {
   // Load both noise processors
   try {
     await synthContext.context.audioWorklet.addModule(
-      "/white-noise-processor.js"
+      whiteNoiseProcessorWorkletUrl,
     );
     await synthContext.context.audioWorklet.addModule(
-      "/pink-noise-processor.js"
+      pinkNoiseProcessorWorkletUrl,
     );
   } catch (error) {
     console.error("Failed to load noise processors:", error);
