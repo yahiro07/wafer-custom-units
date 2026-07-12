@@ -5,13 +5,14 @@ import vue from "@vitejs/plugin-vue2";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default {
+  base: "./",
   plugins: [vue()],
   resolve: {
     extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
     alias: {
       "@": path.resolve(__dirname, "src"),
-      "@scss": path.resolve(__dirname, "src/assets/scss")
-    }
+      "@scss": path.resolve(__dirname, "src/assets/scss"),
+    },
   },
   css: {
     preprocessorOptions: {
@@ -23,11 +24,10 @@ export default {
           }
 
           return `@import "@/assets/scss/global.scss";\n${content}`;
-        }
-      }
-    }
+        },
+      },
+    },
   },
-  build: {
-    sourcemap: true
-  }
+  build: { outDir: "../../dist/vue-synth", emptyOutDir: true },
+  server: { port: 3000 },
 };

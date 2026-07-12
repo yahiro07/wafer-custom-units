@@ -151,7 +151,7 @@
               </div>
             </div>
             <div class="row overflow-hidden justify-center" v-if="defer(5)">
-              <div class="col" style="padding:0">
+              <div class="col" style="padding: 0">
                 <div class="piano-section">
                   <div class="piano-section__wrapper" draggable="false">
                     <piano @onKeyUp="onKeyUp" @onKeyDown="onKeyDown" height="6.2em"></piano>
@@ -167,7 +167,7 @@
 </template>
 
 <script>
-import { Waveform } from "tone";
+import { Waveform, setContext } from "tone";
 import Synthesizer from "@/Synth";
 import Piano from "@/components/Piano";
 import VSection from "@/components/ui/VSection";
@@ -176,9 +176,15 @@ import Meter from "@/components/vis/Meter";
 import MainScreen from "@/components/vis/MainScreen";
 import Toggle from "@/components/controllers/Toggle";
 import Controller from "@/components/controllers/Controller";
-const Analyser = () => import("@/components/vis/Analyser");
+import Analyser from "@/components/vis/Analyser";
 import { CONTROLLERS } from "@/Synth/synthfunctions";
 import Defer from "@/mixins/Defer";
+import { createCrossRealmAudioBridgingNode } from "@/audio-bridging";
+import * as Tone from "tone";
+import { queryUnitInterface } from "wafer-host/unit-types";
+
+export const unitInterface = queryUnitInterface?.("wafer-v01");
+
 export default {
   mixins: [Defer()],
   components: { Controller, Piano, VSection, Matrix, Meter, MainScreen, Toggle, Analyser },
@@ -187,20 +193,55 @@ export default {
       synth: null,
       CONTROLLERS,
       analyser: null,
-      rotate: 0
+      rotate: 0,
+      waferSetupComplete: false,
     };
   },
   methods: {
-    onKeyDown(note) {
-      this.synth.triggerAttack(note);
+    onKeyDown(note, time, velocity) {
+      if (!this.synth) return;
+      this.synth.triggerAttack(note, time, velocity);
     },
-    onKeyUp(note) {
-      this.synth.triggerRelease(note);
+    onKeyUp(note, time) {
+      if (!this.synth) return;
+      this.synth.triggerRelease(note, time);
     },
     async createSynth() {
+      if (unitInterface) {
+        // Tone.setContext(unitInterface.audioContext);
+      }
       const synth = new Synthesizer();
-      const ready = await synth.init();
+      await synth.init();
+      if (unitInterface) {
+        if (1) {
+          const toneAudioContext = Tone.getContext().rawContext;
+          const wrappedDestinationNode = createCrossRealmAudioBridgingNode(
+            unitInterface.audioOutputNode,
+            toneAudioContext,
+          );
+          return synth.connect(wrappedDestinationNode);
+        } else {
+          return synth.connect(unitInterface.audioOutputNode);
+        }
+      }
       return synth.toDestination();
+    },
+    setupWaferUnit() {
+      if (!unitInterface || this.waferSetupComplete) return;
+      unitInterface.completeSetup({
+        unitAspects: {
+          unitType: "instrument",
+          outputs: ["audio"],
+          inputs: ["note"],
+          viewSize: [1082, 720],
+        },
+        noteInput: {
+          noteOn: (note, time, velocity) => this.onKeyDown(note, time, velocity),
+          noteOff: (note, time) => this.onKeyUp(note, time),
+        },
+        cleanup: () => this.destroySynth(),
+      });
+      this.waferSetupComplete = true;
     },
     destroySynth() {
       if (this.synth) {
@@ -211,7 +252,7 @@ export default {
       }
     },
     dumpPreset() {
-      this.synth && this.synth.dumpPreset();
+      this.synth?.dumpPreset();
     },
     async panic() {
       this.destroySynth();
@@ -221,9 +262,10 @@ export default {
         Object.defineProperties(synth, {
           voiceManager: { configurable: false },
           controlManager: { configurable: false },
-          effects: { configurable: false }
+          effects: { configurable: false },
         });
         this.synth = synth;
+        this.setupWaferUnit();
       }
     },
     toggleAnalyser() {
@@ -235,7 +277,7 @@ export default {
         this.synth.disconnect(this.analyser);
         this.analyser = null;
       }
-    }
+    },
   },
   async created() {
     this.$emit("ready");
@@ -243,7 +285,7 @@ export default {
   },
   beforeDestroy() {
     this.destroySynth();
-  }
+  },
 };
 </script>
 
@@ -253,7 +295,7 @@ export default {
   margin: auto;
   flex-shrink: 0;
   &__wrapper {
-    margin: 1rem auto;
+    margin: 0 auto;
     overflow: hidden;
     border-radius: 0.4em;
     &::before {
@@ -263,7 +305,9 @@ export default {
       position: absolute;
       width: 100%;
       height: 100%;
-      box-shadow: inset 0 0.4em 0.15em -0.3em #fff4, inset 0.3em 0 0.2em -0.2em #aaa5,
+      box-shadow:
+        inset 0 0.4em 0.15em -0.3em #fff4,
+        inset 0.3em 0 0.2em -0.2em #aaa5,
         inset -0.3em 0 0.2em -0.2em #000a;
       mix-blend-mode: hard-light;
     }
@@ -281,7 +325,9 @@ export default {
   border-style: solid;
   border-width: 0em 3em;
   border-image: url("@/assets/images/wood.jpg") 0 100%;
-  box-shadow: inset 0.6em 0 0.1em -0.5em #000, inset -0.6em 0 0.1em -0.5em #000,
+  box-shadow:
+    inset 0.6em 0 0.1em -0.5em #000,
+    inset -0.6em 0 0.1em -0.5em #000,
     inset 0 0 3em 3em #000;
   &::before {
     content: "";
@@ -304,12 +350,18 @@ export default {
       width: 100%;
       height: 6px;
       border-radius: 1px;
-      box-shadow: 0 3px 2px 0 #5551, 0 -1px 1px #111, inset -1px 2px 4px 2px #0008,
+      box-shadow:
+        0 3px 2px 0 #5551,
+        0 -1px 1px #111,
+        inset -1px 2px 4px 2px #0008,
         inset 1px -1px 2px 2px #7771;
       // ---------------
       height: 3px;
       border-radius: 0;
-      box-shadow: 0 1px 1px 0 #5555, 0 -1px 1px #0004, inset 1px -1px 2px 2px #000;
+      box-shadow:
+        0 1px 1px 0 #5555,
+        0 -1px 1px #0004,
+        inset 1px -1px 2px 2px #000;
     }
   }
   .row {
@@ -350,7 +402,10 @@ export default {
         width: 3px;
         height: 100%;
         border-radius: 0;
-        box-shadow: 1px 0px 3px 0px #5555, -2px 0px 1px #0004, inset -1px 1px 1px 0px #000;
+        box-shadow:
+          1px 0px 3px 0px #5555,
+          -2px 0px 1px #0004,
+          inset -1px 1px 1px 0px #000;
       }
     }
   }
@@ -373,7 +428,9 @@ export default {
     &__wrapper {
       // box-shadow: 0 0 5px 2px #111;
       &::before {
-        box-shadow: inset 0 6px 8px 1px #111a, inset 0 3px 3px 1px #111;
+        box-shadow:
+          inset 0 6px 8px 1px #111a,
+          inset 0 3px 3px 1px #111;
         content: "";
         position: absolute;
         width: 100%;

@@ -17,6 +17,9 @@ importers:
       vue:
         specifier: ^2.7.16
         version: 2.7.16
+      wafer-host:
+        specifier: ^0.0.4
+        version: 0.0.4
     devDependencies:
       '@vitejs/plugin-vue2':
         specifier: ^2.3.4
@@ -610,6 +613,17 @@ packages:
     resolution: {integrity: sha512-4gCtFXaAA3zYZdTp5s4Hl2sozuySsgz4jy1EnpBHNfpMa9dK1ZCG7viqBPCwXtmgc8nHqUsAu3G4gtmXkkY3Sw==}
     deprecated: Vue 2 has reached EOL and is no longer actively maintained. See https://v2.vuejs.org/eol/ for more details.
 
+  wafer-host@0.0.4:
+    resolution: {integrity: sha512-fk/3qyJxSWZGnIJlKQpKDfu4b+w8aEAA05goOe2RtwVSnYN4FlZjmsnWjIpz1CWTcTaMaOwQ+0JCWsCmpEz5aA==}
+    peerDependencies:
+      react: ^19.2.6
+      react-dom: ^19.2.6
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
 snapshots:
 
   '@babel/helper-string-parser@7.29.7': {}
@@ -1024,3 +1038,5 @@ snapshots:
     dependencies:
       '@vue/compiler-sfc': 2.7.16
       csstype: 3.2.3
+
+  wafer-host@0.0.4: {}

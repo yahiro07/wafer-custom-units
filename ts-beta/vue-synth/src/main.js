@@ -8,15 +8,8 @@ import App from "./App.vue";
 */
 const files = import.meta.glob("./components/global/**/*.vue", { eager: true });
 
-Object.keys(files).map(key => {
-  Vue.component(
-    files[key].default.name ??
-      key
-        .split("/")
-        .pop()
-        .split(".")[0],
-    files[key].default
-  );
+Object.keys(files).map((key) => {
+  Vue.component(files[key].default.name ?? key.split("/").pop().split(".")[0], files[key].default);
 });
 /*
 ===========================
@@ -27,5 +20,5 @@ Vue.config.productionTip = false;
 Vue.prototype.$bus = new Vue();
 
 new Vue({
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount("#app");
