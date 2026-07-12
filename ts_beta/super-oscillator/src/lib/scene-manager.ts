@@ -9,6 +9,10 @@ export class SceneManager {
   private readonly clock: THREE.Clock;
   private readonly synthesizer: Synthesizer;
 
+  getSynthesizer(): Synthesizer {
+    return this.synthesizer;
+  }
+
   constructor() {
     this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     this.camera = new THREE.PerspectiveCamera();
@@ -60,7 +64,7 @@ export class SceneManager {
 
     this.synthesizer.rotation.x = Math.min(
       this.synthesizer.rotation.x + THREE.MathUtils.degToRad(15) * delta,
-      restRotation
+      restRotation,
     );
 
     // Enable input now if the resting position was just reached.
@@ -78,7 +82,7 @@ export class SceneManager {
     const padding = 5; // Some padding for a bit of empty space on the sides...
     const distance = ThreeUtils.getDistanceToFrustumWidth(
       width + padding,
-      this.camera
+      this.camera,
     );
     this.camera.position.z = distance;
   }

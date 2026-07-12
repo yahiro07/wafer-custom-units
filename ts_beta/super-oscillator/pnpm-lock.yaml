@@ -17,6 +17,9 @@ importers:
       tonal:
         specifier: ^6.0.0
         version: 6.4.3
+      wafer-host:
+        specifier: ^0.0.4
+        version: 0.0.4
       web-audio-oscillators:
         specifier: ^2.0.0
         version: 2.0.0
@@ -438,6 +441,17 @@ packages:
       yaml:
         optional: true
 
+  wafer-host@0.0.4:
+    resolution: {integrity: sha512-fk/3qyJxSWZGnIJlKQpKDfu4b+w8aEAA05goOe2RtwVSnYN4FlZjmsnWjIpz1CWTcTaMaOwQ+0JCWsCmpEz5aA==}
+    peerDependencies:
+      react: ^19.2.6
+      react-dom: ^19.2.6
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   web-audio-oscillators@2.0.0:
     resolution: {integrity: sha512-dVqMA9azUUVonPNGsQiUhj84s94uaqLDvMxN9lJLUZZIMNeCvUl5IOQ5Zot5SHHOKSyRFdqgQKKrdBxNrMS7FQ==}
 
@@ -840,6 +854,8 @@ snapshots:
       tinyglobby: 0.2.17
     optionalDependencies:
       fsevents: 2.3.3
+
+  wafer-host@0.0.4: {}
 
   web-audio-oscillators@2.0.0:
     dependencies:

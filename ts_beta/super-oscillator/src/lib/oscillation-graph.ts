@@ -1,6 +1,9 @@
 import { Note, NoteLiteral } from 'tonal';
 import Reverb, { ReverbNode } from 'soundbank-reverb';
 import { CustomOscillatorType, customOscillators } from 'web-audio-oscillators';
+import { queryUnitInterface } from 'wafer-host/unit-types';
+
+export const unitInterface = queryUnitInterface('wafer-v01');
 
 export class OscillationGraph {
   private readonly volume: GainNode;
@@ -9,13 +12,15 @@ export class OscillationGraph {
   private readonly noteOscillators: Map<NoteLiteral, OscillatorNode>;
 
   constructor(notes: NoteLiteral[]) {
-    const context = new AudioContext();
+    const context = unitInterface?.audioContext ?? new AudioContext();
+    const audioDestination =
+      unitInterface?.audioOutputNode ?? context.destination;
 
     this.reverb = Reverb(context);
     this.reverb.time = 1;
     this.reverb.wet.value = 0.8;
     this.reverb.dry.value = 0.6;
-    this.reverb.connect(context.destination);
+    this.reverb.connect(audioDestination);
 
     this.volume = context.createGain();
     this.volume.gain.value = 0.2; // TODO: Add UI control for this.

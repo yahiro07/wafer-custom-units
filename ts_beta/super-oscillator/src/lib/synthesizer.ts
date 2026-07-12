@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTF, GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Font, FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { NoteLiteral, Range, Scale } from 'tonal';
+import { Note, NoteLiteral, Range, Scale } from 'tonal';
 import wrapIndex from 'wrap-index';
 import * as ThreeUtils from './three-utils';
 import { OscillationGraph } from './oscillation-graph';
@@ -44,26 +44,26 @@ export class Synthesizer extends THREE.Group {
 
   addInputListener(
     renderer: THREE.Renderer,
-    camera: THREE.PerspectiveCamera
+    camera: THREE.PerspectiveCamera,
   ): void {
     window.addEventListener('keydown', this.onKeyDown.bind(this));
     window.addEventListener('keyup', this.onKeyUp.bind(this));
 
     renderer.domElement.addEventListener(
       'pointerdown',
-      this.onPointerDown.bind(this, renderer, camera)
+      this.onPointerDown.bind(this, renderer, camera),
     );
     renderer.domElement.addEventListener(
       'pointerup',
-      this.onPointerUp.bind(this)
+      this.onPointerUp.bind(this),
     );
     renderer.domElement.addEventListener(
       'pointermove',
-      this.onPointerMove.bind(this, renderer, camera)
+      this.onPointerMove.bind(this, renderer, camera),
     );
     renderer.domElement.addEventListener(
       'pointerleave',
-      this.onPointerUp.bind(this)
+      this.onPointerUp.bind(this),
     );
   }
 
@@ -94,7 +94,7 @@ export class Synthesizer extends THREE.Group {
   private onPointerDown(
     renderer: THREE.Renderer,
     camera: THREE.PerspectiveCamera,
-    event: PointerEvent
+    event: PointerEvent,
   ): void {
     // In case the previous pointerdown wasn't followed by a pointerup, clean up.
     this.onPointerUp();
@@ -106,7 +106,7 @@ export class Synthesizer extends THREE.Group {
       event.clientX,
       event.clientY,
       renderer,
-      camera
+      camera,
     );
 
     if (pressable) {
@@ -123,14 +123,14 @@ export class Synthesizer extends THREE.Group {
   private onPointerMove(
     renderer: THREE.Renderer,
     camera: THREE.PerspectiveCamera,
-    event: PointerEvent
+    event: PointerEvent,
   ): void {
     const pressable = ThreeUtils.getObjectAtCoord(
       this.pressables,
       event.clientX,
       event.clientY,
       renderer,
-      camera
+      camera,
     );
     renderer.domElement.style.cursor = pressable ? 'pointer' : 'default';
 
@@ -162,7 +162,7 @@ export class Synthesizer extends THREE.Group {
       if (this.keys.includes(pressable)) {
         pressable.position.y -= Synthesizer.keyPressHeight;
         this.oscillationGraph.openNoteGate(
-          pressable.userData.note as NoteLiteral
+          pressable.userData.note as NoteLiteral,
         );
       } else if ([this.nextButton, this.previousButton].includes(pressable)) {
         pressable.position.y -= Synthesizer.buttonPressHeight;
@@ -185,14 +185,14 @@ export class Synthesizer extends THREE.Group {
       if (this.keys.includes(pressable)) {
         pressable.position.y += Synthesizer.keyPressHeight;
         this.oscillationGraph.closeNoteGate(
-          pressable.userData.note as NoteLiteral
+          pressable.userData.note as NoteLiteral,
         );
       } else if ([this.nextButton, this.previousButton].includes(pressable)) {
         pressable.position.y += Synthesizer.buttonPressHeight;
         const increment = pressable === this.nextButton ? 1 : -1;
         this.oscillatorType = wrapIndex(
           customOscillatorTypes.indexOf(this.oscillatorType) + increment,
-          customOscillatorTypes
+          customOscillatorTypes,
         );
         this.oscillationGraph.setOscillatorType(this.oscillatorType);
         this.setScreenText();
@@ -210,7 +210,7 @@ export class Synthesizer extends THREE.Group {
         font: Synthesizer.assets.font,
         size: 1.5,
         height: 0.1,
-      }
+      },
     ).center();
     this.screenText.material = new THREE.MeshPhysicalMaterial({
       color: '#ff6600',
@@ -316,6 +316,18 @@ export class Synthesizer extends THREE.Group {
       model: await modelLoader.loadAsync('models/synthesizer.glb'),
       font: await fontLoader.loadAsync('fonts/share-tech-mono.json'),
     };
+  }
+
+  noteOn(noteNumber: number): void {
+    this.oscillationGraph.openNoteGate(
+      Note.fromMidi(noteNumber) as NoteLiteral,
+    );
+  }
+
+  noteOff(noteNumber: number): void {
+    this.oscillationGraph.closeNoteGate(
+      Note.fromMidi(noteNumber) as NoteLiteral,
+    );
   }
 }
 
