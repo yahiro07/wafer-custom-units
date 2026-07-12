@@ -4,7 +4,6 @@ import "./styles/variables.css";
 import PresetSelector from "./components/PresetSelector/PresetSelector";
 import { presets } from "./synth/presets";
 import Synth from "./components/Synth/Synth";
-import Footer from "./components/Footer";
 import { unitInterface } from "@/synth/audio/wafer-unit-interface";
 import { midiNoteToNote } from "@/hooks/useMidiHandling";
 import { useEffect } from "react";
@@ -85,7 +84,7 @@ function App() {
     <div className={styles.appContainer}>
       <PresetSelector onPresetSelect={handlePresetSelect} />
       <Synth />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
