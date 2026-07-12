@@ -1,0 +1,67 @@
+import { useSynthSelectors } from "./store/synthStore";
+import styles from "./styles/App.module.css";
+import "./styles/variables.css";
+import PresetSelector from "./components/PresetSelector/PresetSelector";
+import { presets } from "./synth/presets";
+import Synth from "./components/Synth/Synth";
+import Footer from "./components/Footer";
+
+function App() {
+  const setOctave = useSynthSelectors.useSetOctave();
+  const setGlide = useSynthSelectors.useSetGlide();
+  const updateMixer = useSynthSelectors.useUpdateMixer();
+  const setModWheel = useSynthSelectors.useSetModWheel();
+  const setOscillator = useSynthSelectors.useSetOscillator();
+  const updateNoise = useSynthSelectors.useUpdateNoise();
+  const updateModifiers = useSynthSelectors.useUpdateModifiers();
+  const updateEffects = useSynthSelectors.useUpdateEffects();
+
+  const handlePresetSelect = (presetName: string) => {
+    const preset = presets[presetName];
+    if (!preset) return;
+
+    // Update all synth settings
+    setOctave(preset.octave);
+    setGlide(preset.glide);
+    updateMixer({ modMix: preset.modMix });
+    setModWheel(preset.modWheel);
+
+    // Update oscillators
+    preset.oscillators.forEach((osc, index) => {
+      setOscillator((index + 1) as 1 | 2 | 3, {
+        ...osc,
+        enabled: true,
+      });
+    });
+
+    // Update noise
+    updateNoise(preset.noise);
+
+    // Update modifiers
+    updateModifiers({
+      cutoff: preset.filter.cutoff,
+      resonance: preset.filter.resonance,
+      contourAmount: preset.filter.contourAmount,
+      filterType: preset.filter.type,
+      envelope: preset.envelope,
+      lfo: preset.lfo,
+    });
+
+    // Update effects
+    updateEffects({
+      reverb: preset.reverb,
+      distortion: preset.distortion,
+      delay: preset.delay,
+    });
+  };
+
+  return (
+    <div className={styles.appContainer}>
+      <PresetSelector onPresetSelect={handlePresetSelect} />
+      <Synth />
+      <Footer />
+    </div>
+  );
+}
+
+export default App;
