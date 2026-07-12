@@ -6,12 +6,7 @@ import { ControlManager } from "@/Synth/control";
 import { BaseCommand } from "@/Synth/commands";
 import { CONTROLLERS, CONTROL_TYPES } from "@/Synth/synthfunctions";
 import { PresetManager } from "./PresetManager";
-let presets;
-try {
-  presets = require("./presets").default;
-} catch (e) {
-  console.warn("presets file not found.");
-}
+import presets from "./presets";
 
 function midiToNote(midi) {
   return Frequency(midi, "midi").toFrequency();
