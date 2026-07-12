@@ -318,7 +318,7 @@ function handleRibbonRelease() {
 }
 
 function playNote(note) {
-  console.log("Playing note:", note);
+  // console.log("Playing note:", note);
   // Call the core synth function
   window.playSynthNote(note);
 

@@ -176,7 +176,7 @@ window.updateOscillatorFrequencies = function () {
   // Update LED pulse rate
   updateLEDPulseRate(vco1Frequency, vco2Frequency);
   // Debug logging
-  logOscillatorState(vco1Frequency, vco2Frequency);
+  // logOscillatorState(vco1Frequency, vco2Frequency);
 };
 
 // Updates the LED pulse rate based on the mixer output frequency
@@ -238,7 +238,7 @@ window.playSynthNote = function (note, time = Tone.now()) {
   startAudioContext();
 
   window.currentNote = note;
-  console.log("Setting base frequency for note:", note);
+  // console.log("Setting base frequency for note:", note);
   const noteNumber = typeof note === "string" ? getNoteNumber(note) : note;
   window.baseFrequency = noteNumberToFrequency(noteNumber);
 
