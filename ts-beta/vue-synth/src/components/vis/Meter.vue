@@ -14,12 +14,12 @@ export default {
   props: {
     meter: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      meterLevels: []
+      meterLevels: [],
     };
   },
   mounted() {
@@ -29,11 +29,11 @@ export default {
         return;
       }
       const values = this.meter.getValue();
-      const levels = values.map(val => val.toFixed(2));
+      const levels = [].concat(values).map((val) => val.toFixed(2));
       this.meterLevels = levels;
     };
     loop();
-  }
+  },
 };
 </script>
 
@@ -47,7 +47,11 @@ export default {
     flex: 1;
     overflow: hidden;
     background: linear-gradient(to bottom, red 5%, orange 20%, green 60%);
-    box-shadow: inset 0 0 2px 0 #333, inset 0 0 1px 3px #000, 0 0 2px 1px #252525, 0 0 2px 1px #111;
+    box-shadow:
+      inset 0 0 2px 0 #333,
+      inset 0 0 1px 3px #000,
+      0 0 2px 1px #252525,
+      0 0 2px 1px #111;
     &::before {
       content: "";
       background: #111;
