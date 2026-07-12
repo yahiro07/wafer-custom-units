@@ -98,6 +98,7 @@ function onMIDISystemError(err) {
 
 //init: start up MIDI
 window.addEventListener("load", function () {
-  if (navigator.requestMIDIAccess)
+  const isStandalone = window.self === window.top;
+  if (isStandalone && navigator.requestMIDIAccess)
     navigator.requestMIDIAccess().then(onMIDIStarted, onMIDISystemError);
 });
