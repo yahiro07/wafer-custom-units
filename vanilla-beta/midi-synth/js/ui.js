@@ -52,7 +52,7 @@ function createKnob(
   knob.setAttribute("diameter", "64");
   knob.setAttribute("sprites", "100");
   knob.setAttribute("tooltip", label);
-  knob.ready();
+  // knob.ready();
   knob.onchange = onChange;
   //	knob.setValue( currentValue );
 

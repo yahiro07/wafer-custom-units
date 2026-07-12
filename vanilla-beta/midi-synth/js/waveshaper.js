@@ -118,6 +118,10 @@ function WaveShaper(context) {
 }
 
 WaveShaper.prototype.setDrive = function (drive) {
+  drive = Number(drive);
+  if (!isFinite(drive) || drive <= 0) {
+    drive = 0.01;
+  }
   this.input.gain.value = drive;
   var postDrive = Math.pow(1 / drive, 0.6);
   this.output.gain.value = postDrive;
