@@ -1,3 +1,5 @@
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+
 var voices = new Array();
 var audioContext = null;
 var isMobile = false; // we have to disable the convolver on mobile for performance reasons.
@@ -826,12 +828,9 @@ function onChangeOctave(ev) {
 }
 
 function initAudio() {
-  window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  try {
-    audioContext = new AudioContext();
-  } catch (e) {
-    alert("The Web Audio API is apparently not supported in this browser.");
-  }
+  audioContext = unitInterface?.audioContext ?? new AudioContext();
+  const audioDestination =
+    unitInterface?.audioOutputNode ?? audioContext.destination;
 
   window.addEventListener("keydown", keyDown, false);
   window.addEventListener("keyup", keyUp, false);
@@ -864,7 +863,7 @@ function initAudio() {
   onUpdateReverb({ currentTarget: { value: currentRev } });
 
   volNode.connect(compressor);
-  compressor.connect(audioContext.destination);
+  compressor.connect(audioDestination);
   onUpdateVolume({ currentTarget: { value: currentVol } });
 
   if (!isMobile) {
@@ -879,6 +878,23 @@ function initAudio() {
     };
     irRRequest.send();
   }
+
+  unitInterface?.completeSetup({
+    unitAspects: {
+      unitType: "instrument",
+      outputs: ["audio"],
+      inputs: ["note"],
+      viewSize: [1000, 700],
+    },
+    noteInput: {
+      noteOn(note, _time, velocity) {
+        noteOn(note, velocity);
+      },
+      noteOff(note, _time) {
+        noteOff(note);
+      },
+    },
+  });
 }
 
 window.onload = initAudio;
