@@ -16,6 +16,7 @@ export default {
   css: {
     preprocessorOptions: {
       scss: {
+        silenceDeprecations: ["import"],
         additionalData(content, filename) {
           if (filename.includes(`${path.sep}src${path.sep}assets${path.sep}scss${path.sep}`)) {
             return content;
