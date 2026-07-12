@@ -1,6 +1,5 @@
 import { presets } from "@/synth/presets";
 import styles from "./PresetSelector.module.css";
-import { useSynthStore } from "@/store/synthStore";
 
 type PresetSelectorProps = {
   onPresetSelect: (presetName: string) => void;
@@ -9,16 +8,16 @@ type PresetSelectorProps = {
 export default function PresetSelector({
   onPresetSelect,
 }: PresetSelectorProps) {
-  const exportCurrentPreset = useSynthStore((s) => s.exportCurrentPreset);
+  // const exportCurrentPreset = useSynthStore((s) => s.exportCurrentPreset);
 
-  const handleExport = () => {
-    const preset = exportCurrentPreset();
-    const presetString = JSON.stringify(preset, null, 2);
-    navigator.clipboard.writeText(presetString);
-    alert(
-      "Current preset copied to clipboard!\nPaste it into presets.ts as needed."
-    );
-  };
+  // const handleExport = () => {
+  //   const preset = exportCurrentPreset();
+  //   const presetString = JSON.stringify(preset, null, 2);
+  //   navigator.clipboard.writeText(presetString);
+  //   alert(
+  //     "Current preset copied to clipboard!\nPaste it into presets.ts as needed.",
+  //   );
+  // };
 
   return (
     <div className={styles.presetSelector}>
@@ -36,9 +35,9 @@ export default function PresetSelector({
           </option>
         ))}
       </select>
-      <button type="button" onClick={handleExport} style={{ marginLeft: 8 }}>
+      {/* <button type="button" onClick={handleExport} style={{ marginLeft: 8 }}>
         Export Preset
-      </button>
+      </button> */}
     </div>
   );
 }
