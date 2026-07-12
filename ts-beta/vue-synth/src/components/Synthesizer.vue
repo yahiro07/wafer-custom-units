@@ -207,13 +207,15 @@ export default {
       this.synth.triggerRelease(note, time);
     },
     async createSynth() {
-      if (unitInterface) {
-        // Tone.setContext(unitInterface.audioContext);
-      }
+      //this is not working, Error: param must be an AudioParam
+      // if (unitInterface) {
+      //   Tone.setContext(unitInterface.audioContext);
+      // }
       const synth = new Synthesizer();
       await synth.init();
       if (unitInterface) {
         if (1) {
+          //avoid error, Error: param must be an AudioParam
           const toneAudioContext = Tone.getContext().rawContext;
           const wrappedDestinationNode = createCrossRealmAudioBridgingNode(
             unitInterface.audioOutputNode,
@@ -221,6 +223,7 @@ export default {
           );
           return synth.connect(wrappedDestinationNode);
         } else {
+          //this also causes error, Error: A value with the given key could not be found.
           return synth.connect(unitInterface.audioOutputNode);
         }
       }
@@ -228,6 +231,17 @@ export default {
     },
     setupWaferUnit() {
       if (!unitInterface || this.waferSetupComplete) return;
+
+      function convertHostAudioContextTimeToToneJsAudioContextTime(time) {
+        const hostAc = unitInterface.audioContext;
+        const toneAc = Tone.getContext().rawContext;
+        if (time === 0 || time === undefined || time < hostAc.currentTime) {
+          return toneAc.currentTime;
+        }
+        return toneAc.currentTime + (time - hostAc.currentTime);
+      }
+
+      const self = this;
       unitInterface.completeSetup({
         unitAspects: {
           unitType: "instrument",
@@ -236,8 +250,14 @@ export default {
           viewSize: [1082, 720],
         },
         noteInput: {
-          noteOn: (note, time, velocity) => this.onKeyDown(note, time, velocity),
-          noteOff: (note, time) => this.onKeyUp(note, time),
+          noteOn(note, time, velocity) {
+            time = convertHostAudioContextTimeToToneJsAudioContextTime(time);
+            self.onKeyDown(note, time, velocity);
+          },
+          noteOff(note, time) {
+            time = convertHostAudioContextTimeToToneJsAudioContextTime(time);
+            self.onKeyUp(note, time);
+          },
         },
         cleanup: () => this.destroySynth(),
       });
