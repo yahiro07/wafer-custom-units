@@ -1,6 +1,8 @@
+import { SynthSetupContext } from "@/synth/audio/wafer-unit-interface";
 import Tuna from "tunajs";
 
-export function setupEffects(context: AudioContext) {
+export function setupEffects(synthSetupContext: SynthSetupContext) {
+  const context = synthSetupContext.audioContext;
   const masterGain = context.createGain();
   masterGain.gain.value = 0.3;
 
@@ -101,11 +103,11 @@ export function setupEffects(context: AudioContext) {
   // Connect reverb through EQ
   reverbNode.connect(reverbEQ);
   reverbEQ.connect(reverbGain);
-  reverbGain.connect(context.destination);
+  reverbGain.connect(synthSetupContext.destinationNode);
 
-  dryGain.connect(context.destination);
-  wetGain.connect(context.destination);
-  delayGain.connect(context.destination);
+  dryGain.connect(synthSetupContext.destinationNode);
+  wetGain.connect(synthSetupContext.destinationNode);
+  delayGain.connect(synthSetupContext.destinationNode);
 
   return {
     masterGain,

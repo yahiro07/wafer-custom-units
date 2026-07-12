@@ -11,6 +11,10 @@ import { createOscillator, createGainNode } from "./audio/nodes";
 import { setupEffects } from "./audio/effects";
 import whiteNoiseProcessorWorkletUrl from "./white-noise-processor?worker&url";
 import pinkNoiseProcessorWorkletUrl from "./pink-noise-processor?worker&url";
+import {
+  createSynthSetupContext,
+  SynthSetupContext,
+} from "@/synth/audio/wafer-unit-interface";
 
 type SynthContext = {
   context: AudioContext;
@@ -87,9 +91,12 @@ type OscillatorChain = {
   panner: StereoPannerNode | null;
 };
 
-function createSynthContext(context: AudioContext): SynthContext {
+function createSynthContext(
+  synthSetupContext: SynthSetupContext,
+): SynthContext {
   // Use setupEffects to create the effects chain
-  const effects = setupEffects(context);
+  const effects = setupEffects(synthSetupContext);
+  const context = synthSetupContext.audioContext;
 
   // Create noise-related nodes
   const noiseGain = context.createGain();
@@ -1453,7 +1460,8 @@ function dispose(state: SynthState, synthContext: SynthContext): void {
 
 // Factory function to create a synth
 export async function createSynth() {
-  const synthContext = createSynthContext(new AudioContext());
+  const synthSetupContext = createSynthSetupContext();
+  const synthContext = createSynthContext(synthSetupContext);
   const state = createInitialState();
 
   // Load both noise processors

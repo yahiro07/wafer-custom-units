@@ -5,6 +5,9 @@ import PresetSelector from "./components/PresetSelector/PresetSelector";
 import { presets } from "./synth/presets";
 import Synth from "./components/Synth/Synth";
 import Footer from "./components/Footer";
+import { unitInterface } from "@/synth/audio/wafer-unit-interface";
+import { midiNoteToNote } from "@/hooks/useMidiHandling";
+import { useEffect } from "react";
 
 function App() {
   const setOctave = useSynthSelectors.useSetOctave();
@@ -15,6 +18,8 @@ function App() {
   const updateNoise = useSynthSelectors.useUpdateNoise();
   const updateModifiers = useSynthSelectors.useUpdateModifiers();
   const updateEffects = useSynthSelectors.useUpdateEffects();
+  const keyboardRef = useSynthSelectors.useKeyboardRef();
+  const synth = keyboardRef.synth;
 
   const handlePresetSelect = (presetName: string) => {
     const preset = presets[presetName];
@@ -54,6 +59,27 @@ function App() {
       delay: preset.delay,
     });
   };
+
+  useEffect(() => {
+    if (synth) {
+      unitInterface?.completeSetup({
+        unitAspects: {
+          unitType: "instrument",
+          outputs: ["audio"],
+          inputs: ["note"],
+          viewSize: [1180, 540],
+        },
+        noteInput: {
+          noteOn(noteNumber) {
+            synth?.triggerAttack(midiNoteToNote(noteNumber));
+          },
+          noteOff(noteNumber) {
+            synth?.triggerRelease(midiNoteToNote(noteNumber));
+          },
+        },
+      });
+    }
+  }, [synth]);
 
   return (
     <div className={styles.appContainer}>

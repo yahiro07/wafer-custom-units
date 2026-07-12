@@ -51,7 +51,7 @@ declare global {
   }
 }
 
-function midiNoteToNote(midiNote: MIDIValue): NoteName {
+export function midiNoteToNote(midiNote: MIDIValue): NoteName {
   const noteNames = [
     "C",
     "C#",
@@ -156,7 +156,7 @@ export function useMidiHandling() {
           break;
       }
     },
-    [setActiveKeys, keyboardRef]
+    [setActiveKeys, keyboardRef],
   );
 
   useEffect(() => {
