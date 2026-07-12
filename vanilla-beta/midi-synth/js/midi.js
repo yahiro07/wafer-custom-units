@@ -96,9 +96,8 @@ function onMIDISystemError(err) {
   console.log("MIDI not initialized - error encountered:" + err.code);
 }
 
-//init: start up MIDI
-window.addEventListener("load", function () {
-  const isStandalone = window.self === window.top;
-  if (isStandalone && navigator.requestMIDIAccess)
-    navigator.requestMIDIAccess().then(onMIDIStarted, onMIDISystemError);
-});
+//disable midi input for iframe unit
+// window.addEventListener("load", function () {
+//   if (navigator.requestMIDIAccess)
+//     navigator.requestMIDIAccess().then(onMIDIStarted, onMIDISystemError);
+// });

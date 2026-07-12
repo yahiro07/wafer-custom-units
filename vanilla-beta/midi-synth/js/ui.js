@@ -500,23 +500,23 @@ function setupSynthUI() {
       onUpdateVolume,
     ),
   );
-  master.appendChild(
-    createDropdown(
-      "midiIn",
-      "midi_in",
-      280,
-      15,
-      ["-no MIDI-"],
-      0,
-      selectMIDIIn,
-    ),
-  );
+  // master.appendChild(
+  //   createDropdown(
+  //     "midiIn",
+  //     "midi_in",
+  //     280,
+  //     15,
+  //     ["-no MIDI-"],
+  //     0,
+  //     selectMIDIIn,
+  //   ),
+  // );
   master.appendChild(
     createDropdown(
       "kbd_oct",
       "kbd_oct",
       280,
-      60,
+      30,
       ["+3", "+2", "+1", "normal", "-1", "-2", "-3"],
       3,
       onChangeOctave,
