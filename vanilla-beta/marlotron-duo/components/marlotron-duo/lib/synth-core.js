@@ -1,5 +1,24 @@
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+const toneAudioContext = Tone.getContext().rawContext;
+const wrappedDestinationNode = unitInterface
+  ? createCrossRealmAudioBridgingNode(
+      unitInterface.audioOutputNode,
+      toneAudioContext,
+    )
+  : toneAudioContext.destination;
+
+function convertHostAudioContextTimeToToneJsAudioContextTime(time) {
+  if (!unitInterface) return time;
+  const hostAc = unitInterface.audioContext;
+  const toneAc = Tone.getContext().rawContext;
+  if (time === 0 || time === undefined || time < hostAc.currentTime) {
+    return toneAc.currentTime;
+  }
+  return toneAc.currentTime + (time - hostAc.currentTime);
+}
+
 // Initialize variables to manage the state of the synth and set defaults
-window.synthMode = "standby"; // Defaults to standby mode, controls active oscillators
+window.synthMode = "vco1"; // Defaults to standby mode, controls active oscillators
 window.ribbonMode = "chromatic"; // Default ribbon mode (chromatic, major, minor, bypass)
 window.isDroneMode = false; // When true, notes continue playing after ribbon is released
 window.currentNote = null; // Keeps track of the currently playing note
@@ -36,7 +55,7 @@ window.vcf = new Tone.Filter({
 
 // Add a gain stage after the filter to compensate for resonance
 // This mimics the hardware's behavior where resonance doesn't reduce overall volume
-window.filterCompensation = new Tone.Gain(1).toDestination();
+window.filterCompensation = new Tone.Gain(1).connect(wrappedDestinationNode);
 
 // Create a mixer node to combine VCO1 and VCO2
 // In the hardware, this is a simple voltage summer before the filter
@@ -208,7 +227,7 @@ window.startAudioContext = function () {
 };
 
 // Core synth functions for playing and stopping notes
-window.playSynthNote = function (note) {
+window.playSynthNote = function (note, time = Tone.now()) {
   // Don't play any notes if synth is in standby
   if (window.synthMode === "standby") {
     console.log("Synth in standby mode, not playing");
@@ -220,7 +239,8 @@ window.playSynthNote = function (note) {
 
   window.currentNote = note;
   console.log("Setting base frequency for note:", note);
-  window.baseFrequency = noteNumberToFrequency(getNoteNumber(note));
+  const noteNumber = typeof note === "string" ? getNoteNumber(note) : note;
+  window.baseFrequency = noteNumberToFrequency(noteNumber);
 
   // Enable appropriate oscillators
   if (window.synthMode === "vco1") {
@@ -234,10 +254,34 @@ window.playSynthNote = function (note) {
 };
 
 // Function to stop playing a note (used when not in drone mode)
-window.stopSynthNote = function () {
+window.stopSynthNote = function (time = Tone.now()) {
   if (!window.isDroneMode) {
     window.currentNote = null;
-    vco1Output.gain.setValueAtTime(0, Tone.now());
-    vco2Output.gain.setValueAtTime(0, Tone.now());
+    vco1Output.gain.setValueAtTime(0, time);
+    vco2Output.gain.setValueAtTime(0, time);
   }
 };
+
+let lastInputNote = null;
+unitInterface?.completeSetup({
+  unitAspects: {
+    unitType: "instrument",
+    outputs: ["audio"],
+    inputs: ["note"],
+    viewSize: [900, 520],
+  },
+  noteInput: {
+    noteOn(noteNumber, time) {
+      time = convertHostAudioContextTimeToToneJsAudioContextTime(time);
+      playSynthNote(noteNumber, time);
+      lastInputNote = noteNumber;
+    },
+    noteOff(noteNumber, time) {
+      if (lastInputNote === noteNumber) {
+        time = convertHostAudioContextTimeToToneJsAudioContextTime(time);
+        stopSynthNote(time);
+        lastInputNote = null;
+      }
+    },
+  },
+});
