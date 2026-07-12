@@ -22,7 +22,7 @@ importers:
         specifier: ^2.3.4
         version: 2.3.4(vite@7.3.6(sass@1.101.0))(vue@2.7.16)
       sass:
-        specifier: ^1.89.2
+        specifier: ^1.101.0
         version: 1.101.0
       vite:
         specifier: ^7.3.6
