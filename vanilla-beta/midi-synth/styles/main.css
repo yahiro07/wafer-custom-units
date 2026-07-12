@@ -1,10 +1,26 @@
 body {
-  background-color: #999999;
+  height: 100dvh;
   overflow: hidden;
+  margin: 0;
+  background-color: #999999;
   font:
     12px "Syncopate",
     sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.synth-frame {
+  background: #555;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
 #draw {
   height: 500px;
 }
@@ -71,8 +87,9 @@ body {
 }
 #keybox {
   width: 910px;
-  margin-left: -7px;
   text-align: center;
+  transform: scale(1.035);
+  transform-origin: center;
 }
 #blackkeys {
   position: absolute;
@@ -88,7 +105,7 @@ body {
 .black {
   background: black;
   width: 40px;
-  height: 150px;
+  height: 75px;
   margin: 0px 11px;
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
@@ -101,7 +118,7 @@ body {
 .white {
   background: white;
   width: 60px;
-  height: 250px;
+  height: 125px;
   border: 1px solid black;
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;

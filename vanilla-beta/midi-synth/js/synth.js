@@ -884,7 +884,7 @@ function initAudio() {
       unitType: "instrument",
       outputs: ["audio"],
       inputs: ["note"],
-      viewSize: [1000, 700],
+      viewSize: [940, 550],
     },
     noteInput: {
       noteOn(note, _time, velocity) {
