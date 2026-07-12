@@ -226,6 +226,7 @@ export class VoiceManager extends PolySynth {
   constructor() {
     super(optionsFromArguments(VoiceManager.getDefaults(), arguments));
     this.globalModMatrix = new ModMatrix();
+    this._voiceTriggerOrder = 0;
     /* --------------------------- */
     // this.initGlobalMatrix();
     this.initVoices();
@@ -265,6 +266,7 @@ export class VoiceManager extends PolySynth {
       // global parameters
 
       voice.connect(this.output);
+      voice._triggerOrder = -1;
       this._voices.push(voice);
     }
   }
@@ -301,15 +303,31 @@ export class VoiceManager extends PolySynth {
     return freeVoice;
   }
 
+  _findOldestVoice() {
+    let oldestVoice = null;
+    for (let i = 0; i < this.maxPolyphony; i++) {
+      const voice = this._voices[i];
+      if (!oldestVoice || voice._triggerOrder < oldestVoice._triggerOrder) {
+        oldestVoice = voice;
+      }
+    }
+    return oldestVoice;
+  }
+
+  _getVoiceForAttack() {
+    return this._findFreeVoice() || this._findOldestVoice();
+  }
+
   _triggerAttack(notes, time, velocity) {
     notes.forEach(note => {
-      const voice = this._findFreeVoice();
+      const voice = this._getVoiceForAttack();
       if (!voice) return;
 
       const midiNote = new MidiClass(this.context, note).toMidi();
       if (voice) {
         voice.triggerAttack(note, time, velocity);
         voice._noteNumber = midiNote;
+        voice._triggerOrder = this._voiceTriggerOrder++;
       }
     });
   }
