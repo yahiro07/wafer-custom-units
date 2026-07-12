@@ -5,7 +5,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   base: "./",
   plugins: [react(), tsconfigPaths()],
-  optimizeDeps: {
-    exclude: ["lucide-react"],
-  },
+  optimizeDeps: { exclude: ["lucide-react"] },
+  build: { outDir: "../dist/model-1", emptyOutDir: true },
 });
