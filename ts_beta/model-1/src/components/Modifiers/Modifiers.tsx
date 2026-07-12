@@ -1,5 +1,5 @@
-import Knob from "../Knob";
-import ADSR from "../ADSR";
+import Knob from "../Knob/index.ts";
+import ADSR from "../ADSR/index.ts";
 import { WaveformType, LFORouting, FilterType } from "@/synth/types/index";
 import { WAVEFORM_ICONS, ROUTING_LABELS } from "./constants.tsx";
 import {
@@ -9,7 +9,7 @@ import {
   valueToRouting,
   filterTypeToValue,
   valueToFilterType,
-} from "./utils";
+} from "./utils.ts";
 import ArrowKnob from "../ArrowKnob/ArrowKnob.tsx";
 import styles from "./Modifiers.module.css";
 
