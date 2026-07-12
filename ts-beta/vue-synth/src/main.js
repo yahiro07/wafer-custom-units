@@ -6,16 +6,16 @@ import App from "./App.vue";
 >>> Globally register all components from 'src/components/global' directory
 ===========================
 */
-const files = require.context("@/components/global", true, /\.vue$/i);
+const files = import.meta.glob("./components/global/**/*.vue", { eager: true });
 
-files.keys().map(key => {
+Object.keys(files).map(key => {
   Vue.component(
-    files(key).default.name ??
+    files[key].default.name ??
       key
         .split("/")
         .pop()
         .split(".")[0],
-    files(key).default
+    files[key].default
   );
 });
 /*

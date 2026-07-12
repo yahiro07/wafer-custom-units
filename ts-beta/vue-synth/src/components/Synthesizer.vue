@@ -280,7 +280,7 @@ export default {
   // ------------
   border-style: solid;
   border-width: 0em 3em;
-  border-image: url("~@/assets/images/wood.jpg") 0 100%;
+  border-image: url("@/assets/images/wood.jpg") 0 100%;
   box-shadow: inset 0.6em 0 0.1em -0.5em #000, inset -0.6em 0 0.1em -0.5em #000,
     inset 0 0 3em 3em #000;
   &::before {

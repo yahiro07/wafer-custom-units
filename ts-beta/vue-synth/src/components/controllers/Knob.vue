@@ -25,7 +25,7 @@ const MID_Y = 50;
 
 import { clamp, scale, describeArc, polarToCartesian } from "@/utils";
 import { ControlMixin } from "@/mixins/Control";
-import variables from "@/assets/scss/_variables.scss";
+import variables from "@/assets/scss/_variables.module.scss";
 import BaseController from "./BaseController";
 export default {
   name: "Knob",
