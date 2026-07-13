@@ -73,6 +73,11 @@ export const GlobalStyles = createGlobalStyle`
         background-color: ${({ theme }) => theme.background};
         color: ${({ theme }) => theme.strong};
         ${typographyStyles}
+        display: flex;
+        height: 100dvh;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
     }
 
     input, button, select, textarea {
