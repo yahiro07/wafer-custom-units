@@ -8,8 +8,9 @@ export default defineConfig({
   resolve: {
     extensions: [".jsx", ".js"],
     alias: {
-      "@": path.join(__dirname, "./src"),
+      src: path.join(__dirname, "./src"),
     },
   },
+  build: { outDir: "../dist/poly-synth", emptyOutDir: true },
   server: { port: 3000 },
 });
