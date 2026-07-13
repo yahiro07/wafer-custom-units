@@ -1,4 +1,8 @@
-var audioContext = new AudioContext();
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+const audioContext = unitInterface?.audioContext ?? new AudioContext();
+const audioDestination =
+  unitInterface?.audioOutputNode ?? audioContext.destination;
+
 var audioInput = null,
   realAudioInput = null,
   effectInput = null,
@@ -110,9 +114,13 @@ function toggleMono() {
 var useFeedbackReduction = true;
 
 function gotStream(stream) {
+  var input = audioContext.createMediaStreamSource(stream);
+  gotStreamInput(input);
+}
+
+function gotStreamInput(input) {
   // Create an AudioNode from the stream.
   //    realAudioInput = audioContext.createMediaStreamSource(stream);
-  var input = audioContext.createMediaStreamSource(stream);
 
   /*
     realAudioInput = audioContext.createBiquadFilter();
@@ -138,7 +146,7 @@ function gotStream(stream) {
   audioInput.connect(effectInput);
   dryGain.connect(outputMix);
   wetGain.connect(outputMix);
-  outputMix.connect(audioContext.destination);
+  outputMix.connect(audioDestination);
   outputMix.connect(analyser2);
   crossfade(1.0);
   changeEffect();
@@ -200,16 +208,33 @@ function initAudio() {
   analyserView2 = new AnalyserView("view2");
   analyserView2.initByteBuffer(analyser2);
 
-  if (!navigator.getUserMedia)
-    return alert("Error: getUserMedia not supported!");
-
-  navigator.getUserMedia(constraints, gotStream, function (e) {
-    alert("Error getting audio");
-    console.log(e);
-  });
-
-  navigator.mediaDevices.enumerateDevices().then(gotSources);
   document.getElementById("effect").onchange = changeEffect;
+
+  if (!unitInterface) {
+    if (!navigator.getUserMedia)
+      return alert("Error: getUserMedia not supported!");
+    navigator.getUserMedia(constraints, gotStream, function (e) {
+      alert("Error getting audio");
+      console.log(e);
+    });
+    navigator.mediaDevices.enumerateDevices().then(gotSources);
+  } else {
+    gotStreamInput(unitInterface.audioInputNode);
+    unitInterface.completeSetup({
+      unitAspects: {
+        unitType: "effect",
+        outputs: ["audio"],
+        inputs: ["audio"],
+        viewSize: [1000, 780],
+      },
+    });
+    const hideElement = (id) => {
+      const element = document.getElementById(id);
+      element.style.display = "none";
+    };
+    hideElement("autoplay");
+    // hideElement("inputOuter");
+  }
 }
 
 function keyPress(ev) {
