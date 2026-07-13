@@ -1,5 +1,5 @@
-import { createGlobalStyle } from 'styled-components';
-import { defaultTransition } from 'src/styles/constants';
+import { createGlobalStyle } from "styled-components";
+import { defaultTransition } from "src/styles/constants";
 
 const resetStyles = `
     /* http://meyerweb.com/eric/tools/css/reset/
