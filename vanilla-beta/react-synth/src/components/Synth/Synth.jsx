@@ -20,13 +20,21 @@ import {
   InfoText,
   AnalyserContainer,
 } from "./styles";
+import { queryUnitInterface } from "wafer-host/unit-types";
+
+const unitInterface = queryUnitInterface("wafer-v01");
 
 class Synth extends React.Component {
   constructor(props) {
     super(props);
 
     this.BASE_CLASS_NAME = "Synth";
-    this.AC = new AudioContext();
+
+    const audioContext = unitInterface?.audioContext ?? new AudioContext();
+    const audioDestination =
+      unitInterface?.audioOutputNode ?? audioContext.destination;
+    this.AC = audioContext;
+    this.AC.__destination = audioDestination;
 
     // setting up nodes
     this.volumeNode = new Nodes.Gain(this.AC);
@@ -72,6 +80,24 @@ class Synth extends React.Component {
       // Knob state
       ...this.presets["- INIT -"],
     };
+
+    const self = this;
+    unitInterface?.completeSetup({
+      unitAspects: {
+        unitType: "instrument",
+        outputs: ["audio"],
+        inputs: ["note"],
+        viewSize: [1180, 730],
+      },
+      noteInput: {
+        noteOn(time) {
+          self.noteOn(time);
+        },
+        noteOff(time) {
+          self.noteOff(time);
+        },
+      },
+    });
   }
 
   componentDidMount = () => this.initSynth();
@@ -79,7 +105,7 @@ class Synth extends React.Component {
   // Connect all the nodes together
   initSynth = () => {
     // Master Volume Setup
-    this.volumeNode.connect(this.AC.destination);
+    this.volumeNode.connect(this.AC.__destination);
 
     // Reverb Setup
     this.reverbNode.connect(this.volumeNode.getNode());
@@ -129,6 +155,8 @@ class Synth extends React.Component {
 
     // Listen for keys
     this.engageKeyboard();
+
+    this.startAnalyser();
   };
 
   // Sync node values to the current state
