@@ -28,6 +28,6 @@ export default {
       },
     },
   },
-  build: { outDir: "../../dist/vue-synth", emptyOutDir: true },
+  build: { outDir: "../dist/vue-synth", emptyOutDir: true },
   server: { port: 3000 },
 };

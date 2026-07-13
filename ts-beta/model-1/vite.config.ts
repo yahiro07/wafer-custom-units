@@ -6,6 +6,6 @@ export default defineConfig({
   base: "./",
   plugins: [react(), tsconfigPaths()],
   optimizeDeps: { exclude: ["lucide-react"] },
-  build: { outDir: "../../dist/model-1", emptyOutDir: true },
+  build: { outDir: "../dist/model-1", emptyOutDir: true },
   server: { port: 3000 },
 });

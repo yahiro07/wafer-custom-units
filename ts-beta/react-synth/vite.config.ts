@@ -11,6 +11,6 @@ export default defineConfig({
       "@": path.join(__dirname, "./src"),
     },
   },
-  build: { outDir: "../../dist/react-synth", emptyOutDir: true },
+  build: { outDir: "../dist/react-synth", emptyOutDir: true },
   server: { port: 3000 },
 });
