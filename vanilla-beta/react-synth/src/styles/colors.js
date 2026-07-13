@@ -1,5 +1,5 @@
 // Variables for colors for use around the site
-import * as palette from './palette';
+import * as palette from "./palette";
 
 // General Colors
 export const lightTextColor = palette.colorOffWhite;
@@ -32,4 +32,3 @@ export const sequencerBackgroundColor = palette.colorDarkerGrey;
 export const controlBackgroundColor = palette.colorLightGrey;
 export const uiColor1 = palette.colorAqua;
 export const uiColor2 = palette.colorOrange;
-

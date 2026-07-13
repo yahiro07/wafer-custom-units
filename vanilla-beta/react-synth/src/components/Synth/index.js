@@ -1,1 +1,1 @@
-export { default } from './Synth';
+export { default } from "./Synth";
