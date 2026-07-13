@@ -7,22 +7,6 @@ import {
   knobDialBorderColor,
 } from "@/styles/colors";
 
-export const ComponentContainer = styled.div`
-  ${relaInline}
-  margin: 0 0.5rem 0.5rem;
-  vertical-align: top;
-  text-align: left;
-
-  &:hover ${Label}, &:active ${Label} {
-    & .label-text {
-      opacity: 0;
-    }
-    & .value-text {
-      opacity: 1;
-    }
-  }
-`;
-
 export const Label = styled.h2`
   ${relaBlock}
   max-width: 80px;
@@ -42,6 +26,22 @@ export const Label = styled.h2`
     left: 0;
     right: 0;
     opacity: 0;
+  }
+`;
+
+export const ComponentContainer = styled.div`
+  ${relaInline}
+  margin: 0 0.5rem 0.5rem;
+  vertical-align: top;
+  text-align: left;
+
+  &:hover ${Label}, &:active ${Label} {
+    & .label-text {
+      opacity: 0;
+    }
+    & .value-text {
+      opacity: 1;
+    }
   }
 `;
 

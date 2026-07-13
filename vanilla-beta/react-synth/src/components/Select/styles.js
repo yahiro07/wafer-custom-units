@@ -9,21 +9,6 @@ import {
   selectDropdownBackgroundColor,
 } from "@/styles/colors";
 
-export const ComponentContainer = styled.div`
-  ${relaBlock}
-  width: 5rem;
-  padding: 0.5rem 0;
-  margin: 0 0.5rem;
-  &:hover ${Label}, &:active ${Label} {
-    & .label-text {
-      opacity: 0;
-    }
-    & .value-text {
-      opacity: 1;
-    }
-  }
-`;
-
 export const Label = styled.h4`
   ${relaBlock}
   margin: 0.5rem auto;
@@ -43,6 +28,21 @@ export const Label = styled.h4`
     left: 0;
     right: 0;
     opacity: 0;
+  }
+`;
+
+export const ComponentContainer = styled.div`
+  ${relaBlock}
+  width: 5rem;
+  padding: 0.5rem 0;
+  margin: 0 0.5rem;
+  &:hover ${Label}, &:active ${Label} {
+    & .label-text {
+      opacity: 0;
+    }
+    & .value-text {
+      opacity: 1;
+    }
   }
 `;
 
