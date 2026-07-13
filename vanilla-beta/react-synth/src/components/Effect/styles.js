@@ -1,10 +1,10 @@
 import styled from "styled-components";
-import { relaBlock, relaInline } from "frontend/styles/util";
+import { relaBlock, relaInline } from "@/styles/util";
 import {
   lightTextColor,
   effectLabelColor,
   effectBackgroundColor,
-} from "frontend/styles/colors";
+} from "@/styles/colors";
 
 // Widths
 // One knob: 112px

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { relaBlock, fixedFill } from "frontend/styles/util";
+import { relaBlock, fixedFill } from "@/styles/util";
 
 export const ComponentContainer = styled.div`
   ${fixedFill}

@@ -1,12 +1,12 @@
 import styled from "styled-components";
-import { relaBlock, relaInline } from "frontend/styles/util";
-import { colorDarkGrey, colorBlack } from "frontend/styles/palette";
+import { relaBlock, relaInline } from "@/styles/util";
+import { colorDarkGrey, colorBlack } from "@/styles/palette";
 import {
   lightTextColor,
   synthBackgroundColor,
   synthSelectBackgroundColor,
   synthBorderColor,
-} from "frontend/styles/colors";
+} from "@/styles/colors";
 
 export const ComponentContainer = styled.div`
   ${relaBlock}

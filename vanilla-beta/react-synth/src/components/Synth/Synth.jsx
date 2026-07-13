@@ -1,16 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Knob from "frontend/components/Knob";
-import Effect from "frontend/components/Effect";
-import Select from "frontend/components/Select";
-import Modal from "frontend/components/Modal";
-import { getFreqFromNote, getNoteFromKeyCode } from "frontend/util/util";
-import {
-  keyToNoteMap,
-  scaleOffsets,
-  selectOptions,
-} from "frontend/util/constants";
-import * as Nodes from "frontend/nodes";
+import Knob from "@/components/Knob";
+import Effect from "@/components/Effect";
+import Select from "@/components/Select";
+import Modal from "@/components/Modal";
+import { getFreqFromNote, getNoteFromKeyCode } from "@/util/util";
+import { keyToNoteMap, scaleOffsets, selectOptions } from "@/util/constants";
+import * as Nodes from "@/nodes";
 import presetData from "./presetData";
 import {
   ComponentContainer,

@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { defaultKnobColor, knobTrackSvgColor } from "frontend/styles/colors";
+import { defaultKnobColor, knobTrackSvgColor } from "@/styles/colors";
 import {
   ComponentContainer,
   Label,

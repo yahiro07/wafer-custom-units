@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import { relaBlock, relaInline } from "frontend/styles/util";
+import { relaBlock, relaInline } from "@/styles/util";
 import {
   knobLabelColor,
   knobDialBackgroundColor,
   knobDialTickColor,
   knobDialBorderColor,
-} from "frontend/styles/colors";
+} from "@/styles/colors";
 
 export const ComponentContainer = styled.div`
   ${relaInline}

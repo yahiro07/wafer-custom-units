@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { relaBlock, relaInline } from "frontend/styles/util";
+import { relaBlock, relaInline } from "@/styles/util";
 import {
   svgActiveColor,
   svgInactiveColor,
@@ -7,7 +7,7 @@ import {
   selectBorderColor,
   selectActiveBorderColor,
   selectDropdownBackgroundColor,
-} from "frontend/styles/colors";
+} from "@/styles/colors";
 
 export const ComponentContainer = styled.div`
   ${relaBlock}
