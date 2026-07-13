@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useEffect, useState } from "react";
+import React, { useLayoutEffect, useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import * as Nodes from "src/nodes";
 import MonoSynth from "src/components/MonoSynth";
@@ -11,6 +11,8 @@ import presetData from "src/util/presetData";
 import { getNoteInfo, WAVEFORM, FILTER, REVERB } from "src/util/util";
 import { THEMES } from "src/styles/themes";
 
+import { queryUnitInterface } from "wafer-host/unit-types";
+
 import {
   ModuleGridContainer,
   InfoModule,
@@ -22,9 +24,11 @@ import {
   Lines,
 } from "./PolySynth.styled";
 
-const BASE_CLASS_NAME = "PolySynth";
+const unitInterface = queryUnitInterface("wafer-v01");
+const AC = unitInterface?.audioContext ?? new AudioContext();
+const audioDestination = unitInterface?.audioOutputNode ?? AC.destination;
 
-const AC = new AudioContext();
+const BASE_CLASS_NAME = "PolySynth";
 const polyphony = 8;
 const synthArr = Array(polyphony)
   .fill(0)
@@ -99,6 +103,8 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
   const [eqLowFreq, setEqLowFreq] = useState(320);
   const [eqHighFreq, setEqHighFreq] = useState(3200);
 
+  const noteFunctions = useRef({ noteOn: null, noteOff: null });
+
   const octaveUp = () => {
     if (octaveMod < 7) {
       setOctaveMod(octaveMod + 1);
@@ -150,7 +156,32 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
     masterLimiter.setKnee(0);
     masterLimiter.setRatio(20);
 
-    masterGain.connect(AC.destination);
+    masterGain.connect(audioDestination);
+
+    const midiToFreq = (noteNumber) => {
+      return 440 * Math.pow(2, (noteNumber - 69) / 12);
+    };
+
+    unitInterface?.completeSetup({
+      unitAspects: {
+        unitType: "instrument",
+        outputs: ["audio"],
+        inputs: ["note"],
+        viewSize: [1280, 770],
+      },
+      noteInput: {
+        noteOn(noteNumber) {
+          const note = `midi-${noteNumber}`;
+          const freq = midiToFreq(noteNumber);
+          noteFunctions.current?.noteOn({ note, freq });
+        },
+        noteOff(noteNumber) {
+          const note = `midi-${noteNumber}`;
+          const freq = midiToFreq(noteNumber);
+          noteFunctions.current?.noteOff({ note, freq });
+        },
+      },
+    });
   };
 
   const getGainEnv = () => ({
@@ -205,6 +236,8 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
     );
     targetSynths.forEach((synth) => synthNoteOff(synth));
   };
+
+  noteFunctions.current = { noteOn, noteOff };
 
   // Keyboard listeners
   const keydownFunction = (e) => {
