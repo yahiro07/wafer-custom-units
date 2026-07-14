@@ -6,6 +6,7 @@ import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { Keyboard } from "./Keyboard";
 import { Oscillator, Toggle, Parameter, effects } from "./Control";
 import { defaultType } from "./Control/Oscillator";
+import { createWaferToneSynthBridge } from "../wafer-tone-synth-bridge";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,13 +30,25 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+const waferToneSynthBridge = createWaferToneSynthBridge();
+
 const effectsChain = Object.entries(effects).map(
   ([name, effect]) => effect.object,
 );
 const synth = new Tone.MonoSynth({ oscillator: { type: defaultType } }).chain(
   ...effectsChain,
-  Tone.Master,
+  waferToneSynthBridge.destinationNode,
 );
+
+waferToneSynthBridge.unitInterface?.completeSetup({
+  unitAspects: {
+    unitType: "instrument",
+    outputs: ["audio"],
+    inputs: ["note"],
+    viewSize: [756, 370],
+  },
+  noteInput: waferToneSynthBridge.createNotePortAdapted(synth),
+});
 
 export const Synth = () => {
   const titleDelimiter = " ";
@@ -62,19 +75,19 @@ export const Synth = () => {
         container
         spacing={2}
         alignItems="center"
-        justify="center"
+        justifyContent="center"
       >
         <Grid item xs={12}>
-          <Paper className={classes.paper}>
+          <Paper className={classes.paper} style={{ fontSize: "1.5rem" }}>
             My{titleAdjectiveString || titleDelimiter}Synth
           </Paper>
         </Grid>
-        <Grid container item xs={3} alignItems="center" justify="center">
+        <Grid container item xs={3} alignItems="center" justifyContent="center">
           <Grid item xs={12}>
             <Oscillator synth={synth} />
           </Grid>
         </Grid>
-        <Grid container item xs={3} alignItems="center" justify="center">
+        <Grid container item xs={3} alignItems="center" justifyContent="center">
           <Grid item xs={6}>
             <Toggle
               text={effects.pitchShift.name}
@@ -90,7 +103,7 @@ export const Synth = () => {
             />
           </Grid>
         </Grid>
-        <Grid container item xs={3} alignItems="center" justify="center">
+        <Grid container item xs={3} alignItems="center" justifyContent="center">
           <Grid item xs={6}>
             <Toggle
               text={effects.filter.name}
@@ -125,7 +138,7 @@ export const Synth = () => {
             />
           </Grid>
         </Grid>
-        <Grid item xs={12} alignItems="center" justify="center">
+        <Grid item xs={12} alignItems="center" justifyContent="center">
           <Keyboard synth={synth} />
         </Grid>
       </Grid>
