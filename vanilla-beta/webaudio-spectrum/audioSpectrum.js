@@ -2,6 +2,8 @@
 // It creates a canvas element and draws the audio spectrum data on it in real-time.
 // The script also includes a button to start and stop the audio sampling and toggle the frequency scale.
 
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+
 document.addEventListener("DOMContentLoaded", function () {
   const btn = document.getElementById("toggle");
   const scaleBtn = document.getElementById("toggleScale");
@@ -124,23 +126,28 @@ document.addEventListener("DOMContentLoaded", function () {
     oscilloscopeLabel.textContent = `Oscilloscope (Time Domain) - ${modeText}`;
   });
 
-  btn.addEventListener("click", function () {
-    // Check if the AudioContext has been initialized
-    if (!audioContext) {
-      // Initialize AudioContext and other related setups
-      audioContext = new AudioContext();
-      analyser = audioContext.createAnalyser();
-      analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = 0.85; // keep buttery-smooth when using built-in spectrum
-      bufferLength = analyser.frequencyBinCount;
-      dataArray = new Uint8Array(bufferLength);
-      timeDataArray = new Uint8Array(OSCILLOSCOPE_SAMPLES);
+  function setupAudioSource() {
+    // Initialize AudioContext and other related setups
+    audioContext = unitInterface?.audioContext ?? new AudioContext();
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048;
+    analyser.smoothingTimeConstant = 0.85; // keep buttery-smooth when using built-in spectrum
+    bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+    timeDataArray = new Uint8Array(OSCILLOSCOPE_SAMPLES);
 
-      // Precompute Hamming window for time-domain samples with coherent gain compensation (mean=1)
-      precomputeHammingTimeWindow(analyser.fftSize);
-      fftWorkRe = new Float32Array(analyser.fftSize);
-      fftWorkIm = new Float32Array(analyser.fftSize);
+    // Precompute Hamming window for time-domain samples with coherent gain compensation (mean=1)
+    precomputeHammingTimeWindow(analyser.fftSize);
+    fftWorkRe = new Float32Array(analyser.fftSize);
+    fftWorkIm = new Float32Array(analyser.fftSize);
 
+    if (unitInterface) {
+      const source = unitInterface.audioInputNode;
+      source.connect(analyser);
+      btn.style.display = "none";
+      updateSpectrum(); // Start the visualization
+      unitInterface.audioInputNode.connect(unitInterface.audioOutputNode);
+    } else {
       // Request access to the microphone
       navigator.mediaDevices
         .getUserMedia({ audio: true })
@@ -154,6 +161,19 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(function (err) {
           console.error("Error accessing media devices:", err);
         });
+    }
+  }
+
+  function cleanupConnections() {
+    if (unitInterface) {
+      unitInterface.audioInputNode.disconnect();
+    }
+  }
+
+  function handleStartButtonClick() {
+    // Check if the AudioContext has been initialized
+    if (!audioContext) {
+      setupAudioSource();
     } else {
       // Toggle the state based on current state of the AudioContext
       if (audioContext.state === "running") {
@@ -171,7 +191,21 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
     }
-  });
+  }
+
+  if (unitInterface) {
+    setupAudioSource();
+    unitInterface.completeSetup({
+      unitAspects: {
+        unitType: "effect",
+        inputs: ["audio"],
+        outputs: ["audio"],
+        viewSize: [1200, 860],
+      },
+      cleanup: cleanupConnections,
+    });
+  }
+  btn.addEventListener("click", handleStartButtonClick);
 
   function applyScaling(bufferLength, width, sampleRate, mode) {
     const xs = new Array(bufferLength);
