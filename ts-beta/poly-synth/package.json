@@ -7,15 +7,16 @@
     "dev": "vite",
     "build": "vite build"
   },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^6.0.3",
-    "vite": "^8.1.4",
-    "wafer-host": "^0.0.4"
-  },
   "dependencies": {
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "styled-components": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "@vitejs/plugin-react": "^6.0.3",
+    "vite": "^8.1.4",
+    "wafer-host": "^0.0.4"
   }
 }
