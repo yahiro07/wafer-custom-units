@@ -1,4 +1,7 @@
-const unitInterface = window.queryUnitInterface("wafer-v01");
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+if (!unitInterface) {
+  throw new Error("missing  unitInterface");
+}
 
 class CircularAudioWave {
   constructor(elem, opts = {}) {
