@@ -26,16 +26,37 @@ document.addEventListener("DOMContentLoaded", function () {
   const spectrogramLabel = document.getElementById("spectrogramLabel");
   const smoothBtn = document.getElementById("toggleSmooth");
 
+  function syncCanvasSize(canvas) {
+    const rect = canvas.getBoundingClientRect();
+    const width = Math.round(rect.width);
+    const height = Math.round(rect.height);
+
+    if (width <= 0 || height <= 0) {
+      return false;
+    }
+
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+      return true;
+    }
+
+    return false;
+  }
+
   function resizeCanvases() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    spectrogramCanvas.width = spectrogramCanvas.offsetWidth;
-    spectrogramCanvas.height = spectrogramCanvas.offsetHeight;
-    oscilloscopeCanvas.width = oscilloscopeCanvas.offsetWidth;
-    oscilloscopeCanvas.height = oscilloscopeCanvas.offsetHeight;
+    syncCanvasSize(canvas);
+    syncCanvasSize(spectrogramCanvas);
+    syncCanvasSize(oscilloscopeCanvas);
+  }
+
+  function updateCanvasLayout() {
+    document.body.classList.toggle("show-oscilloscope", showOscilloscope);
+    resizeCanvases();
   }
 
   resizeCanvases();
+  window.addEventListener("resize", resizeCanvases);
 
   let audioContext = null;
   let analyser = null;
@@ -94,11 +115,11 @@ document.addEventListener("DOMContentLoaded", function () {
     oscilloscopeScaleBtn.style.display = showOscilloscope
       ? "inline-block"
       : "none";
+    updateCanvasLayout();
     if (showOscilloscope) {
       // Resize the oscilloscope canvas when it becomes visible
       setTimeout(() => {
-        oscilloscopeCanvas.width = oscilloscopeCanvas.offsetWidth;
-        oscilloscopeCanvas.height = oscilloscopeCanvas.offsetHeight;
+        resizeCanvases();
       }, 10);
     }
   });
@@ -809,6 +830,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function updateSpectrum() {
     if (audioContext.state === "running") {
+      resizeCanvases();
       requestAnimationFrame(updateSpectrum);
       drawOscilloscope();
       drawSpectrum();
