@@ -1,4 +1,6 @@
-const unitInterface = window.queryUnitInterface?.("wafer-v01");
+import { queryUnitInterface } from "wafer-host/unit-types";
+
+const unitInterface = queryUnitInterface?.("wafer-v01");
 
 export function setupEffectEngine() {
   const volume = document.getElementById("volume");
@@ -49,6 +51,15 @@ export function setupEffectEngine() {
       .connect(gainNode)
       .connect(analyserNode)
       .connect(destination);
+  };
+
+  const removeConnectionChain = (source) => {
+    source.disconnect();
+    trebleEQ.disconnect();
+    midEQ.disconnect();
+    bassEQ.disconnect();
+    gainNode.disconnect();
+    analyserNode.disconnect();
   };
 
   const setupContext = async () => {
@@ -143,6 +154,9 @@ export function setupEffectEngine() {
       outputs: ["audio"],
       inputs: ["audio"],
       viewSize: [860, 520],
+    },
+    cleanup() {
+      removeConnectionChain(unitInterface.audioInputNode);
     },
   });
 }
