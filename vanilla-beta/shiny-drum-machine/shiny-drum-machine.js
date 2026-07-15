@@ -111,6 +111,20 @@ function init() {
   loadAssets();
 
   updateControls();
+
+  unitInterface?.completeSetup({
+    unitAspects: {
+      unitType: "instrument",
+      outputs: ["audio"],
+      viewSize: [1000, 700],
+    },
+    hostCallbacks: {
+      setBpm(bpm) {
+        theBeat.tempo = bpm;
+        ui.tempoInput.value = bpm;
+      },
+    },
+  });
 }
 
 function initControls() {

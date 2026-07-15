@@ -2,7 +2,9 @@
 
 import { INSTRUMENTS, freeze, clone } from "./shiny-drum-machine-data.js";
 
-const context = new AudioContext();
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+const context = unitInterface?.audioContext ?? new AudioContext();
+const audioDestination = unitInterface?.audioOutputNode ?? context.destination;
 
 const LOOP_LENGTH = 16;
 const BEATS_PER_FULL_NOTE = 4;
@@ -174,7 +176,7 @@ class Player {
 
     // Create a dynamics compressor to sweeten the overall mix.
     const compressor = new DynamicsCompressorNode(context);
-    compressor.connect(context.destination);
+    compressor.connect(audioDestination);
 
     // Create master volume and reduce overall volume to avoid clipping.
     this.masterGainNode = new GainNode(context, { gain: 0.7 });
