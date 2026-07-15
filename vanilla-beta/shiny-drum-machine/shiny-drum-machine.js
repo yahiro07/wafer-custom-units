@@ -124,7 +124,7 @@ function init() {
     unitAspects: {
       unitType: "instrument",
       outputs: ["audio"],
-      viewSize: [1000, 700],
+      viewSize: [900, 640],
     },
     clockHandlers: {
       start() {
