@@ -25,7 +25,13 @@ import {
   FileDropZone,
 } from "./shiny-drum-machine-ui.js";
 
-import { Beat, Player, Kit, Effect } from "./shiny-drum-machine-audio.js";
+import {
+  Beat,
+  Player,
+  Kit,
+  Effect,
+  unitInterface,
+} from "./shiny-drum-machine-audio.js";
 
 // Events
 // init() once the page has finished loading.
@@ -38,6 +44,8 @@ let theBeat;
 let player;
 const KITS = [];
 const EFFECTS = [];
+
+let activeClockSource = null;
 
 const ui = Object.seal({
   effectPicker: null,
@@ -118,6 +126,26 @@ function init() {
       outputs: ["audio"],
       viewSize: [1000, 700],
     },
+    clockHandlers: {
+      start() {
+        if (activeClockSource === null) {
+          ui.playButton.state = "playing";
+          activeClockSource = "external";
+        }
+      },
+      processStep(stepIndex, time) {
+        if (activeClockSource === "external") {
+          player.onStep(stepIndex % 16, time);
+        }
+      },
+      stop() {
+        if (activeClockSource === "external") {
+          ui.playheads.off();
+          ui.playButton.state = "stopped";
+          activeClockSource = null;
+        }
+      },
+    },
     hostCallbacks: {
       setBpm(bpm) {
         theBeat.tempo = bpm;
@@ -186,7 +214,7 @@ function initControls() {
   ui.demoButtons = new DemoButtons();
   ui.demoButtons.onDemoClick = (demoIndex) => {
     loadBeat(DEMO_BEATS[demoIndex]);
-    handlePlay();
+    // handlePlay();
   };
 
   ui.tempoInput = new TempoInput({ min: MIN_TEMPO, max: MAX_TEMPO, step: 4 });
@@ -220,14 +248,20 @@ async function setEffect(index) {
 }
 
 function handlePlay() {
-  player.play();
-  ui.playButton.state = "playing";
+  if (activeClockSource === null) {
+    player.play();
+    ui.playButton.state = "playing";
+    activeClockSource = "internal";
+  }
 }
 
 function handleStop() {
-  player.stop();
-  ui.playheads.off();
-  ui.playButton.state = "stopped";
+  if (activeClockSource === "internal") {
+    player.stop();
+    ui.playheads.off();
+    ui.playButton.state = "stopped";
+    activeClockSource = null;
+  }
 }
 
 function loadBeat(beat) {

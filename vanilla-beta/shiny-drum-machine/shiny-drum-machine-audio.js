@@ -1,6 +1,6 @@
 /* eslint require-jsdoc: "off" */
 
-import { INSTRUMENTS, freeze, clone } from "./shiny-drum-machine-data.js";
+import { clone, freeze, INSTRUMENTS } from "./shiny-drum-machine-data.js";
 
 const unitInterface = window.queryUnitInterface?.("wafer-v01");
 const context = unitInterface?.audioContext ?? new AudioContext();
@@ -25,7 +25,7 @@ class Kit {
   }
 
   getSampleUrl(instrumentName) {
-    return `../../sounds/drum-samples/${this.id}/${instrumentName.toLowerCase()}.wav`;
+    return `./sound/drum-samples/${this.id}/${instrumentName.toLowerCase()}.wav`;
   }
 
   load() {
@@ -63,7 +63,7 @@ class Effect {
       return;
     }
 
-    this.buffer = await fetchAndDecodeAudio(`../../sounds/${this.url}`);
+    this.buffer = await fetchAndDecodeAudio(`./sound/${this.url}`);
   }
 }
 
@@ -169,11 +169,9 @@ class Beat {
   }
 }
 
-class Player {
-  constructor(beat, onNextBeat) {
+class SoundEngine {
+  constructor(beat) {
     this.beat = beat;
-    this.onNextBeat = onNextBeat;
-
     // Create a dynamics compressor to sweeten the overall mix.
     const compressor = new DynamicsCompressorNode(context);
     compressor.connect(audioDestination);
@@ -189,10 +187,6 @@ class Player {
     // Create convolver for effect
     this.convolver = new ConvolverNode(context);
     this.convolver.connect(this.effectLevelNode);
-  }
-
-  playNote(instrument, rhythmIndex) {
-    this.playNoteAtTime(instrument, rhythmIndex, 0);
   }
 
   playNoteAtTime(instrument, rhythmIndex, noteTime) {
@@ -237,35 +231,10 @@ class Player {
     voice.start(noteTime);
   }
 
-  // Call when beat `n` is played to schedule beat `n+1`.
-  tick() {
-    // tick() is called when beat `n` is played. At this time, call the
-    // onNextBeat callback to highlight the currently audible beat in the UI.
-    this.onNextBeat(this.rhythmIndex);
-
-    // Then, increase rhythmIndex and nextBeatAt for beat `n+1`.
-    this.advanceBeat();
-
-    // Schedule notes to be played at beat `n+1`.
+  handleStep(rhythmIndex, time) {
     for (const instrument of INSTRUMENTS) {
-      this.playNoteAtTime(instrument, this.rhythmIndex, this.nextBeatAt);
+      this.playNoteAtTime(instrument, rhythmIndex, time);
     }
-
-    // Finally, call tick() again at the time when beat `n+1` is played.
-    this.timeoutId = setTimeout(
-      () => this.tick(),
-      (this.nextBeatAt - context.currentTime) * 1000,
-    );
-  }
-
-  advanceBeat() {
-    // Convert configured beats per minute to delay per tick.
-    const secondsPerBeat = 60.0 / this.beat.tempo / BEATS_PER_FULL_NOTE;
-    const swingDirection = this.rhythmIndex % 2 ? -1 : 1;
-    const swing = (this.beat.swingFactor / 3) * swingDirection;
-
-    this.nextBeatAt += (1 + swing) * secondsPerBeat;
-    this.rhythmIndex = (this.rhythmIndex + 1) % LOOP_LENGTH;
   }
 
   updateEffect() {
@@ -276,23 +245,61 @@ class Player {
     this.effectLevelNode.gain.value =
       this.beat.effectMix * this.beat.effect.wetMix;
   }
+}
+
+function createClockDriver(beat, stepCallback) {
+  let timerId = null;
+  return {
+    start() {
+      let nextBeatAt = context.currentTime;
+      let rhythmIndex = 0;
+
+      const tick = () => {
+        stepCallback(rhythmIndex, nextBeatAt);
+
+        // Convert configured beats per minute to delay per tick.
+        const secondsPerBeat = 60.0 / beat.tempo / BEATS_PER_FULL_NOTE;
+        const swingDirection = rhythmIndex % 2 ? -1 : 1;
+        const swing = (beat.swingFactor / 3) * swingDirection;
+
+        nextBeatAt += (1 + swing) * secondsPerBeat;
+        rhythmIndex = (rhythmIndex + 1) % LOOP_LENGTH;
+
+        timerId = setTimeout(tick, (nextBeatAt - context.currentTime) * 1000);
+      };
+
+      tick();
+    },
+    stop() {
+      clearTimeout(timerId);
+    },
+  };
+}
+
+class Player {
+  constructor(beat, onNextBeat) {
+    this.soundEngine = new SoundEngine(beat);
+    this.clockDriver = createClockDriver(beat, this.onStep.bind(this));
+    this.beat = beat;
+    this.onNextBeat = onNextBeat;
+  }
+
+  onStep(rhythmIndex, time) {
+    this.soundEngine.handleStep(rhythmIndex, time);
+    this.onNextBeat(rhythmIndex);
+  }
+
+  updateEffect() {
+    this.soundEngine.updateEffect();
+  }
 
   play() {
-    // Ensure that initial notes are played at once by scheduling the playback
-    // slightly in the future.
-    this.nextBeatAt = context.currentTime + 0.05;
-    this.rhythmIndex = 0;
-
-    for (const instrument of INSTRUMENTS) {
-      this.playNote(instrument, this.rhythmIndex, this.nextBeatAt);
-    }
-
-    this.tick();
+    this.clockDriver.start();
   }
 
   stop() {
-    clearTimeout(this.timeoutId);
+    this.clockDriver.stop();
   }
 }
 
-export { Beat, Player, Effect, Kit };
+export { Beat, Player, Effect, Kit, unitInterface };
