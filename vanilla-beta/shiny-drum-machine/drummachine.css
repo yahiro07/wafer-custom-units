@@ -335,8 +335,7 @@ select::after {
 }
 
 input[type="range"] {
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: none;
   background: transparent url(images/sliderh_track.png) no-repeat center;
   cursor: pointer;
   width: 171px;
