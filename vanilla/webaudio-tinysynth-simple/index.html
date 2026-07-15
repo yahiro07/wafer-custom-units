@@ -19,37 +19,34 @@
           document.getElementById("prog").appendChild(o);
         }
 
-        const uintInterface = window.unitInterface;
-        if (uintInterface) {
-          unitInterface.completeSetup({
-            unitAspects: {
-              unitType: "instrument",
-              categoryHint: "synthesizer",
-              outputs: ["audio"],
-              inputs: ["note"],
-              viewSize: [520, 280],
+        unitInterface?.completeSetup({
+          unitAspects: {
+            unitType: "instrument",
+            categoryHint: "synthesizer",
+            outputs: ["audio"],
+            inputs: ["note"],
+            viewSize: [520, 280],
+          },
+          noteInput: {
+            noteOn(noteNumber, time, velocity) {
+              synth.send([0x90, noteNumber, (velocity ?? 1) * 127], time);
             },
-            noteInput: {
-              noteOn(noteNumber, time, velocity) {
-                synth.send([0x90, noteNumber, (velocity ?? 1) * 127], time);
-              },
-              noteOff(noteNumber, time) {
-                synth.send([0x80, noteNumber, 0], time);
-              },
+            noteOff(noteNumber, time) {
+              synth.send([0x80, noteNumber, 0], time);
             },
-            persistence: {
-              emitStateBytes() {
-                const pg = document.getElementById("prog").selectedIndex;
-                return new Uint8Array([pg]);
-              },
-              applyStateBytes(stateBytes) {
-                const pg = stateBytes[0];
-                document.getElementById("prog").selectedIndex = pg;
-                Prog(pg);
-              },
+          },
+          persistence: {
+            emitStateBytes() {
+              const pg = document.getElementById("prog").selectedIndex;
+              return new Uint8Array([pg]);
             },
-          });
-        }
+            applyStateBytes(stateBytes) {
+              const pg = stateBytes[0];
+              document.getElementById("prog").selectedIndex = pg;
+              Prog(pg);
+            },
+          },
+        });
       }
       function Prog(pg) {
         synth.send([0xc0, pg]);

@@ -1,3 +1,5 @@
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+
 (function (window) {
   "use strict";
 
@@ -1613,8 +1615,6 @@
         );
         if (this.debug) console.log("internalcontext:" + this.internalcontext);
         if (this.internalcontext) {
-          window.checkUnitInterfaceCompatibility?.("wafer-v01");
-          const { unitInterface } = window;
           if (unitInterface) {
             this.setAudioContext(
               unitInterface.audioContext,

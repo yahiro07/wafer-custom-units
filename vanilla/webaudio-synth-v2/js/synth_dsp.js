@@ -17,6 +17,8 @@ function init() {
   }
 }
 
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+
 ///////////// Init Parameter /////////////////////
 var stream_length = 1024;
 
@@ -328,8 +330,10 @@ CTL_Filter.prototype.getnode = function () {
 ///////////// SYNTH MAIN /////////////////////
 var WebSynth = function () {
   var self = this;
-  window.checkUnitInterfaceCompatibility?.("wafer-v01");
-  this.context = window.unitInterface?.audioContext ?? new AudioContext();
+  this.context = unitInterface?.audioContext ?? new AudioContext();
+  const destinationNode =
+    unitInterface?.audioOutputNode ?? this.context.destination;
+
   this.vco1 = new VCO(this.context);
   this.vco2 = new VCO(this.context);
   this.mixer = this.context.createScriptProcessor(stream_length, 1, 2);
@@ -353,9 +357,7 @@ var WebSynth = function () {
   this.mixer.connect(this.filter.getnode());
   this.filter.connect(this.volume.getnode());
   this.volume.connect(this.delay.getnode());
-  this.delay.connect(
-    window.unitInterface?.audioOutputNode ?? this.context.destination,
-  );
+  this.delay.connect(destinationNode);
 
   this.mixer.onaudioprocess = function (event) {
     self.filter.set_eg(self.feg.gain);

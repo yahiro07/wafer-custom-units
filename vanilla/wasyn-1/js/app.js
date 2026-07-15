@@ -1,8 +1,6 @@
-window.checkUnitInterfaceCompatibility?.("wafer-v01");
-
 var app = {
   //Web audio context (Passed in to instruments)
-  context: window.unitInterface?.audioContext ?? new AudioContext(),
+  context: unitInterface?.audioContext ?? new AudioContext(),
   keyboardOctave: 3,
   synth: null,
   instructionsHidden: false,
@@ -14,7 +12,7 @@ var app = {
     ui.init();
     app.createSynth();
 
-    window.unitInterface?.completeSetup({
+    unitInterface?.completeSetup({
       unitAspects: {
         unitType: "instrument",
         categoryHint: "synthesizer",

@@ -1,4 +1,4 @@
-window.checkUnitInterfaceCompatibility?.("wafer-v01");
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
 
 function AudioAnalyser() {
   var audioanalyser = {
@@ -9,8 +9,7 @@ function AudioAnalyser() {
     hasNewSong: false,
     init: function () {
       audioanalyser.audioCtx =
-        window.unitInterface?.audioContext ??
-        new (window.AudioContext || window.webkitAudioContext)();
+        unitInterface?.audioContext ?? new window.AudioContext();
       audioanalyser.analyser = audioanalyser.audioCtx.createAnalyser();
       audioanalyser.gainNode = audioanalyser.audioCtx.createGain();
       audioanalyser.gainNode.gain.value = 0.2;

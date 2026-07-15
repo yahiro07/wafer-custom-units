@@ -1,5 +1,5 @@
 function setupWaferUnit() {
-  window.unitInterface?.completeSetup({
+  unitInterface?.completeSetup({
     unitAspects: {
       unitType: "instrument",
       categoryHint: "synthesizer",

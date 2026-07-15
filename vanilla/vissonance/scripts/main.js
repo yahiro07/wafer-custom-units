@@ -10,10 +10,10 @@ if (!Detector.webgl) {
   var controller = new Controller();
   controller.init(audioAnalyser, view);
 
-  if (window.unitInterface) {
+  if (unitInterface) {
     audioAnalyser.setSourceNode(unitInterface.audioInputNode);
     unitInterface.audioInputNode.connect(unitInterface.audioOutputNode);
-    window.unitInterface?.completeSetup({
+    unitInterface?.completeSetup({
       unitAspects: {
         unitType: "effect",
         categoryHint: "visualizer",

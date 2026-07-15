@@ -465,8 +465,8 @@ document.addEventListener("DOMContentLoaded", () => {
     { passive: false },
   );
 
-  if (window.unitInterface) {
-    window.unitInterface.completeSetup({
+  if (unitInterface) {
+    unitInterface.completeSetup({
       unitAspects: {
         unitType: "instrument",
         categoryHint: "synthesizer",

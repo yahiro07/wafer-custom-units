@@ -1,4 +1,4 @@
-window.checkUnitInterfaceCompatibility?.("wafer-v01");
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
 
 class AdditiveEngine {
   constructor() {
@@ -21,9 +21,10 @@ class AdditiveEngine {
 
   async init() {
     if (this.isInitialized) return;
-    this.ctx =
-      window.unitInterface?.audioContext ??
-      new (window.AudioContext ?? window.webkitAudioContext)();
+    this.ctx = unitInterface?.audioContext ?? new window.AudioContext();
+    const destinationNode =
+      unitInterface?.audioOutputNode ?? this.ctx.destination;
+
     if (this.ctx instanceof AudioContext && this.ctx.state === "suspended") {
       await this.ctx.resume();
     }
@@ -34,9 +35,7 @@ class AdditiveEngine {
     this.compressor.ratio.value = 6;
     this.compressor.attack.value = 0.003;
     this.compressor.release.value = 0.15;
-    this.compressor.connect(
-      window.unitInterface?.audioOutputNode ?? this.ctx.destination,
-    );
+    this.compressor.connect(destinationNode);
 
     this.masterGain = this.ctx.createGain();
     this.masterGain.gain.value = this.volume;

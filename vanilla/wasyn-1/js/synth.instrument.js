@@ -1,3 +1,5 @@
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+
 var synth = function (config) {
   this.context = config.context;
   this.masterGainNode = null;
@@ -278,7 +280,7 @@ synth.prototype = {
 
       //Connect master gain node to destination (speakers)
       this.masterGainNode.connect(
-        window.unitInterface?.audioOutputNode ?? this.context.destination,
+        unitInterface?.audioOutputNode ?? this.context.destination,
       );
 
       //Connect lfo to filter
