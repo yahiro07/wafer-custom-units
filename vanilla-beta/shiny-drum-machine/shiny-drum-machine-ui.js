@@ -5,12 +5,12 @@ class Slider {
     this.element = element;
     this.onchange = () => {};
 
-    element.addEventListener('input', () => {
+    element.addEventListener("input", () => {
       this.onchange(this.value);
     });
 
     if (opts && opts.doubleClickValue) {
-      element.addEventListener('dblclick', () => {
+      element.addEventListener("dblclick", () => {
         this.value = opts.doubleClickValue;
         this.onchange(this.value);
       });
@@ -27,25 +27,26 @@ class Slider {
 }
 
 class EffectSlider extends Slider {
-  constructor(container=document) {
-    super(container.getElementById('effect_thumb'));
+  constructor(container = document) {
+    super(container.getElementById("effect_thumb"));
   }
 }
 
 class SwingSlider extends Slider {
-  constructor(container=document) {
-    super(container.getElementById('swing_thumb'));
+  constructor(container = document) {
+    super(container.getElementById("swing_thumb"));
   }
 }
 
 class PitchSliders {
-  constructor(container=document) {
+  constructor(container = document) {
     this.sliders = {};
     this.onPitchChange = (instrument, pitch) => {};
-    const selector = '[data-instrument][data-pitch]';
+    const selector = "[data-instrument][data-pitch]";
     for (const el of container.querySelectorAll(selector)) {
-      this.sliders[el.dataset.instrument] = new Slider(el,
-          {doubleClickValue: 0.5});
+      this.sliders[el.dataset.instrument] = new Slider(el, {
+        doubleClickValue: 0.5,
+      });
       this.sliders[el.dataset.instrument].onchange = (value) => {
         this.onPitchChange(el.dataset.instrument, value);
       };
@@ -61,7 +62,7 @@ class Button {
   constructor(element, onclick = () => {}) {
     this.element = element;
     this.onclick = onclick;
-    element.addEventListener('click', (event) => this.onclick(event));
+    element.addEventListener("click", (event) => this.onclick(event));
   }
 
   get state() {
@@ -75,13 +76,13 @@ class Button {
 
 class PlayButton extends Button {
   constructor() {
-    super(document.getElementById('play'));
+    super(document.getElementById("play"));
   }
 }
 
 class ResetButton extends Button {
   constructor() {
-    super(document.getElementById('reset'));
+    super(document.getElementById("reset"));
   }
 }
 
@@ -90,7 +91,7 @@ class Playheads {
     this.current = 0;
     this.leds = {};
 
-    const selector = '[data-led][data-rhythm]';
+    const selector = "[data-led][data-rhythm]";
     for (const el of document.querySelectorAll(selector)) {
       const i = Number(el.dataset.rhythm);
       this.leds[i] = el;
@@ -100,11 +101,11 @@ class Playheads {
   drawPlayhead(index) {
     this.off();
     this.current = index;
-    this.leds[this.current].dataset.led = 'on';
+    this.leds[this.current].dataset.led = "on";
   }
 
   off() {
-    this.leds[this.current].dataset.led = 'off';
+    this.leds[this.current].dataset.led = "off";
   }
 }
 
@@ -124,7 +125,7 @@ class DemoButtons {
   }
 
   markDemoAvailable(demoIndex) {
-    this.buttons[demoIndex].state = 'loaded';
+    this.buttons[demoIndex].state = "loaded";
   }
 }
 
@@ -132,8 +133,9 @@ class Picker {
   constructor(element) {
     this.onSelect = (index) => {};
     this.element = element;
-    this.element.addEventListener('change',
-        () => this.onSelect(this.element.selectedIndex));
+    this.element.addEventListener("change", () =>
+      this.onSelect(this.element.selectedIndex),
+    );
   }
 
   addOptions(names) {
@@ -148,28 +150,28 @@ class Picker {
 }
 
 class EffectPicker extends Picker {
-  constructor(container=document) {
-    super(container.getElementById('effectlist'));
+  constructor(container = document) {
+    super(container.getElementById("effectlist"));
   }
 }
 
 class KitPicker extends Picker {
-  constructor(container=document) {
-    super(container.getElementById('kitlist'));
+  constructor(container = document) {
+    super(container.getElementById("kitlist"));
   }
 }
 
 class TempoInput {
-  constructor({min, max, step}) {
-    this.labelElement = document.getElementById('tempo');
+  constructor({ min, max, step }) {
+    this.labelElement = document.getElementById("tempo");
     this.onTempoChange = (tempo) => {};
 
-    document.getElementById('tempoinc').addEventListener('click', () => {
+    document.getElementById("tempoinc").addEventListener("click", () => {
       this.value += this.step;
       this.onTempoChange(this.value);
     });
 
-    document.getElementById('tempodec').addEventListener('click', () => {
+    document.getElementById("tempodec").addEventListener("click", () => {
       this.value -= this.step;
       this.onTempoChange(this.value);
     });
@@ -193,7 +195,7 @@ class Notes {
     this.onClick = (instrument, rhythm) => {};
 
     this.buttons = {};
-    const selector = '[data-instrument][data-rhythm]';
+    const selector = "[data-instrument][data-rhythm]";
     for (const el of document.querySelectorAll(selector)) {
       const instrument = el.dataset.instrument;
       const rhythm = Number(el.dataset.rhythm);
@@ -203,8 +205,8 @@ class Notes {
       }
 
       this.buttons[instrument][rhythm] = new Button(el);
-      this.buttons[instrument][rhythm].onclick = () => this.onClick(
-          instrument, rhythm);
+      this.buttons[instrument][rhythm].onclick = () =>
+        this.onClick(instrument, rhythm);
     }
   }
 
@@ -215,15 +217,15 @@ class Notes {
 
 class SaveButton extends Button {
   constructor(getDataCallback) {
-    super(document.getElementById('save'), () => {
+    super(document.getElementById("save"), () => {
       const data = getDataCallback();
-      const date = new Date().toISOString().split('T')[0];
+      const date = new Date().toISOString().split("T")[0];
       const filename = `drums-${date}.json`;
 
-      const blob = new Blob([data], {type: 'application/json'});
+      const blob = new Blob([data], { type: "application/json" });
       const url = window.URL.createObjectURL(blob);
 
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
       a.download = filename;
 
@@ -241,10 +243,10 @@ function loadFile(file, onload) {
 
 class LoadButton extends Button {
   constructor(onLoadCallback) {
-    super(document.getElementById('load'), () => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.json,application/json';
+    super(document.getElementById("load"), () => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".json,application/json";
       input.onchange = () => loadFile(input.files[0], onLoadCallback);
       input.click();
     });
@@ -253,25 +255,25 @@ class LoadButton extends Button {
 
 class FileDropZone {
   constructor(onLoadCallback) {
-    document.body.addEventListener('dragover', (e) => {
+    document.body.addEventListener("dragover", (e) => {
       e.preventDefault();
-      document.body.classList.add('dragging');
+      document.body.classList.add("dragging");
 
       const item = e.dataTransfer.items[0];
-      if (item && item.type === 'application/json') {
-        e.dataTransfer.dropEffect = 'copy';
+      if (item && item.type === "application/json") {
+        e.dataTransfer.dropEffect = "copy";
       } else {
-        e.dataTransfer.dropEffect = 'none';
+        e.dataTransfer.dropEffect = "none";
       }
     });
 
-    document.body.addEventListener('dragleave', () => {
-      document.body.classList.remove('dragging');
+    document.body.addEventListener("dragleave", () => {
+      document.body.classList.remove("dragging");
     });
 
-    document.body.addEventListener('drop', (e) => {
+    document.body.addEventListener("drop", (e) => {
       e.preventDefault();
-      document.body.classList.remove('dragging');
+      document.body.classList.remove("dragging");
       loadFile(e.dataTransfer.items[0].getAsFile(), onLoadCallback);
     });
   }

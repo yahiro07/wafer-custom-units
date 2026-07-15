@@ -1,13 +1,12 @@
 /* eslint require-jsdoc: "off" */
 
-import {INSTRUMENTS, freeze, clone} from './shiny-drum-machine-data.js';
+import { INSTRUMENTS, freeze, clone } from "./shiny-drum-machine-data.js";
 
 const context = new AudioContext();
 
 const LOOP_LENGTH = 16;
 const BEATS_PER_FULL_NOTE = 4;
 const VOLUMES = freeze([0, 0.3, 1]);
-
 
 async function fetchAndDecodeAudio(url) {
   const response = await fetch(url);
@@ -24,13 +23,13 @@ class Kit {
   }
 
   getSampleUrl(instrumentName) {
-    return `../../sounds/drum-samples/${this.id}/${
-      instrumentName.toLowerCase()}.wav`;
+    return `../../sounds/drum-samples/${this.id}/${instrumentName.toLowerCase()}.wav`;
   }
 
   load() {
-    const instrumentPromises = INSTRUMENTS.map(
-        (instrument) => this.loadSample(instrument.name));
+    const instrumentPromises = INSTRUMENTS.map((instrument) =>
+      this.loadSample(instrument.name),
+    );
     const promise = Promise.all(instrumentPromises).then(() => null);
     // Return original Promise on subsequent load calls to avoid duplicate
     // loads.
@@ -40,10 +39,10 @@ class Kit {
 
   async loadSample(instrumentName) {
     this.buffer[instrumentName] = await fetchAndDecodeAudio(
-        this.getSampleUrl(instrumentName));
+      this.getSampleUrl(instrumentName),
+    );
   }
 }
-
 
 class Effect {
   constructor(data, index) {
@@ -65,7 +64,6 @@ class Effect {
     this.buffer = await fetchAndDecodeAudio(`../../sounds/${this.url}`);
   }
 }
-
 
 class Beat {
   constructor(data, kits, effects) {
@@ -179,11 +177,11 @@ class Player {
     compressor.connect(context.destination);
 
     // Create master volume and reduce overall volume to avoid clipping.
-    this.masterGainNode = new GainNode(context, {gain: 0.7});
+    this.masterGainNode = new GainNode(context, { gain: 0.7 });
     this.masterGainNode.connect(compressor);
 
     // Create effect volume controlled by effect sliders.
-    this.effectLevelNode = new GainNode(context, {gain: 1.0});
+    this.effectLevelNode = new GainNode(context, { gain: 1.0 });
     this.effectLevelNode.connect(this.masterGainNode);
 
     // Create convolver for effect
@@ -213,20 +211,24 @@ class Player {
     // Optionally, connect to a panner.
     if (instrument.pan) {
       // Pan according to sequence position.
-      const panner = new PannerNode(context,
-          {positionX: 0.5 * rhythmIndex - 4, positionY: 0, positionZ: -1});
+      const panner = new PannerNode(context, {
+        positionX: 0.5 * rhythmIndex - 4,
+        positionY: 0,
+        positionZ: -1,
+      });
       finalNode.connect(panner);
       finalNode = panner;
     }
 
     // Connect to dry mix
-    const dryGainNode = new GainNode(context,
-        {gain: VOLUMES[note] * instrument.mainGain * this.beat.effect.dryMix});
+    const dryGainNode = new GainNode(context, {
+      gain: VOLUMES[note] * instrument.mainGain * this.beat.effect.dryMix,
+    });
     finalNode.connect(dryGainNode);
     dryGainNode.connect(this.masterGainNode);
 
     // Connect to wet mix
-    const wetGainNode = new GainNode(context, {gain: instrument.sendGain});
+    const wetGainNode = new GainNode(context, { gain: instrument.sendGain });
     finalNode.connect(wetGainNode);
     wetGainNode.connect(this.convolver);
 
@@ -249,15 +251,15 @@ class Player {
 
     // Finally, call tick() again at the time when beat `n+1` is played.
     this.timeoutId = setTimeout(
-        () => this.tick(),
-        (this.nextBeatAt - context.currentTime) * 1000,
+      () => this.tick(),
+      (this.nextBeatAt - context.currentTime) * 1000,
     );
   }
 
   advanceBeat() {
     // Convert configured beats per minute to delay per tick.
     const secondsPerBeat = 60.0 / this.beat.tempo / BEATS_PER_FULL_NOTE;
-    const swingDirection = (this.rhythmIndex % 2) ? -1 : 1;
+    const swingDirection = this.rhythmIndex % 2 ? -1 : 1;
     const swing = (this.beat.swingFactor / 3) * swingDirection;
 
     this.nextBeatAt += (1 + swing) * secondsPerBeat;
@@ -270,7 +272,7 @@ class Player {
     // Factor in both the preset's effect level and the blending level
     // (effectWetMix) stored in the effect itself.
     this.effectLevelNode.gain.value =
-        this.beat.effectMix * this.beat.effect.wetMix;
+      this.beat.effectMix * this.beat.effect.wetMix;
   }
 
   play() {
@@ -291,4 +293,4 @@ class Player {
   }
 }
 
-export {Beat, Player, Effect, Kit};
+export { Beat, Player, Effect, Kit };

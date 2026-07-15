@@ -1,14 +1,31 @@
 /* eslint require-jsdoc: "off" */
 
-import {RESET_BEAT, DEMO_BEATS, INSTRUMENTS, KIT_DATA,
-  IMPULSE_RESPONSE_DATA} from './shiny-drum-machine-data.js';
+import {
+  RESET_BEAT,
+  DEMO_BEATS,
+  INSTRUMENTS,
+  KIT_DATA,
+  IMPULSE_RESPONSE_DATA,
+} from "./shiny-drum-machine-data.js";
 
-import {DemoButtons, EffectPicker, KitPicker, EffectSlider, SwingSlider,
-  PitchSliders, TempoInput, Playheads, Notes, SaveButton, LoadButton,
-  ResetButton, PlayButton, FileDropZone} from './shiny-drum-machine-ui.js';
+import {
+  DemoButtons,
+  EffectPicker,
+  KitPicker,
+  EffectSlider,
+  SwingSlider,
+  PitchSliders,
+  TempoInput,
+  Playheads,
+  Notes,
+  SaveButton,
+  LoadButton,
+  ResetButton,
+  PlayButton,
+  FileDropZone,
+} from "./shiny-drum-machine-ui.js";
 
-import {Beat, Player, Kit, Effect} from './shiny-drum-machine-audio.js';
-
+import { Beat, Player, Kit, Effect } from "./shiny-drum-machine-audio.js";
 
 // Events
 // init() once the page has finished loading.
@@ -56,10 +73,9 @@ function loadDemos(onDemoLoaded) {
     const effect = EFFECTS[demo.effectIndex];
     const kit = KITS[demo.kitIndex];
 
-    Promise.all([
-      effect.load(),
-      kit.load(),
-    ]).then(() => onDemoLoaded(demoIndex));
+    Promise.all([effect.load(), kit.load()]).then(() =>
+      onDemoLoaded(demoIndex),
+    );
   }
 }
 
@@ -70,16 +86,15 @@ function onDemoLoaded(demoIndex) {
   // Enable play button and assign it to demo 2.
   if (demoIndex == 1) {
     // This gets rid of the loading spinner on the play button.
-    ui.playButton.state = 'stopped';
+    ui.playButton.state = "stopped";
     loadBeat(DEMO_BEATS[1]);
   }
 }
 
 function init() {
-  EFFECTS.push(...IMPULSE_RESPONSE_DATA.map(
-      (data, i) => new Effect(data, i)));
+  EFFECTS.push(...IMPULSE_RESPONSE_DATA.map((data, i) => new Effect(data, i)));
 
-  KITS.push(...KIT_DATA.map(({id, name}, i) => new Kit(id, name, i)));
+  KITS.push(...KIT_DATA.map(({ id, name }, i) => new Kit(id, name, i)));
 
   theBeat = new Beat(RESET_BEAT, KITS, EFFECTS);
 
@@ -101,8 +116,8 @@ function init() {
 function initControls() {
   // Initialize note buttons
   ui.notes = new Notes();
-  ui.notes.onClick = (instrumentName, rhythm) => handleNoteClick(
-      instrumentName, rhythm);
+  ui.notes.onClick = (instrumentName, rhythm) =>
+    handleNoteClick(instrumentName, rhythm);
 
   ui.kitPicker = new KitPicker();
   ui.kitPicker.addOptions(KITS.map((kit) => kit.prettyName));
@@ -129,14 +144,14 @@ function initControls() {
   };
 
   ui.pitchSliders = new PitchSliders();
-  ui.pitchSliders.onPitchChange = (instrumentName, pitch) => theBeat.setPitch(
-      instrumentName, pitch);
+  ui.pitchSliders.onPitchChange = (instrumentName, pitch) =>
+    theBeat.setPitch(instrumentName, pitch);
 
   ui.playButton = new PlayButton();
   ui.playButton.onclick = () => {
-    if (ui.playButton.state === 'playing') {
+    if (ui.playButton.state === "playing") {
       handleStop();
-    } else if (ui.playButton.state === 'stopped') {
+    } else if (ui.playButton.state === "stopped") {
       handlePlay();
     }
   };
@@ -160,7 +175,7 @@ function initControls() {
     handlePlay();
   };
 
-  ui.tempoInput = new TempoInput({min: MIN_TEMPO, max: MAX_TEMPO, step: 4});
+  ui.tempoInput = new TempoInput({ min: MIN_TEMPO, max: MAX_TEMPO, step: 4 });
   ui.tempoInput.onTempoChange = (tempo) => {
     theBeat.tempo = tempo;
   };
@@ -171,8 +186,11 @@ function initControls() {
 function handleNoteClick(instrumentName, rhythmIndex) {
   theBeat.toggleNote(instrumentName, rhythmIndex);
 
-  ui.notes.setNote(instrumentName, rhythmIndex,
-      theBeat.getNote(instrumentName, rhythmIndex));
+  ui.notes.setNote(
+    instrumentName,
+    rhythmIndex,
+    theBeat.getNote(instrumentName, rhythmIndex),
+  );
 
   const instrument = INSTRUMENTS.find((instr) => instr.name === instrumentName);
   player.playNote(instrument, rhythmIndex);
@@ -189,13 +207,13 @@ async function setEffect(index) {
 
 function handlePlay() {
   player.play();
-  ui.playButton.state = 'playing';
+  ui.playButton.state = "playing";
 }
 
 function handleStop() {
   player.stop();
   ui.playheads.off();
-  ui.playButton.state = 'stopped';
+  ui.playButton.state = "stopped";
 }
 
 function loadBeat(beat) {
@@ -223,7 +241,9 @@ function updateControls() {
   ui.swingSlider.value = theBeat.swingFactor;
 
   for (const instrument of INSTRUMENTS) {
-    ui.pitchSliders.setPitch(instrument.name,
-        theBeat.getPitch(instrument.name));
+    ui.pitchSliders.setPitch(
+      instrument.name,
+      theBeat.getPitch(instrument.name),
+    );
   }
 }
