@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Play, Pause, Waves, Sparkles, Moon, Volume2 } from "lucide-react";
 import ParticleBackground from "./ParticleBackground";
-import { audioEngine } from "./audioEngine";
+import { audioEngine, unitInterface } from "./audioEngine";
 import "./index.css";
+
+unitInterface?.completeSetup({
+  unitAspects: {
+    unitType: "instrument",
+    outputs: ["audio"],
+    viewSize: [840, 580],
+  },
+});
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);

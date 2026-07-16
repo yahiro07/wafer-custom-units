@@ -1,6 +1,12 @@
+import { queryUnitInterface } from "wafer-host/unit-types";
+
+export const unitInterface = queryUnitInterface("wafer-v01");
+
 class AudioEngine {
   constructor() {
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this.ctx = unitInterface?.audioContext ?? new AudioContext();
+    const destinationNode =
+      unitInterface?.audioOutputNode ?? this.ctx.destination;
     this.isPlaying = false;
     this.mood = "Calm"; // 'Calm' -> LoFi, 'Deep' -> Synthwave, 'Ethereal' -> Dream Pop
     this.nextNoteTime = 0;
@@ -20,7 +26,7 @@ class AudioEngine {
     this.reverb.connect(this.reverbGain);
     this.reverbGain.connect(this.masterGain);
 
-    this.masterGain.connect(this.ctx.destination);
+    this.masterGain.connect(destinationNode);
 
     // Progressions (Chords as arrays of MIDI notes)
     this.chordProgressions = {
