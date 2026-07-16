@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Theme tokens are RGB triplets (not hex) so Tailwind's <alpha-value> syntax
+ * works: rgb(var(--accent) / 0.5) etc. Light is the :root default; .dark
+ * overrides. The font variables point at the families loaded in layout.tsx.
+ */
+:root {
+  --background: 248 250 252;
+  --foreground: 15 18 32;
+  --accent: 124 58 237;
+  --muted: 100 110 130;
+}
+
+.dark {
+  --background: 8 9 18;
+  --foreground: 236 240 250;
+  --accent: 34 211 238;
+  --muted: 140 150 172;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Offset in-page anchors for the fixed navbar. */
+  section,
+  footer {
+    scroll-margin-top: 80px;
+  }
+}
+
+/* Ambient spectrum glow used behind the hero and instrument. */
+.spectrum-glow {
+  background:
+    radial-gradient(
+      40% 50% at 20% 30%,
+      rgba(251, 113, 133, 0.18),
+      transparent 70%
+    ),
+    radial-gradient(
+      45% 55% at 80% 25%,
+      rgba(168, 85, 247, 0.18),
+      transparent 70%
+    ),
+    radial-gradient(
+      50% 60% at 50% 80%,
+      rgba(34, 211, 238, 0.16),
+      transparent 70%
+    );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
