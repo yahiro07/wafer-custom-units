@@ -554,3 +554,11 @@ body::after {
     height: 80px;
   }
 }
+
+/* customization */
+.sequencer-panel {
+  display: none;
+}
+.keyboard-panel {
+  display: none;
+}
