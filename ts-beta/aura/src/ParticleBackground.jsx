@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
 const ParticleBackground = () => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     let animationFrameId;
     let particles = [];
 
@@ -13,7 +13,7 @@ const ParticleBackground = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-    window.addEventListener('resize', resize);
+    window.addEventListener("resize", resize);
     resize();
 
     class Particle {
@@ -52,7 +52,7 @@ const ParticleBackground = () => {
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
+      particles.forEach((p) => {
         p.update();
         p.draw();
       });
@@ -61,22 +61,22 @@ const ParticleBackground = () => {
     animate();
 
     return () => {
-      window.removeEventListener('resize', resize);
+      window.removeEventListener("resize", resize);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
   return (
-    <canvas 
-      ref={canvasRef} 
+    <canvas
+      ref={canvasRef}
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         left: 0,
-        width: '100%',
-        height: '100%',
+        width: "100%",
+        height: "100%",
         zIndex: -1,
-        pointerEvents: 'none'
+        pointerEvents: "none",
       }}
     />
   );
