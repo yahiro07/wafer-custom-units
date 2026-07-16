@@ -1,17 +1,15 @@
-import React, { Component } from 'react';
+import { Component } from "react";
 import {
   Card,
-  ButtonGroup,
-  Button,
   Col,
   Row,
   ToggleButtonGroup,
-  ToggleButton
-} from 'react-bootstrap';
-import Knob from 'react-canvas-knob';
-import { Adsr } from '../audio/adsr';
-import { Vca } from '../audio/vca';
-import { ModType } from '../audio/engine';
+  ToggleButton,
+} from "react-bootstrap";
+import { Knob } from "../react-canvas-knob";
+import { Adsr } from "../audio/adsr";
+import { Vca } from "../audio/vca";
+import { ModType } from "../audio/engine";
 
 export interface AdsrComponentProps {
   adsr: Adsr;
@@ -33,7 +31,7 @@ export class AdsrComponent extends Component<AdsrComponentProps, any> {
               value={this.props.vca.patch}
               className="ml-2"
               size="sm"
-              onChange={value => {
+              onChange={(value) => {
                 this.props.patchVca(value);
                 this.forceUpdate();
               }}
@@ -59,7 +57,7 @@ export class AdsrComponent extends Component<AdsrComponentProps, any> {
                 angleArc={250}
                 width={80}
                 height={80}
-                onChange={value => {
+                onChange={(value) => {
                   this.props.adsr.attack = value;
                   this.forceUpdate();
                 }}
@@ -76,7 +74,7 @@ export class AdsrComponent extends Component<AdsrComponentProps, any> {
                 angleArc={250}
                 width={80}
                 height={80}
-                onChange={value => {
+                onChange={(value) => {
                   this.props.adsr.decay = value;
                   this.forceUpdate();
                 }}
@@ -93,7 +91,7 @@ export class AdsrComponent extends Component<AdsrComponentProps, any> {
                 angleArc={250}
                 width={80}
                 height={80}
-                onChange={value => {
+                onChange={(value) => {
                   this.props.adsr.sustain = value / 1000;
                   this.forceUpdate();
                 }}
@@ -110,7 +108,7 @@ export class AdsrComponent extends Component<AdsrComponentProps, any> {
                 angleArc={250}
                 width={80}
                 height={80}
-                onChange={value => {
+                onChange={(value) => {
                   this.props.adsr.release = value;
                   this.forceUpdate();
                 }}

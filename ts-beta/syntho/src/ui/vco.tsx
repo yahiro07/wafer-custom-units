@@ -1,15 +1,14 @@
-import React, { Component } from 'react';
+import { Component } from "react";
 import {
-  ButtonGroup,
   Button,
   Card,
   Col,
   Row,
   ToggleButtonGroup,
-  ToggleButton
-} from 'react-bootstrap';
-import Knob from 'react-canvas-knob';
-import { Vco } from '../audio/vco';
+  ToggleButton,
+} from "react-bootstrap";
+import { Knob } from "../react-canvas-knob";
+import { Vco } from "../audio/vco";
 
 export interface VcoComponentProps {
   vco: Vco;
@@ -37,7 +36,7 @@ export class VcoComponent extends Component<VcoComponentProps, any> {
           <Col>
             <Row className="justify-content-center mb-3">
               <ToggleButtonGroup
-                onChange={value => {
+                onChange={(value) => {
                   this.props.vco.type = value;
                   this.forceUpdate();
                 }}
@@ -65,7 +64,7 @@ export class VcoComponent extends Component<VcoComponentProps, any> {
               angleArc={250}
               width={80}
               height={80}
-              onChange={value => {
+              onChange={(value) => {
                 this.props.vco.octave = value;
                 this.forceUpdate();
               }}
@@ -79,7 +78,7 @@ export class VcoComponent extends Component<VcoComponentProps, any> {
               angleArc={250}
               width={80}
               height={80}
-              onChange={value => {
+              onChange={(value) => {
                 this.props.vco.detune = value;
                 this.forceUpdate();
               }}
@@ -93,7 +92,7 @@ export class VcoComponent extends Component<VcoComponentProps, any> {
               angleArc={250}
               width={80}
               height={80}
-              onChange={value => {
+              onChange={(value) => {
                 this.props.vco.gain = value / 100;
                 this.forceUpdate();
               }}

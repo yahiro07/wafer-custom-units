@@ -1,6 +1,6 @@
 export enum KeyboardPriority {
   low,
-  high
+  high,
 }
 
 export interface Callback {
@@ -16,8 +16,8 @@ export class PhysicalKeyboard {
   constructor(params: { keyEvent: Callback; triggerEvent: Callback }) {
     this.keyEvent = params.keyEvent;
     this.triggerEvent = params.triggerEvent;
-    document.addEventListener('keydown', event => this.keydown(event));
-    document.addEventListener('keyup', event => this.keyup(event));
+    document.addEventListener("keydown", (event) => this.keydown(event));
+    document.addEventListener("keyup", (event) => this.keyup(event));
   }
 
   keydown(e) {

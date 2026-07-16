@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { Card } from 'react-bootstrap';
-import './keyboard.component.scss';
+import { Component } from "react";
+import { Card } from "react-bootstrap";
+import "./keyboard.component.scss";
 
 export interface KeyEvent {
   (number): void;

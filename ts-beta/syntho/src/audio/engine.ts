@@ -3,18 +3,18 @@
 //  by Michael Marner <michaelthis.20papercups.net>
 //
 
-import { Vco } from './vco';
-import { Lpf } from './lpf';
-import { Lfo } from './lfo';
-import { Vca } from './vca';
-import { Adsr } from './adsr';
-import { Gate } from './gate';
+import { Vco } from "./vco";
+import { Lpf } from "./lpf";
+import { Lfo } from "./lfo";
+import { Vca } from "./vca";
+import { Adsr } from "./adsr";
+import { Gate } from "./gate";
 
 export enum ModType {
   none,
   gate,
   eg,
-  lfo
+  lfo,
 }
 
 export class SynthoEngine {
@@ -30,7 +30,10 @@ export class SynthoEngine {
   adsr: Adsr;
   gate: Gate;
 
-  constructor(private context: AudioContext) {
+  constructor(
+    private context: AudioContext,
+    destinationNode: AudioNode,
+  ) {
     this.vco1 = new Vco(context);
     this.vco2 = new Vco(context);
     this.vco3 = new Vco(context);
@@ -53,7 +56,7 @@ export class SynthoEngine {
     this.vco3.output.connect(this.lpf.input);
 
     this.lpf.output.connect(this.vca.input);
-    this.vca.output.connect(this.context.destination);
+    this.vca.output.connect(destinationNode);
 
     this.gate.output.connect(this.vca.gain);
   }
@@ -105,7 +108,7 @@ export class SynthoEngine {
 
   trigger(value: number) {
     if (value == 1) {
-      if (this.context.state == 'suspended') {
+      if (this.context.state == "suspended") {
         this.context.resume();
       }
       this.adsr.triggerOn();

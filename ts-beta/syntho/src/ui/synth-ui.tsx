@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { Row, Col, Card, Container } from 'react-bootstrap';
-import { VcoComponent } from './vco';
-import { FilterComponent } from './filter.component';
-import { LfoComponent } from './lfo.component';
-import { AdsrComponent } from './adsr.component';
-import { Keyboard } from './keyboard.component';
-import { SynthoEngine } from '../audio/engine';
-import { FrequencyMap } from '../audio/frequency-map';
-import { PhysicalKeyboard } from './physical-keyboard';
+import { Component } from "react";
+import { Row, Col, Card, Container } from "react-bootstrap";
+import { VcoComponent } from "./vco";
+import { FilterComponent } from "./filter.component";
+import { LfoComponent } from "./lfo.component";
+import { AdsrComponent } from "./adsr.component";
+import { Keyboard } from "./keyboard.component";
+import { SynthoEngine } from "../audio/engine";
+import { FrequencyMap } from "../audio/frequency-map";
+import { PhysicalKeyboard } from "./physical-keyboard";
 
 interface SynthUIProps {
   engine: SynthoEngine;
@@ -20,8 +20,8 @@ export class SynthUI extends Component<SynthUIProps, any> {
   constructor(props: SynthUIProps) {
     super(props);
     this.physicalKeyboard = new PhysicalKeyboard({
-      keyEvent: note => this.changeNote(note),
-      triggerEvent: val => this.trigger(val)
+      keyEvent: (note) => this.changeNote(note),
+      triggerEvent: (val) => this.trigger(val),
     });
   }
 
@@ -31,13 +31,13 @@ export class SynthUI extends Component<SynthUIProps, any> {
 
   changeNote(note: number) {
     this.props.engine.vco1.frequency = this.props.frequencyMap.getFrequency(
-      this.props.frequencyMap.getNoteIndex(this.props.engine.vco1.octave, note)
+      this.props.frequencyMap.getNoteIndex(this.props.engine.vco1.octave, note),
     );
     this.props.engine.vco2.frequency = this.props.frequencyMap.getFrequency(
-      this.props.frequencyMap.getNoteIndex(this.props.engine.vco2.octave, note)
+      this.props.frequencyMap.getNoteIndex(this.props.engine.vco2.octave, note),
     );
     this.props.engine.vco3.frequency = this.props.frequencyMap.getFrequency(
-      this.props.frequencyMap.getNoteIndex(this.props.engine.vco3.octave, note)
+      this.props.frequencyMap.getNoteIndex(this.props.engine.vco3.octave, note),
     );
   }
 
@@ -78,7 +78,7 @@ export class SynthUI extends Component<SynthUIProps, any> {
               <Col md={6}>
                 <FilterComponent
                   filter={this.props.engine.lpf}
-                  patchFilter={value => this.props.engine.patchFilter(value)}
+                  patchFilter={(value) => this.props.engine.patchFilter(value)}
                 />
               </Col>
               <Col md={6}>
@@ -90,7 +90,7 @@ export class SynthUI extends Component<SynthUIProps, any> {
                 <AdsrComponent
                   adsr={this.props.engine.adsr}
                   vca={this.props.engine.vca}
-                  patchVca={value => this.props.engine.patchVca(value)}
+                  patchVca={(value) => this.props.engine.patchVca(value)}
                 />
               </Col>
             </Row>

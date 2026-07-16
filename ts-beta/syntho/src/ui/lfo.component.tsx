@@ -1,15 +1,13 @@
-import React, { Component } from 'react';
+import { Component } from "react";
 import {
   Card,
-  ButtonGroup,
-  Button,
   Col,
   Row,
   ToggleButtonGroup,
-  ToggleButton
-} from 'react-bootstrap';
-import Knob from 'react-canvas-knob';
-import { Lfo } from '../audio/lfo';
+  ToggleButton,
+} from "react-bootstrap";
+import { Knob } from "../react-canvas-knob";
+import { Lfo } from "../audio/lfo";
 
 export interface LfoComponentProps {
   lfo: Lfo;
@@ -30,7 +28,7 @@ export class LfoComponent extends Component<LfoComponentProps, any> {
             name="lfoType"
             className="float-right"
             size="sm"
-            onChange={value => {
+            onChange={(value) => {
               this.props.lfo.type = value;
               this.forceUpdate();
             }}
@@ -55,7 +53,7 @@ export class LfoComponent extends Component<LfoComponentProps, any> {
                 angleArc={250}
                 width={80}
                 height={80}
-                onChange={value => {
+                onChange={(value) => {
                   this.props.lfo.frequency = value;
                   this.forceUpdate();
                 }}
@@ -72,7 +70,7 @@ export class LfoComponent extends Component<LfoComponentProps, any> {
                 angleArc={250}
                 width={80}
                 height={80}
-                onChange={value => {
+                onChange={(value) => {
                   this.props.lfo.depth = value;
                   this.forceUpdate();
                 }}

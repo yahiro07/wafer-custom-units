@@ -1,17 +1,14 @@
-import React, { Component } from 'react';
+import { Component } from "react";
 import {
   Card,
-  ButtonGroup,
-  Button,
   Row,
   Col,
   ToggleButtonGroup,
-  ToggleButton
-} from 'react-bootstrap';
-import Knob from 'react-canvas-knob';
-import { Lfo } from '../audio/lfo';
-import { Lpf } from '../audio/lpf';
-import { ModType } from '../audio/engine';
+  ToggleButton,
+} from "react-bootstrap";
+import { Knob } from "../react-canvas-knob";
+import { Lpf } from "../audio/lpf";
+import { ModType } from "../audio/engine";
 
 export interface FilterComponentProps {
   filter: Lpf;
@@ -34,7 +31,7 @@ export class FilterComponent extends Component<FilterComponentProps, any> {
             value={this.props.filter.patch}
             className="float-right"
             size="sm"
-            onChange={value => {
+            onChange={(value) => {
               this.props.patchFilter(value);
               this.forceUpdate();
             }}
@@ -62,7 +59,7 @@ export class FilterComponent extends Component<FilterComponentProps, any> {
                 angleArc={250}
                 width={80}
                 height={80}
-                onChange={value => {
+                onChange={(value) => {
                   this.props.filter.cutOff = value;
                   this.forceUpdate();
                 }}
@@ -78,7 +75,7 @@ export class FilterComponent extends Component<FilterComponentProps, any> {
                 angleArc={250}
                 width={80}
                 height={80}
-                onChange={value => {
+                onChange={(value) => {
                   this.props.filter.peak = value;
                   this.forceUpdate();
                 }}
