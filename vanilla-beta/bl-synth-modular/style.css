@@ -3,9 +3,15 @@
    Retro analog synthesizer aesthetic
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap");
 
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 :root {
   --bg: #0a0a0f;
@@ -24,22 +30,22 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
 /* Scanline overlay */
 body::after {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   background: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 2px,
-    rgba(0,0,0,0.08) 2px,
-    rgba(0,0,0,0.08) 4px
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
   );
   pointer-events: none;
   z-index: 1000;
@@ -60,7 +66,7 @@ body::after {
 }
 
 .home-link {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--accent);
@@ -69,13 +75,15 @@ body::after {
   white-space: nowrap;
 }
 
-.preset-bar, .master-section {
+.preset-bar,
+.master-section {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.preset-bar label, .master-section label,
+.preset-bar label,
+.master-section label,
 .seq-header label {
   font-size: 0.65rem;
   color: var(--dim);
@@ -83,12 +91,13 @@ body::after {
   text-transform: uppercase;
 }
 
-.top-bar select, .seq-header select {
+.top-bar select,
+.seq-header select {
   background: var(--module-bg);
   color: var(--text);
   border: 1px solid var(--panel-border);
   padding: 0.3rem 0.5rem;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 0.75rem;
   border-radius: 2px;
   cursor: pointer;
@@ -97,9 +106,9 @@ body::after {
 .sm-btn {
   background: var(--module-bg);
   color: var(--accent);
-  border: 1px solid rgba(255,107,43,0.3);
+  border: 1px solid rgba(255, 107, 43, 0.3);
   padding: 0.25rem 0.6rem;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 0.65rem;
   letter-spacing: 0.1em;
   cursor: pointer;
@@ -108,7 +117,7 @@ body::after {
 }
 
 .sm-btn:hover {
-  background: rgba(255,107,43,0.15);
+  background: rgba(255, 107, 43, 0.15);
   border-color: var(--accent);
 }
 
@@ -162,7 +171,7 @@ body::after {
 }
 
 .module-title {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-weight: 500;
   font-size: 0.7rem;
   letter-spacing: 0.2em;
@@ -182,13 +191,23 @@ body::after {
   box-shadow: 0 0 6px var(--accent);
   display: inline-block;
 }
-.led-dot.cyan { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); }
-.led-dot.orange { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
-.led-dot.purple { background: var(--accent3); box-shadow: 0 0 6px var(--accent3); }
+.led-dot.cyan {
+  background: var(--accent2);
+  box-shadow: 0 0 6px var(--accent2);
+}
+.led-dot.orange {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+.led-dot.purple {
+  background: var(--accent3);
+  box-shadow: 0 0 6px var(--accent3);
+}
 
 /* Screw decoration */
-.module::before, .module::after {
-  content: '';
+.module::before,
+.module::after {
+  content: "";
   position: absolute;
   width: 8px;
   height: 8px;
@@ -196,8 +215,14 @@ body::after {
   background: var(--screw);
   border: 1px solid #444;
 }
-.module::before { top: 6px; right: 6px; }
-.module::after { bottom: 6px; left: 6px; }
+.module::before {
+  top: 6px;
+  right: 6px;
+}
+.module::after {
+  bottom: 6px;
+  left: 6px;
+}
 
 .control-row {
   display: flex;
@@ -226,7 +251,7 @@ body::after {
   color: var(--text);
   border: 1px solid var(--panel-border);
   padding: 0.25rem 0.3rem;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 0.7rem;
   border-radius: 2px;
   cursor: pointer;
@@ -257,7 +282,7 @@ body::after {
   border-radius: 50%;
   background: linear-gradient(135deg, #666, #333);
   border: 2px solid #888;
-  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
@@ -267,22 +292,22 @@ body::after {
   border-radius: 50%;
   background: linear-gradient(135deg, #666, #333);
   border: 2px solid #888;
-  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
 /* Accent colored tracks */
 .knob-range.accent::-webkit-slider-thumb {
   border-color: var(--accent);
-  box-shadow: 0 0 6px rgba(255,107,43,0.3);
+  box-shadow: 0 0 6px rgba(255, 107, 43, 0.3);
 }
 .knob-range.cyan::-webkit-slider-thumb {
   border-color: var(--accent2);
-  box-shadow: 0 0 6px rgba(0,229,255,0.3);
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.3);
 }
 .knob-range.purple::-webkit-slider-thumb {
   border-color: var(--accent3);
-  box-shadow: 0 0 6px rgba(179,136,255,0.3);
+  box-shadow: 0 0 6px rgba(179, 136, 255, 0.3);
 }
 
 /* ---- ENVELOPE DISPLAY ---- */
@@ -309,7 +334,7 @@ body::after {
 }
 
 .fx-sub h4 {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-weight: 400;
   font-size: 0.55rem;
   letter-spacing: 0.15em;
@@ -344,7 +369,7 @@ body::after {
   color: var(--text);
   border: 1px solid var(--panel-border);
   padding: 0.3rem 0.8rem;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   cursor: pointer;
@@ -352,13 +377,15 @@ body::after {
   transition: all 0.2s;
 }
 
-.seq-btn:hover { border-color: var(--accent); }
+.seq-btn:hover {
+  border-color: var(--accent);
+}
 
 .seq-btn.play-btn.active {
-  background: rgba(255,107,43,0.2);
+  background: rgba(255, 107, 43, 0.2);
   border-color: var(--accent);
   color: var(--accent);
-  box-shadow: 0 0 10px rgba(255,107,43,0.2);
+  box-shadow: 0 0 10px rgba(255, 107, 43, 0.2);
 }
 
 .bpm-input {
@@ -367,7 +394,7 @@ body::after {
   border: 1px solid var(--panel-border);
   padding: 0.3rem 0.4rem;
   width: 50px;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 0.75rem;
   border-radius: 2px;
   text-align: center;
@@ -391,19 +418,21 @@ body::after {
 }
 
 .seq-step.active {
-  background: rgba(255,107,43,0.3);
+  background: rgba(255, 107, 43, 0.3);
   border-color: var(--accent);
-  box-shadow: 0 0 8px rgba(255,107,43,0.2);
+  box-shadow: 0 0 8px rgba(255, 107, 43, 0.2);
 }
 
 .seq-step.current {
-  box-shadow: 0 0 12px rgba(0,229,255,0.5);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
   border-color: var(--accent2);
 }
 
 .seq-step.active.current {
-  background: rgba(255,107,43,0.6);
-  box-shadow: 0 0 15px rgba(255,107,43,0.4), 0 0 12px rgba(0,229,255,0.3);
+  background: rgba(255, 107, 43, 0.6);
+  box-shadow:
+    0 0 15px rgba(255, 107, 43, 0.4),
+    0 0 12px rgba(0, 229, 255, 0.3);
 }
 
 .seq-notes {
@@ -417,7 +446,7 @@ body::after {
   color: var(--dim);
   border: 1px solid var(--panel-border);
   padding: 1px;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 0.5rem;
   border-radius: 2px;
   cursor: pointer;
@@ -462,9 +491,10 @@ body::after {
   padding-bottom: 6px;
 }
 
-.key.white:active, .key.white.active {
+.key.white:active,
+.key.white.active {
   background: linear-gradient(180deg, #ccc8c0, #bbb7af);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .key.black {
@@ -478,7 +508,8 @@ body::after {
   margin-left: -14px;
 }
 
-.key.black:active, .key.black.active {
+.key.black:active,
+.key.black.active {
   background: linear-gradient(180deg, #333, #222);
   height: 63%;
 }
@@ -486,7 +517,7 @@ body::after {
 .key-label {
   font-size: 0.5rem;
   color: #888;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
 }
 
 /* Position black keys - handled by JS flex layout */
@@ -512,7 +543,8 @@ body::after {
     min-width: 500px;
     height: 100px;
   }
-  .seq-grid, .seq-notes {
+  .seq-grid,
+  .seq-notes {
     grid-template-columns: repeat(16, 1fr);
   }
   .seq-step {

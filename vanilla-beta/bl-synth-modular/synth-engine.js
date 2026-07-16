@@ -13,17 +13,17 @@ class SynthEngine {
     this.effects = {};
     this.lfo = null;
     this.lfoGain = null;
-    this.lfoTarget = 'filter';
+    this.lfoTarget = "filter";
     this.lfoRunning = false;
     this.filterNode = null;
     this.params = {
-      oscType: 'sawtooth',
-      osc2Type: 'square',
+      oscType: "sawtooth",
+      osc2Type: "square",
       osc2Detune: 7,
       osc2Mix: 0.5,
       osc2Octave: 0,
       noiseLevel: 0,
-      filterType: 'lowpass',
+      filterType: "lowpass",
       filterCutoff: 5000,
       filterResonance: 1,
       filterEnvAmount: 0,
@@ -33,8 +33,8 @@ class SynthEngine {
       release: 0.5,
       lfoRate: 4,
       lfoDepth: 0,
-      lfoShape: 'sine',
-      lfoTarget: 'filter',
+      lfoShape: "sine",
+      lfoTarget: "filter",
       delayTime: 0.3,
       delayFeedback: 0.3,
       delayMix: 0.2,
@@ -100,8 +100,12 @@ class SynthEngine {
     const distCurve = this._makeDistortionCurve(0);
     const distNode = this.ctx.createWaveShaper();
     distNode.curve = distCurve;
-    distNode.oversample = '4x';
-    this.effects.distortion = { input: distNode, output: distNode, node: distNode };
+    distNode.oversample = "4x";
+    this.effects.distortion = {
+      input: distNode,
+      output: distNode,
+      node: distNode,
+    };
 
     // --- Chorus (via delayed LFO-modulated signal) ---
     const chorusDry = this.ctx.createGain();
@@ -115,7 +119,7 @@ class SynthEngine {
     chorusWet.gain.value = this.params.chorusMix;
     chorusDelay.delayTime.value = 0.005;
     chorusLFO.frequency.value = this.params.chorusRate;
-    chorusLFO.type = 'sine';
+    chorusLFO.type = "sine";
     chorusLFOGain.gain.value = this.params.chorusDepth;
 
     chorusLFO.connect(chorusLFOGain);
@@ -131,9 +135,13 @@ class SynthEngine {
     chorusWet.connect(chorusMerge);
 
     this.effects.chorus = {
-      input: chorusInput, output: chorusMerge,
-      wet: chorusWet, dry: chorusDry, delay: chorusDelay,
-      lfo: chorusLFO, lfoGain: chorusLFOGain
+      input: chorusInput,
+      output: chorusMerge,
+      wet: chorusWet,
+      dry: chorusDry,
+      delay: chorusDelay,
+      lfo: chorusLFO,
+      lfoGain: chorusLFOGain,
     };
 
     // --- Delay ---
@@ -148,7 +156,7 @@ class SynthEngine {
     delayWet.gain.value = this.params.delayMix;
     delayNode.delayTime.value = this.params.delayTime;
     delayFeedback.gain.value = this.params.delayFeedback;
-    delayFilter.type = 'lowpass';
+    delayFilter.type = "lowpass";
     delayFilter.frequency.value = 4000;
 
     const delayInput = this.ctx.createGain();
@@ -162,9 +170,13 @@ class SynthEngine {
     delayWet.connect(delayMerge);
 
     this.effects.delay = {
-      input: delayInput, output: delayMerge,
-      wet: delayWet, dry: delayDry, node: delayNode,
-      feedback: delayFeedback, filter: delayFilter
+      input: delayInput,
+      output: delayMerge,
+      wet: delayWet,
+      dry: delayDry,
+      node: delayNode,
+      feedback: delayFeedback,
+      filter: delayFilter,
     };
 
     // --- Reverb (convolution) ---
@@ -185,8 +197,11 @@ class SynthEngine {
     reverbWet.connect(reverbMerge);
 
     this.effects.reverb = {
-      input: reverbInput, output: reverbMerge,
-      wet: reverbWet, dry: reverbDry, convolver: reverbConvolver
+      input: reverbInput,
+      output: reverbMerge,
+      wet: reverbWet,
+      dry: reverbDry,
+      convolver: reverbConvolver,
     };
   }
 
@@ -206,16 +221,17 @@ class SynthEngine {
     if (!this.lfoGain) return;
     this.lfoGain.disconnect();
     const target = this.params.lfoTarget;
-    if (target === 'filter') {
-      this.lfoGain.gain.value = this.params.lfoDepth * this.params.filterCutoff * 0.5;
+    if (target === "filter") {
+      this.lfoGain.gain.value =
+        this.params.lfoDepth * this.params.filterCutoff * 0.5;
       this.lfoGain.connect(this.filterNode.frequency);
-    } else if (target === 'pitch') {
+    } else if (target === "pitch") {
       this.lfoGain.gain.value = this.params.lfoDepth * 100;
       // Connected per-voice
-    } else if (target === 'amplitude') {
+    } else if (target === "amplitude") {
       this.lfoGain.gain.value = this.params.lfoDepth * 0.5;
       this.lfoGain.connect(this.masterGain.gain);
-    } else if (target === 'pan') {
+    } else if (target === "pan") {
       this.lfoGain.gain.value = this.params.lfoDepth;
     }
   }
@@ -229,7 +245,8 @@ class SynthEngine {
       if (k === 0) {
         curve[i] = x;
       } else {
-        curve[i] = ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
+        curve[i] =
+          ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
       }
     }
     return curve;
@@ -286,7 +303,7 @@ class SynthEngine {
     voice.vca.gain.linearRampToValueAtTime(velocity, t + this.params.attack);
     voice.vca.gain.linearRampToValueAtTime(
       velocity * this.params.sustain,
-      t + this.params.attack + this.params.decay
+      t + this.params.attack + this.params.decay,
     );
 
     // Filter envelope
@@ -296,7 +313,7 @@ class SynthEngine {
       this.filterNode.frequency.setValueAtTime(envFreq, t);
       this.filterNode.frequency.linearRampToValueAtTime(
         baseFreq + (envFreq - baseFreq) * 0.3,
-        t + this.params.attack + this.params.decay
+        t + this.params.attack + this.params.decay,
       );
     }
 
@@ -308,7 +325,7 @@ class SynthEngine {
     voice.vca.connect(this.filterNode);
 
     // LFO pitch connection
-    if (this.params.lfoTarget === 'pitch' && this.params.lfoDepth > 0) {
+    if (this.params.lfoTarget === "pitch" && this.params.lfoDepth > 0) {
       this.lfoGain.connect(voice.osc1.detune);
       this.lfoGain.connect(voice.osc2.detune);
     }
@@ -333,11 +350,14 @@ class SynthEngine {
     voice.osc2.stop(t + releaseTime);
     if (voice.noise) voice.noise.stop(t + releaseTime);
 
-    setTimeout(() => {
-      try {
-        voice.vca.disconnect();
-      } catch (e) {}
-    }, (releaseTime + 0.1) * 1000);
+    setTimeout(
+      () => {
+        try {
+          voice.vca.disconnect();
+        } catch (e) {}
+      },
+      (releaseTime + 0.1) * 1000,
+    );
 
     this.voices.delete(note);
   }
@@ -367,58 +387,85 @@ class SynthEngine {
     if (!this.initialized) return;
 
     switch (name) {
-      case 'masterVolume':
-        this.masterGain.gain.linearRampToValueAtTime(value, this.ctx.currentTime + 0.05);
+      case "masterVolume":
+        this.masterGain.gain.linearRampToValueAtTime(
+          value,
+          this.ctx.currentTime + 0.05,
+        );
         break;
-      case 'filterCutoff':
-        this.filterNode.frequency.linearRampToValueAtTime(value, this.ctx.currentTime + 0.05);
-        if (this.params.lfoTarget === 'filter') {
+      case "filterCutoff":
+        this.filterNode.frequency.linearRampToValueAtTime(
+          value,
+          this.ctx.currentTime + 0.05,
+        );
+        if (this.params.lfoTarget === "filter") {
           this.lfoGain.gain.value = this.params.lfoDepth * value * 0.5;
         }
         break;
-      case 'filterResonance':
-        this.filterNode.Q.linearRampToValueAtTime(value, this.ctx.currentTime + 0.05);
+      case "filterResonance":
+        this.filterNode.Q.linearRampToValueAtTime(
+          value,
+          this.ctx.currentTime + 0.05,
+        );
         break;
-      case 'filterType':
+      case "filterType":
         this.filterNode.type = value;
         break;
-      case 'delayTime':
-        this.effects.delay.node.delayTime.linearRampToValueAtTime(value, this.ctx.currentTime + 0.05);
+      case "delayTime":
+        this.effects.delay.node.delayTime.linearRampToValueAtTime(
+          value,
+          this.ctx.currentTime + 0.05,
+        );
         break;
-      case 'delayFeedback':
-        this.effects.delay.feedback.gain.linearRampToValueAtTime(value, this.ctx.currentTime + 0.05);
+      case "delayFeedback":
+        this.effects.delay.feedback.gain.linearRampToValueAtTime(
+          value,
+          this.ctx.currentTime + 0.05,
+        );
         break;
-      case 'delayMix':
-        this.effects.delay.wet.gain.linearRampToValueAtTime(value, this.ctx.currentTime + 0.05);
+      case "delayMix":
+        this.effects.delay.wet.gain.linearRampToValueAtTime(
+          value,
+          this.ctx.currentTime + 0.05,
+        );
         break;
-      case 'reverbMix':
-        this.effects.reverb.wet.gain.linearRampToValueAtTime(value, this.ctx.currentTime + 0.05);
+      case "reverbMix":
+        this.effects.reverb.wet.gain.linearRampToValueAtTime(
+          value,
+          this.ctx.currentTime + 0.05,
+        );
         break;
-      case 'reverbDecay':
+      case "reverbDecay":
         this.effects.reverb.convolver.buffer = this._createReverbIR(value);
         break;
-      case 'distortionAmount':
+      case "distortionAmount":
         this.effects.distortion.node.curve = this._makeDistortionCurve(value);
         break;
-      case 'chorusRate':
+      case "chorusRate":
         this.effects.chorus.lfo.frequency.value = value;
         break;
-      case 'chorusDepth':
+      case "chorusDepth":
         this.effects.chorus.lfoGain.gain.value = value;
         break;
-      case 'chorusMix':
-        this.effects.chorus.wet.gain.linearRampToValueAtTime(value, this.ctx.currentTime + 0.05);
+      case "chorusMix":
+        this.effects.chorus.wet.gain.linearRampToValueAtTime(
+          value,
+          this.ctx.currentTime + 0.05,
+        );
         break;
-      case 'lfoRate':
-        this.lfo.frequency.linearRampToValueAtTime(value, this.ctx.currentTime + 0.05);
+      case "lfoRate":
+        this.lfo.frequency.linearRampToValueAtTime(
+          value,
+          this.ctx.currentTime + 0.05,
+        );
         break;
-      case 'lfoDepth':
+      case "lfoDepth":
         this._routeLFO();
         break;
-      case 'lfoShape':
+      case "lfoShape":
         this.lfo.type = value;
         break;
-      case 'lfoTarget':
+      case "lfoTarget":
         this._routeLFO();
         break;
     }
@@ -439,7 +486,7 @@ class SynthEngine {
   }
 
   resume() {
-    if (this.ctx && this.ctx.state === 'suspended') {
+    if (this.ctx && this.ctx.state === "suspended") {
       this.ctx.resume();
     }
   }
@@ -464,9 +511,9 @@ class Sequencer {
     for (let i = 0; i < this.steps; i++) {
       this.pattern.push({
         active: false,
-        note: 60,   // C4
+        note: 60, // C4
         velocity: 0.8,
-        slide: false
+        slide: false,
       });
     }
   }
@@ -492,7 +539,7 @@ class Sequencer {
 
   _scheduleNext() {
     if (!this.running) return;
-    const stepDuration = (60 / this.bpm) * 1000 / 4; // 16th notes
+    const stepDuration = ((60 / this.bpm) * 1000) / 4; // 16th notes
     this.intervalId = setTimeout(() => {
       this._tick();
       this._scheduleNext();
@@ -531,11 +578,11 @@ class Sequencer {
   }
 
   loadPattern(pattern) {
-    this.pattern = pattern.map(s => ({ ...s }));
+    this.pattern = pattern.map((s) => ({ ...s }));
   }
 
   getPattern() {
-    return this.pattern.map(s => ({ ...s }));
+    return this.pattern.map((s) => ({ ...s }));
   }
 
   randomize(scale, baseNote = 48) {
@@ -566,7 +613,20 @@ const SCALES = {
   arabic: [0, 1, 4, 5, 7, 8, 11],
 };
 
-const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const NOTE_NAMES = [
+  "C",
+  "C#",
+  "D",
+  "D#",
+  "E",
+  "F",
+  "F#",
+  "G",
+  "G#",
+  "A",
+  "A#",
+  "B",
+];
 
 function noteToName(note) {
   return NOTE_NAMES[note % 12] + Math.floor(note / 12 - 1);
