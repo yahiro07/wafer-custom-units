@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
         window.synth.triggerAttack(freq);
       },
       triggerRelease() {
-        window.synth.triggerAttack();
+        window.synth.triggerRelease();
       },
     }),
   });
