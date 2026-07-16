@@ -4,6 +4,8 @@ import Voice from "./Voice.js";
 import Bank from "./Bank.js";
 import Param from "./Param.js";
 
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+
 const REVISION = 6,
   verbosity = 0.5,
   banksTotal = 6, //1
@@ -25,7 +27,11 @@ let hasBooted = false,
   graphContext;
 
 window.addEventListener("DOMContentLoaded", function () {
-  document.body.addEventListener("mousedown", boot);
+  if (unitInterface) {
+    boot();
+  } else {
+    document.body.addEventListener("mousedown", boot);
+  }
 });
 
 function boot() {
@@ -37,7 +43,9 @@ function boot() {
   //  Setup out audio context, analyser,
   //  and data arrays for working magic.
 
-  audioContext = new AudioContext();
+  audioContext = unitInterface?.audioContext ?? new AudioContext();
+  audioContext.__destinationToHost =
+    unitInterface?.audioOutputNode ?? audioContext.destination;
   analyser = audioContext.createAnalyser();
   analyser.fftSize = 4096; //2048
   bufferLength = analyser.frequencyBinCount;
@@ -83,6 +91,15 @@ function boot() {
   //  Hook up the microphone.
 
   getMedia();
+
+  unitInterface?.completeSetup({
+    unitAspects: {
+      unitType: "effect",
+      outputs: ["audio"],
+      inputs: ["audio"],
+      viewSize: [1020, 960],
+    },
+  });
 }
 
 function loop() {
@@ -327,6 +344,13 @@ function dataFromFrequency(frequency) {
 let mediaStreamSource;
 
 async function getMedia() {
+  if (unitInterface) {
+    unitInterface.audioInputNode.connect(analyser);
+    isListening = true;
+    isPlaying = true;
+    loop();
+    return;
+  }
   const constraints = {
     audio: true,
     video: false,
@@ -398,18 +422,3 @@ export default {
   },
   inspect,
 };
-
-console.log(`
-
-
-████    ███   ████   █   █  █   █   ███   █   █  █████
-█   █  █   █  █   █  █  █   █   █  █   █  █   █  █
-█   █  █████  ████   ███    █ █ █  █████  █   █  ████
-█   █  █   █  █   █  █  █   ██ ██  █   █   █ █   █
-████   █   █  █   █  █   █  █   █  █   █    █    █████
-
-Revision ${REVISION}
-
-
-
-`);
