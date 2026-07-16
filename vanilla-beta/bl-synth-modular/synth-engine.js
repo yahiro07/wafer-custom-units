@@ -3,6 +3,8 @@
 // Pure Web Audio API, zero dependencies
 // ============================================================
 
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+
 class SynthEngine {
   constructor() {
     this.ctx = null;
@@ -53,7 +55,9 @@ class SynthEngine {
 
   async init() {
     if (this.initialized) return;
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this.ctx = unitInterface?.audioContext ?? new AudioContext();
+    const destinationNode =
+      unitInterface?.audioDestination ?? this.ctx.destination;
 
     // Master chain: filter -> effects -> compressor -> analyser -> master gain -> destination
     this.masterGain = this.ctx.createGain();
@@ -87,7 +91,7 @@ class SynthEngine {
     this.effects.reverb.output.connect(this.compressor);
     this.compressor.connect(this.analyser);
     this.analyser.connect(this.masterGain);
-    this.masterGain.connect(this.ctx.destination);
+    this.masterGain.connect(destinationNode);
 
     // LFO
     this._buildLFO();

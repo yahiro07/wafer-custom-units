@@ -551,6 +551,23 @@
         bindControls();
         startVisualization();
         drawEnvelope();
+
+        unitInterface?.completeSetup({
+          unitAspects: {
+            unitType: "instrument",
+            outputs: ["audio"],
+            inputs: ["note"],
+            viewSize: [1180, 920],
+          },
+          noteInput: {
+            noteOn(noteNumber) {
+              synth.noteOn(noteNumber);
+            },
+            noteOff(noteNumber) {
+              synth.noteOff(noteNumber);
+            },
+          },
+        });
       }
 
       // --- Presets ---
