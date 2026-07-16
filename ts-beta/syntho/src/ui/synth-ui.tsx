@@ -4,7 +4,6 @@ import { VcoComponent } from "./vco";
 import { FilterComponent } from "./filter.component";
 import { LfoComponent } from "./lfo.component";
 import { AdsrComponent } from "./adsr.component";
-import { Keyboard } from "./keyboard.component";
 import { SynthoEngine } from "../audio/engine";
 import { FrequencyMap } from "../audio/frequency-map";
 import { PhysicalKeyboard } from "./physical-keyboard";
@@ -96,14 +95,14 @@ export class SynthUI extends Component<SynthUIProps, any> {
             </Row>
           </Col>
         </Row>
-        <Row className="mt-2">
+        {/* <Row className="mt-2">
           <Col md={12}>
             <Keyboard
               keyDown={(note: number) => this.keyDown(note)}
               keyUp={(note: number) => this.keyUp(note)}
             />
           </Col>
-        </Row>
+        </Row> */}
       </Container>
     );
   }
