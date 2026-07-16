@@ -1,18 +1,9 @@
 import { Voice } from "@/lib/audio/voice";
 import type { EngineParams } from "@/lib/audio/types";
+import { queryUnitInterface } from "wafer-host/unit-types";
+import { midiToFreq } from "@/lib/audio/notes";
 
-type AudioContextConstructor = typeof AudioContext;
-
-/** Resolve a usable AudioContext constructor, with a webkit fallback. */
-function resolveAudioContext(): AudioContextConstructor | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  const w = window as typeof window & {
-    webkitAudioContext?: AudioContextConstructor;
-  };
-  return w.AudioContext ?? w.webkitAudioContext ?? null;
-}
+export const unitInterface = queryUnitInterface("wafer-v01");
 
 /**
  * The cadence synth engine. Owns the AudioContext and a hand-wired signal
@@ -41,11 +32,10 @@ export class AudioEngine {
   private readonly voices = new Map<string, Voice>();
 
   constructor(params: EngineParams) {
-    const Ctor = resolveAudioContext();
-    if (!Ctor) {
-      throw new Error("Web Audio API is not available in this environment.");
-    }
-    this.ctx = new Ctor();
+    this.ctx = unitInterface?.audioContext ?? new AudioContext();
+    const destinationNode =
+      unitInterface?.audioOutputNode ?? this.ctx.destination;
+
     this.params = params;
 
     this.voiceBus = this.ctx.createGain();
@@ -71,9 +61,30 @@ export class AudioEngine {
     this.wet.connect(this.master);
     // Output tap.
     this.master.connect(this.analyser);
-    this.analyser.connect(this.ctx.destination);
+    this.analyser.connect(destinationNode);
 
     this.applyParams(params);
+
+    const self = this;
+    unitInterface?.completeSetup({
+      unitAspects: {
+        unitType: "instrument",
+        outputs: ["audio"],
+        inputs: ["note"],
+        viewSize: [1120, 775],
+      },
+      noteInput: {
+        noteOn(noteNumber) {
+          const id = `note-${noteNumber}`;
+          const freq = midiToFreq(noteNumber);
+          self.noteOn(id, freq);
+        },
+        noteOff(noteNumber) {
+          const id = `note-${noteNumber}`;
+          self.noteOff(id);
+        },
+      },
+    });
   }
 
   /** Smoothly push parameter values onto the live audio nodes. */
@@ -90,7 +101,10 @@ export class AudioEngine {
 
   /** Resume a suspended context (call inside a user gesture). */
   async resume(): Promise<void> {
-    if (this.ctx.state === "suspended") {
+    if (
+      this.ctx !== unitInterface?.audioContext &&
+      this.ctx.state === "suspended"
+    ) {
       await this.ctx.resume();
     }
   }

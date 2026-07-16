@@ -11,6 +11,6 @@ export default defineConfig({
   resolve: {
     alias: { "@": path.resolve(rootDir, "src") },
   },
-  build: { outDir: "../dist/cadance", emptyOutDir: true },
+  build: { outDir: "../dist/cadence", emptyOutDir: true },
   server: { port: 3000 },
 });

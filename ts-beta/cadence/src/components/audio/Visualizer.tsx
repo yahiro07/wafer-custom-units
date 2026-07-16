@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef } from "react";
 import { useTheme } from "@/lib/hooks/useTheme";
 import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";

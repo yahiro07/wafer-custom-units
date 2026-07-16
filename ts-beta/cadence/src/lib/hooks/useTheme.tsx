@@ -1,5 +1,3 @@
-"use client";
-
 import {
   createContext,
   useCallback,
@@ -34,8 +32,8 @@ function getInitialTheme(): Theme {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Default to dark on both server and first client render to avoid a
-  // hydration mismatch; resolve the real preference immediately after mount.
+  // Resolve preference after mount so the first paint matches the theme
+  // script in index.html and avoids a visible flash.
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {

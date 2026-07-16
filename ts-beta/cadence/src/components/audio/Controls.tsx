@@ -1,5 +1,3 @@
-"use client";
-
 import type { ChangeEvent } from "react";
 import type { EngineParams } from "@/lib/audio/types";
 import { WAVEFORMS } from "@/lib/constants";

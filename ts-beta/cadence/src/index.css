@@ -5,13 +5,15 @@
 /*
  * Theme tokens are RGB triplets (not hex) so Tailwind's <alpha-value> syntax
  * works: rgb(var(--accent) / 0.5) etc. Light is the :root default; .dark
- * overrides. The font variables point at the families loaded in layout.tsx.
+ * overrides. Font variables match the families loaded in index.html.
  */
 :root {
   --background: 248 250 252;
   --foreground: 15 18 32;
   --accent: 124 58 237;
   --muted: 100 110 130;
+  --font-sans: "Outfit", system-ui, sans-serif;
+  --font-display: "Sora", system-ui, sans-serif;
 }
 
 .dark {
@@ -22,22 +24,17 @@
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
     background-color: rgb(var(--background));
     color: rgb(var(--foreground));
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-  }
 
-  /* Offset in-page anchors for the fixed navbar. */
-  section,
-  footer {
-    scroll-margin-top: 80px;
+    height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -59,10 +56,4 @@
       rgba(34, 211, 238, 0.16),
       transparent 70%
     );
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
 }

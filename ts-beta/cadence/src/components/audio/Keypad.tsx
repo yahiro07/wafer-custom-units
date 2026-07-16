@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { KEY_TO_MIDI, PADS, midiToFreq, type Pad } from "@/lib/audio/notes";
 
@@ -109,10 +107,10 @@ export function Keypad({ noteOn, noteOff }: KeypadProps) {
             onPointerDown={(event) => onDown(event, pad.midi)}
             onPointerUp={() => lift(pad.midi)}
             onPointerCancel={() => lift(pad.midi)}
-            className={`relative flex flex-1 items-end justify-center rounded-b-xl border border-foreground/15 pb-3 text-xs font-medium transition-colors ${
+            className={`relative flex flex-1 items-end justify-center rounded-b-xl border border-[#ddd] pb-3 text-xs font-medium transition-colors ${
               on
-                ? "bg-accent text-background"
-                : "bg-foreground/[0.04] text-foreground/50 hover:bg-foreground/[0.08]"
+                ? "bg-accent text-background border-accent"
+                : "bg-[#fff] text-[#ccc] hover:bg-[#eee]"
             }`}
           >
             <span className="pointer-events-none uppercase tracking-wide">
@@ -141,7 +139,7 @@ export function Keypad({ noteOn, noteOff }: KeypadProps) {
             className={`absolute top-0 z-10 flex h-[62%] -translate-x-1/2 items-end justify-center rounded-b-lg border border-black/40 pb-2 text-[10px] font-medium transition-colors ${
               on
                 ? "bg-accent text-background"
-                : "bg-[#0a0b14] text-foreground/40 hover:bg-[#15182a]"
+                : "bg-[#0a0b14] text-[#888] hover:bg-[#15182a]"
             }`}
           >
             <span className="pointer-events-none uppercase">{pad.key}</span>

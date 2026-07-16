@@ -1,7 +1,5 @@
-"use client";
-
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AudioEngine } from "@/lib/audio/engine";
+import { AudioEngine, unitInterface } from "@/lib/audio/engine";
 import type { EngineParams } from "@/lib/audio/types";
 import { DEFAULT_ENGINE_PARAMS } from "@/lib/constants";
 
@@ -67,11 +65,14 @@ export function useAudioEngine(): UseAudioEngine {
   );
 
   useEffect(() => {
+    if (unitInterface) {
+      void ensureEngine();
+    }
     return () => {
       engineRef.current?.dispose();
       engineRef.current = null;
     };
-  }, []);
+  }, [ensureEngine]);
 
   return { ready, params, noteOn, noteOff, updateParams, getAnalyser };
 }
