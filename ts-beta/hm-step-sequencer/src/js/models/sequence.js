@@ -1,18 +1,24 @@
 var Sequence = Backbone.Model.extend({
+  initialize: function (attrs) {
+    // console.log('Sequence::initialize()', attrs);
+    this.context = this.getAudioContext();
+    this.get("stepCollection")
+      .fetch()
+      .done(function () {});
+  },
 
-	initialize: function(attrs) {
-		// console.log('Sequence::initialize()', attrs);
-		this.context = this.getAudioContext();
-		this.get('stepCollection').fetch().done( function() {
-		});
-	},
-
-	getAudioContext: function() {
-    var contextClass = ( window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext || window.msAudioContext);
-    if (contextClass) { // Web Audio API is available.
+  getAudioContext: function () {
+    var contextClass =
+      window.AudioContext ||
+      window.webkitAudioContext ||
+      window.mozAudioContext ||
+      window.oAudioContext ||
+      window.msAudioContext;
+    if (contextClass) {
+      // Web Audio API is available.
       return new contextClass();
     } else {
-      alert('Web Audio API not supported by this browser.  :-(   ');
+      alert("Web Audio API not supported by this browser.  :-(   ");
     }
   },
 
@@ -29,11 +35,10 @@ var Sequence = Backbone.Model.extend({
     vca.connect(this.context.destination);
 
     vco.start(0);
-    var self= this;
-    setTimeout(function() {
-        vco.stop(0);
-        vco.disconnect(self.context.destination);
-    }, 100)
-  }
-
+    var self = this;
+    setTimeout(function () {
+      vco.stop(0);
+      vco.disconnect(self.context.destination);
+    }, 100);
+  },
 });

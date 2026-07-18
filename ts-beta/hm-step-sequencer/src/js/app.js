@@ -1,6 +1,4 @@
-$( document ).ready(function() {
-
+$(document).ready(function () {
   var sequenceView = new SequenceView();
-  $('#seq').append( sequenceView.render().$el );
-  
+  $("#seq").append(sequenceView.render().$el);
 });
