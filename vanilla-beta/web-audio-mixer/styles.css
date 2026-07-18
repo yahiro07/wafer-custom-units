@@ -1,13 +1,3 @@
-@font-face {
-  font-family: "digi";
-  src: url(digital-7_mono-webfont.eot);
-  src:
-    url(digital-7_mono-webfont.eot?#iefix) format("embedded-opentype"),
-    url(digital-7_mono-webfont.woff) format("woff"),
-    url(digital-7_mono-webfont.ttf) format("truetype"),
-    url(digital-7_mono-webfont.svg#webfont) format("svg");
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -16,13 +6,16 @@
 body {
   font-family: arial, sans-serif;
   background: #2e302f;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #container {
-  width: 100%;
-  min-width: 1000px;
-  max-width: 1400px;
-  margin: 50px auto;
+  padding: 12px 16px;
+  background: #3e4140;
 }
 
 h1 {
@@ -31,7 +24,8 @@ h1 {
   font-weight: 700;
   text-transform: uppercase;
   font-size: 20px;
-  padding: 50px 0 0 40px;
+  background: #3e4140;
+  padding-left: 10px;
 }
 
 h1 span {
@@ -57,24 +51,24 @@ h1 span {
 #mixer {
   display: none;
   position: relative;
-  margin: 20px 5%;
-  width: 90%;
+  width: auto;
   float: left;
-  box-shadow: 0 10px 100px #000;
+}
+
+#mixer.is-visible {
+  display: flex;
 }
 
 /* Button colours etc should be #e1e4e9 */
 .channel {
-  float: left;
-  width: 8%;
+  display: flex;
+  width: 180px;
+  flex-shrink: 0;
   background: #3e4140;
   border-right: 2px solid #555;
-  height: 920px;
+  height: 410px;
   box-sizing: border-box;
-}
-
-.channel {
-  padding-top: 50px;
+  padding: 20px 8px 20px;
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
@@ -82,8 +76,37 @@ h1 span {
   -o-user-select: none;
 }
 
+.channel-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.channel-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .channel.master-channel {
-  float: left;
+  width: 100px;
+  justify-content: center;
+  border-right: none;
+}
+
+.channel.master-channel .channel-left {
+  display: none;
+}
+
+.channel.master-channel .channel-right {
+  flex: none;
+  width: 100%;
 }
 
 .dial {
@@ -93,7 +116,7 @@ h1 span {
   transform: rotate(180deg);
   width: 20px;
   height: 20px;
-  margin: 0 auto 35px;
+  margin: 0 auto 22px;
   box-shadow: 0 -4px 13px #222;
   position: relative;
   border: 1px solid #474b4a;
@@ -194,7 +217,7 @@ h1 span {
   color: #ccc;
   width: 40px;
   font-size: 10px;
-  margin: 0 auto;
+  margin: 8px auto 0;
 }
 
 .solo div {
@@ -225,7 +248,7 @@ h1 span {
 }
 
 .button-container.mute {
-  margin-top: 30px;
+  margin-top: 16px;
   height: 14px;
   padding: 10px 0;
   background: #383b3a;
@@ -253,50 +276,21 @@ h1 span {
   box-shadow: 0 1px 1px #222;
 }
 
-#transport {
-  float: right;
-  width: 28%;
-  height: 920px;
-  background: #3e4140;
-}
-
-#transport .controls {
-  padding-left: 40px;
-}
-
-#transport .controls button {
-  padding: 10px;
-  color: #ccc;
-  background: #777;
-  border: 1px solid #666;
-  border-bottom: 4px solid #666;
-  box-shadow: 0 2px 2px #333;
-  margin: 20px 5px 20px 0;
-  font-weight: 700;
-  width: 41%;
-  cursor: pointer;
-  margin-right: 3px;
-}
-
-#transport .controls button#play {
-  margin-right: 7px;
-}
-
-#transport .controls button.on {
-  border-bottom: 4px solid orange;
-}
-
 .fader-container {
-  margin: 20px 10px;
-  padding-top: 15px;
+  margin: 0 2px;
+  padding-top: 0;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .fader-container.master {
-  margin-top: 445px;
+  margin-top: 0;
 }
 
-.fader-container.master .fader {
+.fader-container.master .fader-track,
+.fader-container.master .channel-notches {
+  transform: translateX(10px);
 }
 
 .fader-container .fader-track {
@@ -316,17 +310,17 @@ h1 span {
   box-shadow: inset 1px 1px 7px 1px rgba(0, 0, 0, 0.5);
   text-align: center;
   border-radius: 5px;
-  font-size: 10px;
+  font-size: 9px;
   padding: 5px 2px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   overflow: hidden;
 }
 
 .fader-container .fader-no {
   text-align: center;
   color: #ccc;
-  margin-bottom: 35px;
-  font-size: 20px;
+  margin-bottom: 40px;
+  font-size: 18px;
 }
 
 .fader-container .fader {
@@ -474,19 +468,23 @@ h1 span {
 
 .dial-container {
   position: relative;
+  width: 100%;
 }
 
 .dial-container p {
   color: #ccc;
   font-size: 7px;
   position: absolute;
-  left: 7%;
+  left: 2px;
+  top: 0;
+  z-index: 1;
 }
 
 .channel-notches {
   position: absolute;
-  top: 110px;
-  left: 7%;
+  top: 56px;
+  left: 50%;
+  margin-left: -30px;
 }
 
 .channel-notches .channel-notch {
@@ -508,109 +506,6 @@ h1 span {
 
 .channel-notch.zeroed:after {
   padding-left: 3px;
-}
-
-.master-channel .channel-notches {
-  top: 68px;
-}
-
-#display {
-  background: #222;
-  padding: 10px;
-  border-radius: 10px;
-  width: 72%;
-  margin: 10px 0 0 40px;
-}
-
-#display #time-secs,
-#display #time-milli,
-#display #time-min,
-#display span {
-  float: left;
-  font-family: "digi";
-  font-size: 40px;
-  color: #0bbf0b;
-}
-
-.clear {
-  clear: left;
-}
-
-#hints {
-  position: absolute;
-  left: -25px;
-  top: -10px;
-  display: none;
-}
-
-#hints li {
-  list-style: none;
-}
-
-#hints li span {
-  color: #000;
-  height: 12px;
-  font-size: 11px;
-  padding-top: 0;
-  width: 8px;
-  cursor: pointer;
-  padding-left: 4px;
-  background: #dfd8b0;
-  font-weight: 700;
-  margin: 20px 0 5px;
-  display: block;
-  border: 2px solid #ccc;
-  border-radius: 15px;
-}
-
-#hints div {
-  display: none;
-  background: #dfd8b0;
-  width: 400px;
-  padding: 10px;
-  border-radius: 10px;
-  z-index: 3;
-  position: relative;
-}
-
-#hints div p {
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-#hints #info-highshelf {
-  position: absolute;
-  top: 42px;
-}
-
-#hints #info-peaking {
-  position: absolute;
-  top: 102px;
-}
-
-#hints #info-lowshelf {
-  position: absolute;
-  top: 212px;
-}
-
-#hints #info-pan {
-  position: absolute;
-  top: 272px;
-}
-
-#hints #info-solo {
-  position: absolute;
-  top: 342px;
-}
-
-#hints #info-mute {
-  position: absolute;
-  top: 402px;
-}
-
-#hints #info-fader {
-  position: absolute;
-  top: 562px;
 }
 
 .external-url {

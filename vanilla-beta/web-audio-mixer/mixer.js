@@ -5,43 +5,32 @@
    * A rewrite using React could be beneficial...
    */
 
-  function loadBuffer(source, context, fn) {
-    var request = new XMLHttpRequest();
-    request.open("GET", "audio/" + source, true);
-    //xhr2 - http://www.html5rocks.com/en/tutorials/file/xhr2/
-    request.responseType = "arraybuffer";
-    request.onload = function () {
-      // Asynchronously decode the audio file data in request.response
-      context.decodeAudioData(
-        request.response,
-        function (buff) {
-          buffer = buff;
-          fn(buffer);
-        },
-        function (error) {
-          console.log(error);
-        },
-      );
-    };
-    request.send();
-  }
+  const unitInterface = window.queryUnitInterface?.("wafer-v01");
+  // if (!unitInterface) {
+  //   throw new Error("incompatible environment");
+  // }
+  const audioContext = unitInterface?.audioContext ?? new AudioContext();
+  const ch1Input =
+    unitInterface?.createAdditionalAudioInputNode("ch1") ??
+    audioContext.createGain();
+  const ch2Input =
+    unitInterface?.createAdditionalAudioInputNode("ch2") ??
+    audioContext.createGain();
+  const ch3Input =
+    unitInterface?.createAdditionalAudioInputNode("ch3") ??
+    audioContext.createGain();
+  const ch4Input =
+    unitInterface?.createAdditionalAudioInputNode("ch4") ??
+    audioContext.createGain();
+  const masterOutput =
+    unitInterface?.audioOutputNode ?? audioContext.destination;
 
-  function audioCtx() {
-    var audioCtx =
-      window.AudioContext ||
-      window.webkitAudioContext ||
-      window.mozAudioContext ||
-      window.oAudioContext ||
-      window.msAudioContext;
-    if (audioCtx) {
-      return new audioCtx();
-    } else {
-      alert(
-        "Web Audio not supported in this browser. Please use a modern browser such as Chrome or Firefox",
-      );
-      return;
-    }
-  }
+  const channelInputs = [
+    { input: ch1Input, name: "CH 1" },
+    { input: ch2Input, name: "CH 2" },
+    { input: ch3Input, name: "CH 3" },
+    { input: ch4Input, name: "CH 4" },
+  ];
 
   function Filter(ctx, type, frequency, gain, q) {
     var filter = ctx.createBiquadFilter();
@@ -68,7 +57,10 @@
         text +
         "</div></div>",
     );
-    channel.append(button);
+    var target = channel.children(".channel-left").length
+      ? channel.children(".channel-left")
+      : channel;
+    target.append(button);
     button.on("click", function () {
       var channelNo = $(this).parents(".channel").index();
       $(this).trigger("focused", channelNo);
@@ -76,15 +68,18 @@
     return button;
   }
 
-  function Fader(channel, count, className) {
+  function Fader(channel, count, className, title) {
     var fader = $(
       '<div class="fader-container ' +
         className +
         '"><div class="channel-notches"><div class="channel-notch"></div><div class="channel-notch"></div><div class="channel-notch zeroed">0</div><div class="channel-notch"></div><div class="channel-notch"></div><div class="channel-notch"></div><div class="channel-notch"></div><div class="channel-notch"></div><div class="channel-notch"></div><div class="channel-notch"></div></div><div class="fader-no">' +
-        count +
+        (title ? title : `CH ${count + 1}`) +
         '</div><div class="fader-track"><div class="fader"><div></div></div></div></div>',
     );
-    channel.append(fader);
+    var target = channel.children(".channel-right").length
+      ? channel.children(".channel-right")
+      : channel;
+    target.append(fader);
     $(fader)
       .find(".fader")
       .on("mousedown", function (e) {
@@ -115,13 +110,15 @@
     return fader;
   }
 
-  /* I need better trigonometry */
   function RotaryKnob(channel, label, className) {
     var knobTemplate = $(rotaryKnobTemplate);
     if (className) {
       knobTemplate.find(".dial").addClass(className);
     }
-    channel.append(knobTemplate);
+    var target = channel.children(".channel-left").length
+      ? channel.children(".channel-left")
+      : channel;
+    target.append(knobTemplate);
     var notches = $(knobTemplate).find(".notches");
     $(knobTemplate).prepend("<p>" + label + "</p>");
     var degree = 0;
@@ -137,157 +134,65 @@
       }
       degree = degree + 24;
     }
-    $(knobTemplate)
-      .find(".dial")
-      .on("mousedown", function (e) {
-        var el = $(this),
-          offset = el.offset(),
-          center_x,
-          center_y,
-          mouse_x,
-          radians,
-          degree,
-          degreeRatio;
-        $(document).mousemove(function (evt) {
-          center_x = offset.left + el.width() / 2;
-          center_y = offset.top + el.height() / 2;
-          mouse_x = evt.pageX;
-          var mouse_y = evt.pageY;
-          radians = Math.atan2(mouse_x - center_x, mouse_y - center_y);
-          degree = radians * (180 / Math.PI) * -1;
-          if (degree < 0) {
-            degree = degree + 360;
-          }
-          if (degree >= 50 && degree <= 310) {
-            el.css("-moz-transform", "rotate(" + degree + "deg)");
-            el.css("-webkit-transform", "rotate(" + degree + "deg)");
-            degreeRatio = (degree - 180) / 4;
-            el.trigger("change", degreeRatio);
-          }
+    var dial = $(knobTemplate).find(".dial");
+    dial.data("degree", 180);
+    dial.on("mousedown", function (e) {
+      e.preventDefault();
+      var el = $(this),
+        startY = e.pageY,
+        startDegree = el.data("degree") || 180,
+        sensitivity = 2.4;
+      function onMove(evt) {
+        // Drag up = +, drag down = -
+        var nextDegree = startDegree - (evt.pageY - startY) * sensitivity;
+        if (nextDegree < 50) nextDegree = 50;
+        if (nextDegree > 310) nextDegree = 310;
+        el.data("degree", nextDegree);
+        el.css({
+          "-moz-transform": "rotate(" + nextDegree + "deg)",
+          "-webkit-transform": "rotate(" + nextDegree + "deg)",
+          transform: "rotate(" + nextDegree + "deg)",
         });
-        $(document).on("mouseup", function () {
-          $(document).off("mousemove");
-        });
+        el.trigger("change", (nextDegree - 180) / 4);
+      }
+      function onUp() {
+        $(document).off("mousemove", onMove);
+        $(document).off("mouseup", onUp);
+      }
+      $(document).on("mousemove", onMove);
+      $(document).on("mouseup", onUp);
+    });
+    dial.on("dblclick", function () {
+      $(this).data("degree", 180);
+      $(this).css({
+        "-moz-transform": "rotate(180deg)",
+        "-webkit-transform": "rotate(180deg)",
+        transform: "rotate(180deg)",
       });
-    $(knobTemplate)
-      .find(".dial")
-      .on("dblclick", function () {
-        $(this).css({
-          "-webkit-transform": "rotate(180deg)",
-        });
-        $(this).trigger("change", 0);
-      });
+      $(this).trigger("change", 0);
+    });
     return knobTemplate;
   }
 
-  function Timer() {
-    this.offset;
-    this.clock = 0;
-    this.interval = 0;
-  }
-
-  Timer.prototype.start = function () {
-    if (!this.interval) {
-      this.offset = Date.now();
-      this.interval = setInterval(this.update.bind(this), 1);
-    }
-  };
-
-  Timer.prototype.stop = function () {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = null;
-    }
-  };
-
-  Timer.prototype.reset = function () {
-    this.clock = 0;
-    this.render(0);
-  };
-
-  Timer.prototype.update = function () {
-    this.clock += this.delta();
-    this.render();
-  };
-
-  Timer.prototype.render = function () {
-    var curr = new Date(this.clock);
-    var secs = this.pad(curr.getSeconds());
-    var millis = this.pad(((curr.getMilliseconds() / 10) % 100).toFixed());
-    var mins = this.pad(curr.getMinutes());
-    $("#time-milli").text(millis);
-    $("#time-min").text(mins);
-    $("#time-secs").text(secs);
-  };
-
-  Timer.prototype.pad = function (num) {
-    if (num < 10) {
-      return "0" + num.toString();
-    }
-    return num;
-  };
-
-  Timer.prototype.delta = function () {
-    var now = Date.now(),
-      d = now - this.offset;
-    this.offset = now;
-    return d;
-  };
-
   function Daw() {
-    var self = this;
-    this.ctx = audioCtx();
-    this.tracks = [];
-    this.buffered = 0;
-    this.bufferTracks(function () {
-      self.mixer = new Mixer(self.ctx, self.tracks);
-      self.hideLoader();
-      self.showMixer();
-      $("#play").click();
-      self.initHints();
-    });
+    this.ctx = audioContext;
+    this.mixer = new Mixer(this.ctx, channelInputs);
+    this.hideLoader();
+    this.showMixer();
+    this.initHints();
   }
 
   Daw.prototype.showMixer = function () {
-    $("#mixer").show();
+    $("#mixer").addClass("is-visible");
   };
 
   Daw.prototype.hideLoader = function () {
     $("#loader").hide();
   };
 
-  Daw.prototype.bufferTracks = function (cb) {
-    var self = this,
-      source;
-    if (cb) this.cb = cb;
-    this.populateLoader();
-    loadBuffer(sources[this.buffered], this.ctx, function (buffer) {
-      self.updateLoader(self.buffered);
-      self.tracks.push({
-        buffer: buffer,
-        name: sources[self.buffered],
-      });
-      self.buffered++;
-      if (self.tracks.length === sources.length) {
-        self.cb();
-      } else {
-        self.bufferTracks();
-      }
-    });
-  };
-
-  Daw.prototype.populateLoader = function (current) {
-    $("#loader span.total").text(sources.length);
-    $("#loader").show();
-  };
-
-  Daw.prototype.updateLoader = function (current) {
-    $("#loader span.current").text(current + 1);
-  };
-
   Daw.prototype.initHints = function () {
     var hintsClone = $("#hints").clone();
-    $("#mixer").prepend(hintsClone).show();
+    $("#mixer").prepend(hintsClone);
     hintsClone.show();
     hintsClone.find("li").hover(
       function () {
@@ -301,114 +206,23 @@
 
   /* Mixer based on Yamaha's N12 */
   function Mixer(ctx, tracks) {
-    var track,
-      trackName,
-      trackBuffer,
-      count = 0,
-      rawBuffer;
     this.soloed = 0;
     this.channels = [];
     this.el = $("#mixer");
     this.ctx = ctx;
-    //hardcode duration for time being as the tracks are longer than the song is audible
-    //Can't be bothered to open pro tools and trim the mp3s
-    this.duration = 200;
     this.tracks = tracks;
-    self.playingBack = false;
     this.createMasterChannel();
+    this.masterGain.connect(masterOutput);
     for (var i = 0; i < tracks.length; ++i) {
-      var buffSource;
-      track = tracks[i];
-      rawBuffer = track.buffer;
-      trackName = track.name;
-      buffSource = this.createBufferSource(rawBuffer);
-      this.updateDuration(buffSource.buffer.duration * 1000, trackName);
       this.channels.push(
-        new Channel(rawBuffer, buffSource, trackName, this, ctx, i),
+        new Channel(tracks[i].input, tracks[i].name, this, ctx, i),
       );
     }
-    this.createTransport();
   }
-
-  Mixer.prototype.createBufferSource = function (buffer) {
-    var buff = this.ctx.createBufferSource();
-    buff.buffer = buffer;
-    return buff;
-  };
-
-  Mixer.prototype.createBuffers = function (p) {
-    for (var i = 0; i < this.channels.length; ++i) {
-      this.channels[i].track = this.createBufferSource(
-        this.channels[i].rawBuffer,
-      );
-    }
-  };
-
-  Mixer.prototype.clearBuffers = function (playing) {
-    for (var i = 0; i < this.channels.length; ++i) {
-      if (playing && this.channels[i].track) {
-        this.channels[i].track.stop(0);
-      }
-      this.channels[i].track = null;
-    }
-  };
-
-  Mixer.prototype.createTransport = function () {
-    var self = this;
-    this.elapsed = 0;
-    this.offset = 0;
-    this.start = 0;
-    this.timer = new Timer();
-    $("#mixer").append(
-      '<div id="transport"><h1><span>&#9835; Web Audio</span> mixer</h1><div id="display"><div id="time-min">00</div><span>:</span><div id="time-secs">00</div><span>:</span><div id="time-milli">00</div><div class="clear"></div></div><div class="controls"><button id="play">&#9658;</button><button id="pause">||</button></div></div>',
-    );
-    $("#play").on("click", function () {
-      var el = $(this);
-      $("#transport .controls button").removeClass("on");
-      el.addClass("on");
-      if (self.elapsed >= self.duration) {
-        self.offset = self.start = self.elapsed = 0;
-        el.removeClass("on");
-      }
-      if (!self.playingBack) {
-        self.createBuffers();
-        self.playingBack = true;
-        self.playing = setInterval(function () {
-          self.elapsed += 100;
-          if (self.elapsed >= self.duration) {
-            el.removeClass("on");
-            self.playingBack = false;
-            self.clearBuffers(true);
-            clearInterval(self.playing);
-            self.offset = self.start = self.elapsed = 0;
-          }
-        }, 100);
-        self.start = self.ctx.currentTime;
-        self.timer.start();
-        for (var i = 0; i < self.channels.length; ++i) {
-          self.channels[i].connect();
-          self.channels[i].track.start(0, self.offset);
-        }
-      }
-    });
-    $("#pause").on("click", function () {
-      self.timer.stop();
-      $("#transport .controls button").removeClass("on");
-      $(this).addClass("on");
-      self.playingBack = false;
-      self.clearBuffers(true);
-      clearInterval(self.playing);
-      self.offset += self.ctx.currentTime - self.start;
-    });
-  };
-
-  Mixer.prototype.updateDuration = function (duration, t) {
-    if (duration > this.duration) this.duration = duration;
-  };
 
   Mixer.prototype.createMasterChannel = function () {
     var masterChannel = $(channelTemplate),
-      masterFader = new Fader(masterChannel, "&nbsp;", "master"),
+      masterFader = new Fader(masterChannel, "&nbsp;", "master", "MASTER"),
       oldMin = 285,
       oldMax = 0,
       newMin = 0,
@@ -426,32 +240,32 @@
     });
   };
 
-  function Channel(rawBuffer, track, trackName, mixer, ctx, count) {
+  Mixer.prototype.disconnect = function () {
+    for (var i = 0; i < this.channels.length; ++i) {
+      this.channels[i].disconnect();
+    }
+    if (this.masterGain) {
+      this.masterGain.disconnect();
+    }
+  };
+
+  function Channel(input, trackName, mixer, ctx, count) {
     this.count = count;
     this.mixer = mixer;
     this.currGain = 1;
     this.el = $(channelTemplate);
-    this.track = track;
-    this.rawBuffer = rawBuffer;
+    this.input = input;
     this.ctx = ctx;
     this.on = true;
     this.soloed = false;
     this.trackName = trackName;
-    this.createChannelFilters(this.el, track, ctx);
-    this.createChannelPanner(this.el, track, ctx);
-    this.createChannelFader(this.el, track, ctx);
+    this.createChannelFilters();
+    this.createChannelPanner();
+    this.createChannelFader();
     this.connect();
     this.createChannelControls();
-    this.createChannelLabel();
     this.el.insertBefore(this.mixer.el.find(".master-channel"));
   }
-
-  Channel.prototype.createChannelLabel = function () {
-    var trackName = this.trackName.replace(".mp3", "").replace(/_/g, " ");
-    this.el
-      .find(".fader-container")
-      .prepend('<p class="label">' + trackName + "</p>");
-  };
 
   Channel.prototype.enableDisableChannels = function () {
     var i;
@@ -497,7 +311,10 @@
     });
     this.pannerControl = new RotaryKnob(this.el, "PAN", "panner");
     this.pannerControl.on("change", function (e, val) {
-      self.panner.pan.value = val / 31;
+      var pan = val / 31;
+      if (pan < -1) pan = -1;
+      if (pan > 1) pan = 1;
+      self.panner.pan.value = pan;
     });
     this.soloControl = new Button(this.el, "solo", undefined, "SOLO");
     this.soloControl.on("focused", function (e, val) {
@@ -537,27 +354,36 @@
   };
 
   Channel.prototype.connect = function () {
-    this.track.connect(this.highPassFilter);
+    this.input.connect(this.highPassFilter);
     this.highPassFilter.connect(this.lowShelfFilter);
     this.lowShelfFilter.connect(this.highShelfFilter);
     this.highShelfFilter.connect(this.midFilter);
     this.midFilter.connect(this.panner);
     this.panner.connect(this.gain);
     this.gain.connect(this.mixer.masterGain);
-    this.mixer.masterGain.connect(this.ctx.destination);
   };
 
-  Channel.prototype.createChannelPanner = function (channel, track, ctx) {
+  Channel.prototype.disconnect = function () {
+    if (this.input) this.input.disconnect();
+    if (this.highPassFilter) this.highPassFilter.disconnect();
+    if (this.lowShelfFilter) this.lowShelfFilter.disconnect();
+    if (this.highShelfFilter) this.highShelfFilter.disconnect();
+    if (this.midFilter) this.midFilter.disconnect();
+    if (this.panner) this.panner.disconnect();
+    if (this.gain) this.gain.disconnect();
+  };
+
+  Channel.prototype.createChannelPanner = function () {
     this.panner = this.ctx.createStereoPanner();
     this.panner.pan.value = 0;
   };
 
-  Channel.prototype.createChannelFader = function (channel, track, ctx) {
+  Channel.prototype.createChannelFader = function () {
     this.gain = this.ctx.createGain();
     this.gain.gain.value = 1.0;
   };
 
-  Channel.prototype.createChannelFilters = function (channel, track, ctx) {
+  Channel.prototype.createChannelFilters = function () {
     this.highPassFilter = Filter(this.ctx, "highpass", 80, 0);
     this.lowShelfFilter = Filter(this.ctx, "lowshelf", 90, 0);
     this.highShelfFilter = Filter(this.ctx, "highshelf", 10000, 0);
@@ -565,26 +391,24 @@
   };
 
   function init() {
-    new Daw();
+    var daw = new Daw();
+
+    unitInterface?.completeSetup({
+      unitAspects: {
+        unitType: "effect",
+        outputs: ["audio"],
+        inputs: [],
+        viewSize: [852, 464],
+      },
+      cleanup() {
+        daw.mixer.disconnect();
+      },
+    });
   }
 
-  //These sources could eventually be loaded from the server
-  var sources = [
-    //'Vox.mp3', 'Strings.mp3','Acous_Gtr.mp3','Bass_&_Drums.mp3'
-    "Acous_Gtr.mp3",
-    "Strings.mp3",
-    "Bass_&_Drums.mp3",
-    "Mellotron.mp3",
-    "Bck_vox.mp3",
-    "Stylophone.mp3",
-    "Vox.mp3",
-    "Flute_&_Cello.mp3",
-  ];
-
-  var channelTemplate = '<div class="channel"></div>';
+  var channelTemplate =
+    '<div class="channel"><div class="channel-left"></div><div class="channel-right"></div></div>';
   var rotaryKnobTemplate =
     '<div class="dial-container"><div class="notches"></div><div class="dial"><div class="dial-inner"></div></div></div>';
-  var transportTemplate =
-    '<div id="transport"><h1><span>&#9835; Web Audio</span> mixer</h1><div id="display"><div id="time-min">00</div><span>:</span><div id="time-secs">00</div><span>:</span><div id="time-milli">00</div><div class="clear"></div></div><div class="controls"><button id="play">&#9658;</button><button id="pause">||</button></div></div>';
   window.addEventListener("load", init, false);
 })();
