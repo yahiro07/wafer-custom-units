@@ -5,6 +5,9 @@ import { Clock } from "../models/clock";
 import { Sequence } from "../models/sequence";
 import { StepCollection } from "../collections/steps";
 import { StepView } from "./step";
+
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+
 export const SequenceView = Backbone.View.extend({
   className: "sequence",
 
@@ -16,7 +19,7 @@ export const SequenceView = Backbone.View.extend({
   initialize: function () {
     var self = this;
     this.setNoteMapper();
-    this.stepCount = 1;
+    this.stepIndex = 0;
     this.clock = new Clock();
     this.listenTo(this.clock, "step", this.stepWasTriggered);
     this.stepCollection = new StepCollection();
@@ -24,9 +27,36 @@ export const SequenceView = Backbone.View.extend({
       self.createAndRenderStepViews();
     });
     this.model = new Sequence({
-      tempo: 100,
+      tempo: 120,
       rootPitch: "A4",
       stepCollection: this.stepCollection,
+    });
+    unitInterface?.completeSetup({
+      unitAspects: {
+        unitType: "sequencer",
+        outputs: ["note"],
+        viewSize: [600, 414],
+      },
+      clockHandlers: {
+        start() {
+          self.$(".play").addClass("started");
+        },
+        stop() {
+          self.$(".play").removeClass("started");
+        },
+        processStep(stepIndex, time, unitDuration) {
+          stepIndex %= 16;
+          if (stepIndex % 2 === 0) {
+            self.triggerStepInternal(stepIndex >> 1, time, unitDuration * 2);
+          }
+        },
+      },
+      hostCallbacks: {
+        setBpm(bpm) {
+          self.model.set("tempo", bpm);
+          self.clock.tempo = bpm;
+        },
+      },
     });
   },
 
@@ -61,40 +91,47 @@ export const SequenceView = Backbone.View.extend({
   },
 
   start: function (e) {
-    console.log("SequenceView::start()");
+    // console.log("SequenceView::start()");
+    this.stepIndex = 0;
     this.clock.start();
     $(e.currentTarget).addClass("started");
   },
 
   stop: function () {
-    console.log("SequenceView::stop()");
+    // console.log("SequenceView::stop()");
     this.clock.stop();
     this.$(".play").removeClass("started");
   },
 
-  triggerStep: function () {
-    var self = this;
-    if (this.stepCount - 1 == this.stepCollection.length) {
-      this.stepCount = 1;
-    }
-
-    var currentStepView = this._stepViews[this.stepCount - 1];
+  triggerStepInternal: function (si, time, duration) {
+    var currentStepView = this._stepViews[si];
     if (currentStepView.isActive() === true) {
       // TODO: would be cool if by frequency...
       // var HALF_STEP_DELTA = Math.pow(2, 1/12);
 
       var pitchDelta = currentStepView.model.get("delta");
       var currentNote = this.noteMapper[pitchDelta];
-      console.log(currentNote.freq);
-
-      this.model.createAndTriggerOscillator(currentNote.freq, 0.1);
+      if (unitInterface) {
+        time = Math.max(time, unitInterface.audioContext.currentTime);
+        const noteNumber =
+          Math.round(12 * Math.log2(currentNote.freq / 440)) + 69;
+        unitInterface.noteOutputPort.noteOn(noteNumber, time);
+        unitInterface.noteOutputPort.noteOff(noteNumber, time + duration);
+      } else {
+        this.model.createAndTriggerOscillator(currentNote.freq, 0.1);
+      }
     }
-    this.flashLed();
-    this.stepCount++;
+    this._stepViews[si].flashLed();
   },
 
-  flashLed: function () {
-    this._stepViews[this.stepCount - 1].flashLed();
+  triggerStep: function () {
+    var self = this;
+    if (this.stepIndex == this.stepCollection.length) {
+      this.stepIndex = 0;
+    }
+    const durationSec = 60 / this.model.get("tempo") / 2;
+    this.triggerStepInternal(this.stepIndex, 0, durationSec);
+    this.stepIndex++;
   },
 
   setNoteMapper: function () {

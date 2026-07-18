@@ -5,17 +5,18 @@ export const Clock = Backbone.Model.extend({
     // console.log('Clock::initialize()');
     this.isRunning = false;
     this.engine = 0; // setTimeout id
-    this.tempo = 200; // TODO: convert to BPM from milliseconds
+    this.tempo = 120;
     this.count = 0; // counts number of steps
   },
 
   step: function () {
     var self = this;
     this.count += 1;
+    const intervalMs = 60000 / this.tempo / 2;
     this.engine = setTimeout(function () {
       self.trigger("step", { stepNumber: self.count });
       self.step();
-    }, self.tempo);
+    }, intervalMs);
   },
 
   start: function () {
