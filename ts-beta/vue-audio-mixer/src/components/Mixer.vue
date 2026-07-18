@@ -12,33 +12,33 @@
       <div class="vue-audio-mixer-channel-strip" ref="channelstrip">
         <div>
 
-          <MixerChannel v-show="!track.hidden" v-for="(track, index) in tracks" :title="track.title"
-            :defaultPan="track.pan" :hidden="track.hidden" :defaultGain="track.gain" :defaultMuted="track.muted"
-            :context="context" :output="gainNode" :url="track.url" :key="index" :solodTracks="solodTracks"
-            :trackIndex="index" @panChange="changePan" @gainChange="changeGain" @muteChange="changeMute"
-            @soloChange="changeSolo" :mixerVars="mixerVars" />
+          <MixerChannel v-show="!track.hidden" v-for="(track, index) in tracks" :channelId="track.channelId"
+            :title="track.channelId.toUpperCase()" :defaultPan="track.pan" :hidden="track.hidden"
+            :defaultGain="track.gain" :defaultMuted="track.muted" :context="context" :output="gainNode"
+            :key="track.channelId" :solodTracks="solodTracks" :trackIndex="index" @panChange="changePan"
+            @gainChange="changeGain" @muteChange="changeMute" @soloChange="changeSolo" :mixerVars="mixerVars" />
 
           <!-- master channel -->
-          <Channel title="Master" :defaultPan="masterPanValue" :defaultGain="masterGainValue"
+          <Channel title="MASTER" :defaultPan="masterPanValue" :defaultGain="masterGainValue"
             :defaultMuted="masterMuted" @muteChange="changeMasterMute" @gainChange="changeMasterGain"
             @panChange="changeMasterPan" :leftAnalyser="leftAnalyser" :rightAnalyser="rightAnalyser"
             :scriptProcessorNode="scriptProcessorNode" :showMute="false" :isMaster="true" :mixerVars="mixerVars" />
         </div>
 
-        <ProgressBar :recording="recording" :progressPercent="progressPercent" @percent="playFromPercent"
-          :mixerVars="mixerVars" :tracks="tracks" />
-        <div class="time_and_transport">
+        <!-- <ProgressBar :recording="recording" :progressPercent="progressPercent" @percent="playFromPercent"
+          :mixerVars="mixerVars" :tracks="tracks" /> -->
+        <!-- <div class="time_and_transport">
           <TimeDisplay :progressTime="progress" :totalTime="totalDuration" :mixerVars="mixerVars" />
           <TransportButtons :playing="playing" @stop="stop" @togglePlay="togglePlay" :mixerVars="mixerVars" />
-        </div>
+        </div> -->
 
 
       </div>
 
-      <div class="text-center">
+      <!-- <div class="text-center">
         <button @click="saveAudioMix" class="vue-audio-mixer-download-mix" :class="{ 'recording': recording }">Record and
           download mix</button>
-      </div>
+      </div> -->
 
 
     </div>
@@ -57,8 +57,8 @@ import ProgressBar from './ProgressBar.vue';
 import TransportButtons from './TransportButtons.vue';
 import Loader from './Loader.vue';
 import EventBus from './../event-bus';
-import variables from '../scss/includes/_variables.scss';
-import Recorder from './../recorder';
+import { unitWrapper } from '../unit-wrapper';
+// import Recorder from './../recorder';
 
 
 
@@ -129,16 +129,11 @@ export default {
 
     this.checkConfig();
 
-
-    var AudioContext = window.AudioContext // Default
-      || window.webkitAudioContext // Safari and old versions of Chrome
-      || false;
-
-    this.context = new AudioContext;
+    this.context = unitWrapper.getAudioContext();
     this.gainNode = this.context.createGain();
-    this.gainNode.connect(this.context.destination);
     this.scriptProcessorNode = this.context.createScriptProcessor(2048, 1, 1);
     this.setupAudioNodes();
+    unitWrapper.addCleanupCallback(() => this.disconnectMasterNodes());
     EventBus.$on(this.mixerVars.instance_id + 'track_loaded', this.trackLoaded);
     EventBus.$on(this.mixerVars.instance_id + 'stop', this.stopped);
     EventBus.$on(this.mixerVars.instance_id + 'play', this.started);
@@ -255,6 +250,7 @@ export default {
     },
 
     progressPercent() {
+      if (!this.totalDuration) return 0;
       return (100 / this.totalDuration) * (this.progress);
     },
 
@@ -504,6 +500,15 @@ export default {
 
     // Master Audio Nodes
 
+    disconnectMasterNodes() {
+      if (this.scriptProcessorNode) this.scriptProcessorNode.disconnect();
+      if (this.gainNode) this.gainNode.disconnect();
+      if (this.pannerNode) this.pannerNode.disconnect();
+      if (this.leftAnalyser) this.leftAnalyser.disconnect();
+      if (this.rightAnalyser) this.rightAnalyser.disconnect();
+      if (this.splitter) this.splitter.disconnect();
+    },
+
     setupAudioNodes() {
 
 
@@ -532,8 +537,7 @@ export default {
       this.pannerNode.connect(this.splitter);
       this.splitter.connect(this.leftAnalyser, 0, 0);
       this.splitter.connect(this.rightAnalyser, 1, 0);
-      // this.leftAnalyser.connect(this.scriptProcessorNode);
-      this.pannerNode.connect(this.context.destination);
+      this.pannerNode.connect(unitWrapper.getMasterOutputNode());
 
       // initial values
       this.changeMasterGain(this.masterGainValue);

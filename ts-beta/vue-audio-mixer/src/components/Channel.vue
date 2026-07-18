@@ -49,7 +49,7 @@
 
 import VueKnobControl from 'vue-knob-control'
 import EventBus from './../event-bus';
-import variables from '../scss/includes/_variables.scss';
+import variables from '../variables.js';
 
 import Slider from './Slider.vue';
 

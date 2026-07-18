@@ -1,16 +1,16 @@
 <template>
 
-  <div>
+  <div class="app">
     <div style="text-align: center;">
 
-      <div style="position:relative; display: inline-block; ">
+      <div style="position:relative;">
         <vue-audio-mixer :config="config" size="medium" theme="dark" @loaded="loadedChange" @input="setConfig"
           :showPan="true" :showTotalTime="true" />
       </div>
 
     </div>
 
-    <pre v-html="syntaxHighlight(newConfig)"></pre>
+    <!-- <pre v-html="syntaxHighlight(newConfig)"></pre> -->
 
   </div>
 
@@ -19,8 +19,8 @@
 
 <script>
 
-import VueAudioMixer from '../src/components/Mixer.vue';
-import '../src/scss/main.scss';
+import VueAudioMixer from '../components/Mixer.vue';
+import '../scss/main.scss';
 
 export default {
   name: 'app',
@@ -35,50 +35,44 @@ export default {
       config: {
         "tracks": [
           {
-            "title": "Bass",
-            "url": "https://api.soundcloud.com/tracks/841840237/stream?client_id=ae1dadcc70f054f451de8c6358bcf396",
-            "pan": -30,
+            "channelId": "ch1",
+            "pan": 0,
             "gain": 1,
             "muted": false,
             "hidden": false
           },
           {
-            "title": "Flutes",
-            "url": "https://api.soundcloud.com/tracks/841840234/stream?client_id=ae1dadcc70f054f451de8c6358bcf396",
-            "pan": 81,
-            "gain": 1.08,
+            "channelId": "ch2",
+            "pan": 0,
+            "gain": 1,
             "muted": false,
             "hidden": false
           },
           {
-            "title": "Perc",
-            "url": "https://api.soundcloud.com/tracks/841840222/stream?client_id=ae1dadcc70f054f451de8c6358bcf396",
-            "pan": -49,
-            "gain": 0.85,
+            "channelId": "ch3",
+            "pan": 0,
+            "gain": 1,
             "muted": false,
             "hidden": false
           },
           {
-            "title": "Piano",
-            "url": "https://api.soundcloud.com/tracks/841840216/stream?client_id=ae1dadcc70f054f451de8c6358bcf396",
-            "pan": -60,
-            "gain": 0.6,
+            "channelId": "ch4",
+            "pan": 0,
+            "gain": 1,
             "muted": false,
             "hidden": false
           },
           {
-            "title": "Strings",
-            "url": "https://api.soundcloud.com/tracks/841840174/stream?client_id=ae1dadcc70f054f451de8c6358bcf396",
-            "pan": -49,
-            "gain": 0.85,
+            "channelId": "ch5",
+            "pan": 0,
+            "gain": 1,
             "muted": false,
             "hidden": false
           },
           {
-            "title": "Bass",
-            "url": "https://api.soundcloud.com/tracks/841840237/stream?client_id=ae1dadcc70f054f451de8c6358bcf396",
-            "pan": -30,
-            "gain": 0.5,
+            "channelId": "ch6",
+            "pan": 0,
+            "gain": 1,
             "muted": false,
             "hidden": false
           }
@@ -148,6 +142,13 @@ export default {
 </script>
 
 <style>
+.app {
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 pre {
   outline: 1px solid #ccc;
   padding: 5px;

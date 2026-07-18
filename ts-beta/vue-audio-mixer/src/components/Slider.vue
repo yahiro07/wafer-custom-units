@@ -13,7 +13,7 @@
 
 <script>
 
-import variables from '../scss/includes/_variables.scss';
+import variables from '../variables.js';
 
 export default {
   mixins: [],
@@ -116,16 +116,15 @@ export default {
       let target = this.$refs['vue-audio-mixer-slider'];
       let rect = target.getBoundingClientRect();
       let x = rect.bottom - e.clientY; //x position within the element.
-      let percent = (100 / this.trackHeight) * x;
-      percent = Math.round(percent);
 
+      // Map to 0–150 (matches formattedGain) in steps of 1, then to gain 0–1.5
+      let displayVal = Math.round((x / this.trackHeight) * 150);
+      if (displayVal > 150)
+        displayVal = 150;
+      if (displayVal < 0)
+        displayVal = 0;
 
-      if (percent > 100)
-        percent = 100;
-      if (percent < 0)
-        percent = 0;
-
-      this.inputVal = ((percent / 100) * 1.5).toFixed(1);
+      this.inputVal = (displayVal / 100).toFixed(2);
 
     },
 

@@ -10,13 +10,14 @@
 <script>
 import Channel from './Channel.vue'
 import EventBus from './../event-bus';
+import { unitWrapper } from '../unit-wrapper';
 
 export default {
   name: 'MixerChannel',
   props: [
+    'channelId',
     'title',
     'context',
-    'url',
     'output',
     'defaultPan',
     'defaultGain',
@@ -29,7 +30,7 @@ export default {
   components: { Channel },
   data: function () {
     return {
-      sourceNode: false,
+      channelInputNode: false,
       scriptProcessorNode: false,
       gainNode: false,
       pannerNode: false,
@@ -41,16 +42,8 @@ export default {
       rightAnalyser: false,
       rightBouncer: { average: 0, opacity: 1 },
       splitter: false,
-      ctx: false,
-      gradient: false,
-      buffer: false,
-      meterHeight: 400,
-      meterWidth: 10,
-      playFrom: false,
-      playing: false,
       gainValue: 0,
       pan: 0,
-      gain: 0.8,
       loaded: false,
       mutedBySolo: false,
       mutedByMute: false
@@ -75,14 +68,12 @@ export default {
     this.gainValue = this.defaultGain.toString();
 
     this.scriptProcessorNode = this.context.createScriptProcessor(2048, 1, 1);
-    EventBus.$on(this.mixerVars.instance_id + 'play', this.playSound);
-    EventBus.$on(this.mixerVars.instance_id + 'stop', this.stopSound);
-    this.loadSound();
+    this.setupAudioNodes();
+    unitWrapper.addCleanupCallback(() => this.disconnectAudioNodes());
   },
 
   beforeDestroy() {
-    EventBus.$off(this.mixerVars.instance_id + 'play', this.playSound);
-    EventBus.$off(this.mixerVars.instance_id + 'stop', this.stopSound);
+    this.disconnectAudioNodes();
   },
 
 
@@ -149,7 +140,8 @@ export default {
       //this.gain = gain;
 
       if (!this.muted) {
-        this.gainNode.gain.value = gain;
+        const currentTime = unitWrapper.getAudioContext().currentTime;
+        this.gainNode.gain.linearRampToValueAtTime(gain, currentTime + 0.01);
       }
 
       this.$emit('gainChange', { index: this.trackIndex, gain: gain });
@@ -171,84 +163,18 @@ export default {
       this.$emit('panChange', { index: this.trackIndex, pan: pan });
     },
 
-    // load the specified sound
-    loadSound() {
-      var request = new XMLHttpRequest();
-      request.onerror = (e) => {
-        EventBus.$emit("track_load_error", this.url);
-      };
-      request.open('GET', this.url, true);
-      request.responseType = 'arraybuffer';
-
-      // When loaded decode the data
-      request.onload = () => {
-        // decode the data
-        this.context.decodeAudioData(request.response, (buffer) => { // sound loaded
-          EventBus.$emit("pcm_data_loaded", { buffer: buffer, index: this.trackIndex });
-          // when the audio is decoded play the sound
-          this.buffer = buffer;
-          EventBus.$emit(this.mixerVars.instance_id + 'track_loaded', this.buffer.duration);
-          this.setupAudioNodes();
-
-        }, this.onError);
-      }
-      request.send();
+    disconnectAudioNodes() {
+      if (this.channelInputNode) this.channelInputNode.disconnect();
+      if (this.scriptProcessorNode) this.scriptProcessorNode.disconnect();
+      if (this.gainNode) this.gainNode.disconnect();
+      if (this.pannerNode) this.pannerNode.disconnect();
+      if (this.leftAnalyser) this.leftAnalyser.disconnect();
+      if (this.rightAnalyser) this.rightAnalyser.disconnect();
+      if (this.splitter) this.splitter.disconnect();
     },
-
-    playSound(playfrom) {
-
-      if (playfrom === undefined)
-        playfrom = 0;
-
-      this.setupAudioNodes();
-
-
-      this.sourceNode.start(0, playfrom / 1000);
-
-    },
-
-    stopSound() {
-      this.sourceNode.stop(0);
-    },
-
-    // log if an error occurs
-    onError(e) {
-      console.log(e);
-    },
-
-    getAverageVolume(array) {
-      var values = 0;
-      var average;
-
-      var length = array.length;
-
-      // get all the frequency amplitudes
-      for (var i = 0; i < length; i++) {
-        values += array[i];
-      }
-
-      average = values / length;
-      return average;
-    },
-
 
     setupAudioNodes() {
-
-
-
-      // create a buffer source node
-      this.sourceNode = this.context.createBufferSource();
-
-      this.sourceNode.buffer = this.buffer;
-
-
-
-
-      // this.sourceNode.loop = false; // false to stop looping
-      //  this.sourceNode.muted = false; 
-
-
-      // this.sourceNode.playbackRate.value = 1;
+      this.channelInputNode = unitWrapper.createChannelInputNode(this.channelId);
 
       // setup a analyzers
       this.leftAnalyser = this.context.createAnalyser();
@@ -259,8 +185,6 @@ export default {
       this.rightAnalyser.smoothingTimeConstant = 0.6;
       this.rightAnalyser.fftSize = 1024;
 
-
-
       // Create a gain node.
       this.gainNode = this.context.createGain();
 
@@ -268,28 +192,19 @@ export default {
       this.pannerNode = this.context.createPanner();
       this.pannerNode.panningModel = "equalpower";
 
-      // setup a javascript node
-
       // create splitter
       this.splitter = this.context.createChannelSplitter(2);
 
-
-
       // connect everything together
-      this.pannerNode.connect(this.splitter);
+      // channelInput -> gain -> pan -> output
+      //                          \-> splitter -> analysers
+      this.channelInputNode.connect(this.gainNode);
       this.gainNode.connect(this.pannerNode);
-      this.scriptProcessorNode.connect(this.gainNode);
-      this.sourceNode.connect(this.gainNode);
+      this.pannerNode.connect(this.splitter);
       this.splitter.connect(this.leftAnalyser, 0, 0);
       this.splitter.connect(this.rightAnalyser, 1, 0);
       this.pannerNode.connect(this.output);
-
-
-      //this.leftAnalyser.connect(this.scriptProcessorNode);
-
-
-      // initial values
-      // 
+      this.scriptProcessorNode.connect(this.gainNode);
 
       let mutedBySolo = this.mutedBySolo;
       this.mutedBySolo = false;
@@ -302,33 +217,8 @@ export default {
 
       this.changePan(this.pan);
 
-
-
-      this.sourceNode.onended = () => {
-        this.onended();
-      }
-
       this.loaded = true;
-
-    },
-
-
-    onended() {
-
-      // disconnect everything
-      this.scriptProcessorNode.disconnect();
-      this.sourceNode.disconnect();
-      this.gainNode.disconnect();
-      this.pannerNode.disconnect();
-      this.leftAnalyser.disconnect();
-      this.rightAnalyser.disconnect();
-      this.splitter.disconnect();
-
-      if (this.playFrom)
-        EventBus.$emit(this.mixerVars.instance_id + 'play', this.playFrom);
-
-      EventBus.$emit(this.mixerVars.instance_id + 'ended', this._uid);
-
+      EventBus.$emit(this.mixerVars.instance_id + 'track_loaded', 0);
     },
 
 
