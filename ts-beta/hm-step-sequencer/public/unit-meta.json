@@ -1,0 +1,13 @@
+{
+  "name": "hm-step-sequencer",
+  "unitType": "sequencer",
+  "outputSignalTypes": "note",
+  "protocol": "wafer-v01",
+  "unitTypesVersion": "0.0.1",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/heissmusik/step-sequencer",
+  "originalAuthor": "Frank Heiss",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wus-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}
