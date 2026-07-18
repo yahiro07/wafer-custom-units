@@ -1,4 +1,8 @@
-var StepView = Backbone.View.extend({
+import $ from "jquery";
+import _ from "underscore";
+import Backbone from "backbone";
+
+export const StepView = Backbone.View.extend({
   className: "step",
 
   events: {

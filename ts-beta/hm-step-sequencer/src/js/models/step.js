@@ -1,4 +1,6 @@
-var Step = Backbone.Model.extend({
+import Backbone from "backbone";
+
+export const Step = Backbone.Model.extend({
   defaults: {
     frequency: 440,
   },

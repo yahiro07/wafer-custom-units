@@ -1,4 +1,11 @@
-var SequenceView = Backbone.View.extend({
+import $ from "jquery";
+import _ from "underscore";
+import Backbone from "backbone";
+import { Clock } from "../models/clock";
+import { Sequence } from "../models/sequence";
+import { StepCollection } from "../collections/steps";
+import { StepView } from "./step";
+export const SequenceView = Backbone.View.extend({
   className: "sequence",
 
   events: {

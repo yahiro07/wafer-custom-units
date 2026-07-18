@@ -1,4 +1,6 @@
-var Clock = Backbone.Model.extend({
+import Backbone from "backbone";
+
+export const Clock = Backbone.Model.extend({
   initialize: function () {
     // console.log('Clock::initialize()');
     this.isRunning = false;

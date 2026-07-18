@@ -1,4 +1,6 @@
-var Sequence = Backbone.Model.extend({
+import Backbone from "backbone";
+
+export const Sequence = Backbone.Model.extend({
   initialize: function (attrs) {
     // console.log('Sequence::initialize()', attrs);
     this.context = this.getAudioContext();
