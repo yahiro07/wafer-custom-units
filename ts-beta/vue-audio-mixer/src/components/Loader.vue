@@ -1,7 +1,7 @@
 <template>
 
   <div class="vue-audio-mixer-loader">
-    <p class="vue-audio-mixer-loader-text">Loading... <span>{{percentLoaded}}</span>%</p>
+    <p class="vue-audio-mixer-loader-text">Loading... <span>{{ percentLoaded }}</span>%</p>
     <div class="vue-audio-mixer-loader-inner">
       <div></div>
       <div></div>
@@ -15,11 +15,11 @@
 export default {
   name: 'loader',
   props: [
-      'percentLoaded'
+    'percentLoaded'
   ],
-  data : function(){       
-      return {
-      };
+  data: function () {
+    return {
+    };
   }
 
 }

@@ -1,56 +1,48 @@
 <template>
 
-  <div class="vue-audio-mixer-channel" :class="{'with-panner':mixerVars.show_pan}">
+  <div class="vue-audio-mixer-channel" :class="{ 'with-panner': mixerVars.show_pan }">
 
-        <div class="vue-audio-mixer-channel-panner-container" :class="{'vue-audio-mixer-is-master':isMaster}">
+    <div class="vue-audio-mixer-channel-panner-container" :class="{ 'vue-audio-mixer-is-master': isMaster }">
 
-          <VueKnobControl
-          v-if="mixerVars.show_pan"
-          :min="-90"
-          :max="90"
-          :size="pannerSize"
-          :stroke-width="7"
-          v-model="pan"
-          class="vue-audio-mixer-channel-panner"
-          primaryColor="#c40303"
-          secondaryColor="#adadad"
-          :textColor="knobTextColour"
-        ></VueKnobControl>
-      </div>
+      <VueKnobControl v-if="mixerVars.show_pan" :min="-90" :max="90" :size="pannerSize" :stroke-width="7" v-model="pan"
+        class="vue-audio-mixer-channel-panner" primaryColor="#c40303" secondaryColor="#adadad"
+        :textColor="knobTextColour"></VueKnobControl>
+    </div>
 
 
-      <canvas :id="'canvas'+_uid"  width="25" :height="meterHeight" style="display: block;" class="vue-audio-mixer-channel-meter-canvas"></canvas>
+    <canvas :id="'canvas' + _uid" width="25" :height="meterHeight" style="display: block;"
+      class="vue-audio-mixer-channel-meter-canvas"></canvas>
 
-      <div class="slider_value">{{formattedGain}}</div>
+    <div class="slider_value">{{ formattedGain }}</div>
 
-      <Slider v-model="gain" v-on:input="changeGain" />
+    <Slider v-model="gain" v-on:input="changeGain" />
 
-      <div class="vue-audio-mixer-channel-mute-button" v-show="showMute">
-        <label>
-          <input v-model="mute" type="checkbox" />
-          <span class="vue-audio-mixer-channel-mute-button-label">M</span>
-        </label>
-      </div>
+    <div class="vue-audio-mixer-channel-mute-button" v-show="showMute">
+      <label>
+        <input v-model="mute" type="checkbox" />
+        <span class="vue-audio-mixer-channel-mute-button-label">M</span>
+      </label>
+    </div>
 
-      <div class="logo" v-if="isMaster && !showMute">
-      </div>
+    <div class="logo" v-if="isMaster && !showMute">
+    </div>
 
-      <div class="vue-audio-mixer-channel-solo-button" v-show="!isMaster">
-        <label>
-          <input v-model="soloModel" type="checkbox" />
-          <span class="vue-audio-mixer-channel-solo-button-label">S</span>
-        </label>
-      </div>
+    <div class="vue-audio-mixer-channel-solo-button" v-show="!isMaster">
+      <label>
+        <input v-model="soloModel" type="checkbox" />
+        <span class="vue-audio-mixer-channel-solo-button-label">S</span>
+      </label>
+    </div>
 
-    
 
-      <div class="vue-audio-mixer-channel-label"><label data-label="0"> {{title}}</label></div>
+
+    <div class="vue-audio-mixer-channel-label"><label data-label="0"> {{ title }}</label></div>
 
 
   </div>
 
 </template>
-  
+
 
 
 <script>
@@ -65,9 +57,9 @@ export default {
   name: 'Channel',
   props: [
     'index',
-    'trackIndex', 
+    'trackIndex',
     'title',
-    'context', 
+    'context',
     'url',
     'output',
     'leftAnalyser',
@@ -81,124 +73,119 @@ export default {
     'mixerVars',
     'solodTracks'
   ],
-  components:{
+  components: {
     VueKnobControl,
     Slider
   },
-  data : function(){       
-      return {
-          leftBouncer : {average:0,opacity:1},
-          rightBouncer: {average:0,opacity:1},
-          gradient    : false,
-          ctx         : false,
-          gain        : 0.8,
-          pan         : 0,
-          soloModel   : false,
-          mute        : false,
-          meterHeight : parseInt(variables.meterHeight),
-          titleModel  : '',
-          loaded      : false
-      };
+  data: function () {
+    return {
+      leftBouncer: { average: 0, opacity: 1 },
+      rightBouncer: { average: 0, opacity: 1 },
+      gradient: false,
+      ctx: false,
+      gain: 0.8,
+      pan: 0,
+      soloModel: false,
+      mute: false,
+      meterHeight: parseInt(variables.meterHeight),
+      titleModel: '',
+      loaded: false
+    };
   },
 
-  computed:{
+  computed: {
 
-    knobTextColour()
-    {
+    knobTextColour() {
 
-      if(this.mixerVars.theme_colour == 'default'){
+      if (this.mixerVars.theme_colour == 'default') {
         return variables.knobTextColourDefault;
       }
 
-      if(this.mixerVars.theme_colour == 'dark'){
+      if (this.mixerVars.theme_colour == 'dark') {
         return variables.knobTextColourDark;
       }
 
     },
 
-    pannerSize()
-    {
-      return this.mixerVars.theme_size == 'Small' ? 30 :40; 
+    pannerSize() {
+      return this.mixerVars.theme_size == 'Small' ? 30 : 40;
     },
 
-    meterWidth()
-    {
-      return parseInt(variables['meterWidth'+this.mixerVars.theme_size]);
-    },
-
-
-    meterWidthBetween()
-    {
-      return parseInt(variables['meterWidthBetween'+this.mixerVars.theme_size]);
+    meterWidth() {
+      return parseInt(variables['meterWidth' + this.mixerVars.theme_size]);
     },
 
 
-    formattedGain()
-    {
-      return this.pad(Math.round((this.gain*100)),3);
+    meterWidthBetween() {
+      return parseInt(variables['meterWidthBetween' + this.mixerVars.theme_size]);
+    },
+
+
+    formattedGain() {
+      return this.pad(Math.round((this.gain * 100)), 3);
     }
 
   },
 
-  watch:{
+  watch: {
 
-    pan: function(){
-        this.changePan();
+    pan: function () {
+      this.changePan();
     },
 
 
-    mute: function(){
-        this.muteChange();
+    mute: function () {
+      this.muteChange();
     },
 
-    
 
 
-    soloModel: function(newVal){
-        this.soloChange(this.trackIndex, newVal);
+
+    soloModel: function (newVal) {
+      this.soloChange(this.trackIndex, newVal);
     },
 
-    titleModel:function(){
+    titleModel: function () {
       this.titleChange();
     }
 
   },
 
-  created(){
-   // EventBus.$on('loaded',()=>{this.loaded = true});
-    this.titleModel = 'Track '+(this.trackIndex+1);
-    EventBus.$on(this.mixerVars.instance_id+'ended', this.ended);
+  created() {
+    // EventBus.$on('loaded',()=>{this.loaded = true});
+    this.titleModel = 'Track ' + (this.trackIndex + 1);
+    EventBus.$on(this.mixerVars.instance_id + 'ended', this.ended);
     this.scriptProcessorNode.onaudioprocess = () => {
       this.drawMeter();
     }
   },
 
   beforeDestroy() {
-    EventBus.$off(this.mixerVars.instance_id+'ended',this.ended);
+    EventBus.$off(this.mixerVars.instance_id + 'ended', this.ended);
   },
 
-  mounted(){
+  mounted() {
 
-      this.ctx = document.getElementById('canvas'+this._uid).getContext("2d");
-      this.gradient = this.ctx.createLinearGradient(0,0,0,400);
-      this.gradient.addColorStop(1,'#31e2fc');
-      this.gradient.addColorStop(0.75,'#38fedd');
-      this.gradient.addColorStop(0.25,'#38fedd');
-      this.gradient.addColorStop(0,'#31e0fc');
+    this.ctx = document.getElementById('canvas' + this._uid).getContext("2d");
+    this.gradient = this.ctx.createLinearGradient(0, 0, 0, 400);
+    this.gradient.addColorStop(1, '#31e2fc');
+    this.gradient.addColorStop(0.75, '#38fedd');
+    this.gradient.addColorStop(0.25, '#38fedd');
+    this.gradient.addColorStop(0, '#31e0fc');
 
-      this.pan = this.defaultPan === undefined ? 0 : this.defaultPan;
-      this.gain = this.defaultGain === undefined ? 0 : this.defaultGain;
-      this.mute = this.defaultMuted === undefined ? false : this.defaultMuted;
-    
-      this.changePan();
-      this.changeGain();
+    this.pan = this.defaultPan === undefined ? 0 : this.defaultPan;
+    this.gain = this.defaultGain === undefined ? 0 : this.defaultGain;
+    this.mute = this.defaultMuted === undefined ? false : this.defaultMuted;
 
-      this.drawMeter();
+    this.changePan();
+    this.changeGain();
+
+    this.drawMeter();
 
   },
   methods: {
 
-   
+
 
     pad(n, width, z) {
       z = z || '0';
@@ -206,101 +193,100 @@ export default {
       return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
     },
 
-    ended(index){
+    ended(index) {
 
-      if(index == this.index){
-        setTimeout( () => { this.clearCanvas()}, 10);
+      if (index == this.index) {
+        setTimeout(() => { this.clearCanvas() }, 10);
       }
 
     },
 
-    changeGain()
-    {
-      this.$emit('gainChange',this.gain);
+    changeGain() {
+      this.$emit('gainChange', this.gain);
     },
 
     changePan() {
-      this.$emit('panChange',this.pan);
+      this.$emit('panChange', this.pan);
     },
 
     muteChange() {
-      this.$emit('muteChange',this.mute);
+      this.$emit('muteChange', this.mute);
     },
 
     soloChange(trackIndex, is_solo) {
-        EventBus.$emit(this.mixerVars.instance_id+'soloChange',{index:trackIndex, solo:is_solo});
+      EventBus.$emit(this.mixerVars.instance_id + 'soloChange', { index: trackIndex, solo: is_solo });
     },
 
     titleChange() {
-      this.$emit(this.mixerVars.instance_id+'titleChange',this.titleModel);
+      this.$emit(this.mixerVars.instance_id + 'titleChange', this.titleModel);
     },
 
 
 
-    
+
 
 
 
     getAverageVolume(array) {
-        var values = 0;
-        var average;
-        var length = array.length;
-        // get all the frequency amplitudes
-        for (var i = 0; i < length; i++) {
-            values += array[i];
-        }
-        average = values / length;
-        return average;
+      var values = 0;
+      var average;
+      var length = array.length;
+      // get all the frequency amplitudes
+      for (var i = 0; i < length; i++) {
+        values += array[i];
+      }
+      average = values / length;
+      return average;
     },
 
 
-    clearCanvas(){
+    clearCanvas() {
 
-       // clear the current state
+      // clear the current state
       this.ctx.clearRect(0, 0, 60, this.meterHeight);
 
-      this.ctx.fillStyle="#15181b";
+      this.ctx.fillStyle = "#15181b";
       // create background to meters
-      this.ctx.fillRect(0,0,this.meterWidth,this.meterHeight+200);
-      this.ctx.fillRect(this.meterWidth+this.meterWidthBetween,0,this.meterWidth,this.meterHeight+200);
+      this.ctx.fillRect(0, 0, this.meterWidth, this.meterHeight + 200);
+      this.ctx.fillRect(this.meterWidth + this.meterWidthBetween, 0, this.meterWidth, this.meterHeight + 200);
 
     },
 
-   
 
-    drawMeter(){
+
+    drawMeter() {
 
       // get the average for the first channel
-      var array =  new Uint8Array(this.leftAnalyser.frequencyBinCount);
+      var array = new Uint8Array(this.leftAnalyser.frequencyBinCount);
       this.leftAnalyser.getByteFrequencyData(array);
       var average = this.getAverageVolume(array);
 
       // get the average for the second channel
-      var array2 =  new Uint8Array(this.rightAnalyser.frequencyBinCount);
+      var array2 = new Uint8Array(this.rightAnalyser.frequencyBinCount);
       this.rightAnalyser.getByteFrequencyData(array2);
       var average2 = this.getAverageVolume(array2);
 
       // bouncers left
-      if(average > this.leftBouncer.average){
+      if (average > this.leftBouncer.average) {
         this.leftBouncer.average = average;
         this.leftBouncer.opacity = 1;
       }
-      else{
-        if(this.leftBouncer.opacity > 0.1) // fade out
-          this.leftBouncer.opacity = this.leftBouncer.opacity -0.1;
+      else {
+        if (this.leftBouncer.opacity > 0.1) // fade out
+          this.leftBouncer.opacity = this.leftBouncer.opacity - 0.1;
         else
           this.leftBouncer.opacity = 0;
         this.leftBouncer.average--; // make it fall
       }
 
       // bouncers right
-      if(average2 > this.rightBouncer.average){
+      if (average2 > this.rightBouncer.average) {
         this.rightBouncer.opacity = 1;
         this.rightBouncer.average = average2;
       }
-      else{
-        if(this.rightBouncer.opacity > 0.1)// fade out
-          this.rightBouncer.opacity = this.rightBouncer.opacity -0.1;
+      else {
+        if (this.rightBouncer.opacity > 0.1)// fade out
+          this.rightBouncer.opacity = this.rightBouncer.opacity - 0.1;
         else
           this.rightBouncer.opacity = 0;
         this.rightBouncer.average--;// make it fall
@@ -309,21 +295,21 @@ export default {
       this.clearCanvas();
 
       // set the fill style
-      this.ctx.fillStyle=this.gradient;
+      this.ctx.fillStyle = this.gradient;
 
 
       // create the meters (ctx.meterHeight/100) is 1% of the meter height
-      this.ctx.fillRect(0,this.meterHeight-(average*(this.meterHeight/100)),this.meterWidth,this.meterHeight+200);
-      this.ctx.fillRect(this.meterWidth+this.meterWidthBetween,this.meterHeight-(average2*(this.meterHeight/100)),this.meterWidth,this.meterHeight+200);
+      this.ctx.fillRect(0, this.meterHeight - (average * (this.meterHeight / 100)), this.meterWidth, this.meterHeight + 200);
+      this.ctx.fillRect(this.meterWidth + this.meterWidthBetween, this.meterHeight - (average2 * (this.meterHeight / 100)), this.meterWidth, this.meterHeight + 200);
 
       // create the bouncers
 
-      if(average > 0)
-        this.ctx.fillRect(0,this.meterHeight-(this.leftBouncer.average*(this.meterHeight/100))-2,this.meterWidth,this.leftBouncer.opacity);
-      if(average2 > 0)
-        this.ctx.fillRect(this.meterWidth+this.meterWidthBetween,this.meterHeight-(this.rightBouncer.average*(this.meterHeight/100))-2,this.meterWidth,this.rightBouncer.opacity);
+      if (average > 0)
+        this.ctx.fillRect(0, this.meterHeight - (this.leftBouncer.average * (this.meterHeight / 100)) - 2, this.meterWidth, this.leftBouncer.opacity);
+      if (average2 > 0)
+        this.ctx.fillRect(this.meterWidth + this.meterWidthBetween, this.meterHeight - (this.rightBouncer.average * (this.meterHeight / 100)) - 2, this.meterWidth, this.rightBouncer.opacity);
 
-    
+
     }
 
   }

@@ -1,16 +1,12 @@
 <template>
 
   <div>
-      <div 
-        class="vue-audio-mixer-progress-bar" 
-        ref="vue-audio-mixer-progress-bar" 
-        v-on:mousedown="startDrag" 
-      >
+    <div class="vue-audio-mixer-progress-bar" ref="vue-audio-mixer-progress-bar" v-on:mousedown="startDrag">
       <canvas width="0" height="20" id="vue-audio-mixer-waveform"></canvas>
 
-        <div class="vue-audio-mixer-progress-cursor" :style="{left: progressBarPosition}"></div>
-      </div> 
-  </div> 
+      <div class="vue-audio-mixer-progress-cursor" :style="{ left: progressBarPosition }"></div>
+    </div>
+  </div>
 
 </template>
 
@@ -20,46 +16,46 @@ import EventBus from './../event-bus';
 export default {
   name: 'progressbar',
   props: [
-      'progressPercent',
-      'mixerVars',
-      'tracks',
-      'recording'
+    'progressPercent',
+    'mixerVars',
+    'tracks',
+    'recording'
   ],
-  created(){
+  created() {
     this.waveFormLastGenerated = new Date();
-    window.addEventListener('mousemove',this.doDrag);
+    window.addEventListener('mousemove', this.doDrag);
     window.addEventListener("mouseup", this.triggerMouseUpEvent);
     window.addEventListener("touchend", this.triggerMouseUpEvent);
-    EventBus.$on('pcm_data_loaded',this.addWavelengthPointData);
-    EventBus.$on('loaded',this.create);
+    EventBus.$on('pcm_data_loaded', this.addWavelengthPointData);
+    EventBus.$on('loaded', this.create);
   },
   beforeDestroy() {
-    window.removeEventListener('mousemove',this.doDrag);
+    window.removeEventListener('mousemove', this.doDrag);
     window.removeEventListener("mouseup", this.triggerMouseUpEvent);
     window.removeEventListener("touchend", this.triggerMouseUpEvent);
   },
-  data : function(){       
-      return {
-        progress:0,
-        dragging:false,
-        restart:false,
-        pcmData:[],
-        rightData:[],
+  data: function () {
+    return {
+      progress: 0,
+      dragging: false,
+      restart: false,
+      pcmData: [],
+      rightData: [],
 
-        canvas:null,
-        dpr:null,
-        padding:null,
-        ctx:null,
-        canvasWidth:0,
-        canvasHeight:0,
+      canvas: null,
+      dpr: null,
+      padding: null,
+      ctx: null,
+      canvasWidth: 0,
+      canvasHeight: 0,
 
-        waveformDataPoints:[],
-        regenerate_pcm_data:false,
-        waveformPadding:20,
-        reduced_pcm_data:[],
-        max_length:0,
-        newPCMdata:[]
-      };
+      waveformDataPoints: [],
+      regenerate_pcm_data: false,
+      waveformPadding: 20,
+      reduced_pcm_data: [],
+      max_length: 0,
+      newPCMdata: []
+    };
   },
   watch: {
 
@@ -68,47 +64,45 @@ export default {
       deep: true,
 
       // We have to move our method to a handler field
-      handler(){
-      // only allow the canvas to be refreshed once every 1 seconds max
-       clearTimeout(this.regenerate_pcm_data);
+      handler() {
+        // only allow the canvas to be refreshed once every 1 seconds max
+        clearTimeout(this.regenerate_pcm_data);
         this.regenerate_pcm_data = setTimeout(() => {
-            this.convertPCMDataToWaveform();
+          this.convertPCMDataToWaveform();
         }, 100);
       }
     },
 
-    progressPercent: function(newVal){
-      if(this.$refs['vue-audio-mixer-progress-bar'] && !this.dragging)
-        this.progress =  (this.$refs['vue-audio-mixer-progress-bar'].offsetWidth/100) * newVal;
+    progressPercent: function (newVal) {
+      if (this.$refs['vue-audio-mixer-progress-bar'] && !this.dragging)
+        this.progress = (this.$refs['vue-audio-mixer-progress-bar'].offsetWidth / 100) * newVal;
     },
 
-    progress:function()
-    {
-      this.drawWaveform(); 
+    progress: function () {
+      this.drawWaveform();
     }
 
   },
-  computed:{
-    totalLength(){
+  computed: {
+    totalLength() {
       return this.formatTime(this.totalTime);
     },
 
-    progressFormatted(){
+    progressFormatted() {
       return this.formatTime(this.progressTime);
     },
 
-    progressBarPosition()
-    {
-      return this.progress+'px';
+    progressBarPosition() {
+      return this.progress + 'px';
     }
 
-    
-  },
-  methods:{
 
-    create(loaded){
-      if(loaded){
-        if(!this.canvas){
+  },
+  methods: {
+
+    create(loaded) {
+      if (loaded) {
+        if (!this.canvas) {
           this.$nextTick(() => {
             this.reducePCMData();
           });
@@ -124,29 +118,29 @@ export default {
     },
 
     // Fraws the waveform
-    drawWaveformLineSegment (ctx, x, y, width, isEven) {
+    drawWaveformLineSegment(ctx, x, y, width, isEven) {
 
       let halfway = this.canvasHeight / 2;
 
 
       ctx.lineWidth = 1; // how thick the line is
 
-      if(this.progress*this.dpr > x){
-        if(this.recording){
-          ctx.strokeStyle = isEven ?  "#8c0d0d" : "#bf1111"; // what color our line is
-        }else{
-          ctx.strokeStyle = isEven ?  "#38fedd" : "#99ffee"; // what color our line is
+      if (this.progress * this.dpr > x) {
+        if (this.recording) {
+          ctx.strokeStyle = isEven ? "#8c0d0d" : "#bf1111"; // what color our line is
+        } else {
+          ctx.strokeStyle = isEven ? "#38fedd" : "#99ffee"; // what color our line is
         }
-      }else{
-        ctx.strokeStyle = isEven ?  "#a3a3a3" : "#d9d9d9"; // what color our line is
+      } else {
+        ctx.strokeStyle = isEven ? "#a3a3a3" : "#d9d9d9"; // what color our line is
       }
 
-      
+
 
       ctx.beginPath();
       y = isEven ? y : -y;
 
-      y = halfway +y;
+      y = halfway + y;
 
       ctx.moveTo(x, halfway);
       ctx.lineTo(x, y);
@@ -154,8 +148,7 @@ export default {
     },
 
     // returns the loudness of an array of PCM data
-    getAmps(buffer)
-    {
+    getAmps(buffer) {
 
       var rms = 0;
 
@@ -165,14 +158,13 @@ export default {
 
       rms /= buffer.length;
       rms = Math.sqrt(rms);
- 
+
       return rms;
 
     },
 
     // splits array into chunks
-    chunkArray(arr, size)
-    {
+    chunkArray(arr, size) {
       return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
         arr.slice(i * size, i * size + size)
       );
@@ -180,28 +172,27 @@ export default {
 
 
     // convert PCM data to waveform data points
-    convertPCMDataToWaveform()
-    {
+    convertPCMDataToWaveform() {
 
-    
+
 
       this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-      this.ctx.fillStyle="#303030";
+      this.ctx.fillStyle = "#303030";
       // create background to meters
-      this.ctx.fillRect(0,0,this.canvasWidth,this.canvasHeight);
+      this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
       let finalData = [];
 
-      for (let i = 0; i < this.reduced_pcm_data.length; i++){
-        for (let d = 0; d < this.reduced_pcm_data[i].data.length; d++){
-          if(finalData[d] === undefined){
+      for (let i = 0; i < this.reduced_pcm_data.length; i++) {
+        for (let d = 0; d < this.reduced_pcm_data[i].data.length; d++) {
+          if (finalData[d] === undefined) {
             finalData.push(0);
           }
           // timex value by current gain and mute
           let track_value = this.tracks[this.reduced_pcm_data[i].index].muted ? 0 : (this.reduced_pcm_data[i].data[d] * this.tracks[this.reduced_pcm_data[i].index].gain);
           finalData[d] = finalData[d] + track_value;
         }
-      }        
+      }
 
       let normalizedData = this.filterData(finalData);
       normalizedData = this.normalizeData(normalizedData);
@@ -212,7 +203,7 @@ export default {
     },
 
     // draws the waveform
-    drawWaveform(){
+    drawWaveform() {
 
       let normalizedData = this.waveformDataPoints;
 
@@ -221,16 +212,15 @@ export default {
 
       for (let i = 0; i < normalizedData.length; i++) {
         const x = i;
-        let height = normalizedData[i] * ((this.canvasHeight-this.waveformPadding)/2);
-        this.drawWaveformLineSegment(this.ctx, x, height, width, i%2 == 0);
+        let height = normalizedData[i] * ((this.canvasHeight - this.waveformPadding) / 2);
+        this.drawWaveformLineSegment(this.ctx, x, height, width, i % 2 == 0);
       }
 
     },
 
-    createCanvas()
-    {
+    createCanvas() {
 
-       // Set up the canvas
+      // Set up the canvas
       this.canvas = document.getElementById('vue-audio-mixer-waveform');
       this.dpr = window.devicePixelRatio || 1;
       this.padding = 20;
@@ -242,15 +232,14 @@ export default {
     },
 
     // filters data so we only have the correct number of data points to the number of pixesl in the canvas
-    filterData(rawData)
-    {
+    filterData(rawData) {
       const samples = this.canvasWidth; // Number of samples we want to have in our final data set
       const blockSize = rawData.length / samples; // Number of samples in each subdivision
       const filteredData = [];
       for (let i = 0; i < samples; i++) {
         let index = rawData[Math.ceil(i * blockSize)];
-        if(index !== undefined)
-          filteredData.push(rawData[Math.ceil(i * blockSize)]); 
+        if (index !== undefined)
+          filteredData.push(rawData[Math.ceil(i * blockSize)]);
       }
       return filteredData;
     },
@@ -260,31 +249,30 @@ export default {
      * Reduced the PCM data to the ammount of pixels in the canvas
      */
 
-    reducePCMData(data)
-    {
+    reducePCMData(data) {
 
-      if(!this.canvas){
+      if (!this.canvas) {
         this.createCanvas();
       }
 
 
       // the number of pcm data parts we want to analyse per pixel
-      let chunk_size = Math.floor(this.max_length/this.canvasWidth);
-      for (let i = 0; i < this.pcmData.length; i++){
+      let chunk_size = Math.floor(this.max_length / this.canvasWidth);
+      for (let i = 0; i < this.pcmData.length; i++) {
 
         // split data into chunk sizes
-        let newArray = this.chunkArray(this.pcmData[i].data,chunk_size);
+        let newArray = this.chunkArray(this.pcmData[i].data, chunk_size);
         // make an array of the amps of each track for each pixel
         let finalData = [];
-        for (let c = 0; c < newArray.length; c++){
+        for (let c = 0; c < newArray.length; c++) {
           let amps = this.tracks[this.pcmData[i].index].muted ? 0 : (this.getAmps(newArray[c]) * this.tracks[this.pcmData[i].index].gain);
-          if(finalData[c] === undefined){
+          if (finalData[c] === undefined) {
             finalData.push(0);
           }
-          finalData[c] =  finalData[c] + amps;
+          finalData[c] = finalData[c] + amps;
         }
         // create new data array with reduced data
-        this.reduced_pcm_data.push({data:finalData, index:this.pcmData[i].index});
+        this.reduced_pcm_data.push({ data: finalData, index: this.pcmData[i].index });
 
       }
       this.pcmData = []; // remove this massive data from the storage
@@ -293,15 +281,15 @@ export default {
 
     },
 
-    
+
     /*
     * Called when a new audio source is loaded. Adds the PCM data to the array
     *
     * Raw buffer data is massive, so we need to reduce this down before using it
     *
     **/
-    
-    addWavelengthPointData(raw){
+
+    addWavelengthPointData(raw) {
 
 
       var channels = 2;
@@ -313,62 +301,61 @@ export default {
         let buffer = raw.buffer.getChannelData(channel);
 
         // chunk this into chunks of 1000 points
-        let newArray = this.chunkArray(buffer,1000);
+        let newArray = this.chunkArray(buffer, 1000);
 
         // make an array of the amps of each track for each chunk
-        for (let c = 0; c < newArray.length; c++){
-          if(finalData[c] === undefined){
+        for (let c = 0; c < newArray.length; c++) {
+          if (finalData[c] === undefined) {
             finalData.push(0);
           }
-          finalData[c] =  finalData[c] + this.getAmps(newArray[c]);
+          finalData[c] = finalData[c] + this.getAmps(newArray[c]);
         }
       }
 
       // Calculates the most data points there is
-      if(finalData.length > this.max_length)
-          this.max_length = finalData.length;
+      if (finalData.length > this.max_length)
+        this.max_length = finalData.length;
 
-      this.pcmData.push({data:finalData,index:raw.index});
+      this.pcmData.push({ data: finalData, index: raw.index });
 
     },
 
-    startDrag(e){
+    startDrag(e) {
       this.dragging = true;
       this.progressBarClick(e);
     },
 
-    doDrag(e){
-      if(this.dragging)
+    doDrag(e) {
+      if (this.dragging)
         this.progressBarClick(e);
     },
 
-    triggerMouseUpEvent(e){
+    triggerMouseUpEvent(e) {
       let doIt = this.dragging ? true : false;
       this.dragging = false;
-      if(doIt)
+      if (doIt)
         this.progressBarClick(e, true);
     },
 
-    progressBarClick(e, fdsa)
-    {
+    progressBarClick(e, fdsa) {
 
       // can't click while recording
-      if(this.recording)
+      if (this.recording)
         return;
 
       let target = this.$refs['vue-audio-mixer-progress-bar'];
       var rect = target.getBoundingClientRect();
       var x = e.clientX - rect.left; //x position within the element.
-      var percent = (100/target.offsetWidth) * x;
+      var percent = (100 / target.offsetWidth) * x;
 
       percent = Math.round(percent);
 
-      if(percent < 0 || percent > 100)
+      if (percent < 0 || percent > 100)
         return false;
-       // only if mouse inside box
+      // only if mouse inside box
 
 
-      if(!this.dragging)
+      if (!this.dragging)
         this.$emit('percent', percent);
       else
         this.progress = Math.round(x);
@@ -381,6 +368,4 @@ export default {
 }
 </script>
 
-<style>
-
-  </style>}
+<style></style>}
