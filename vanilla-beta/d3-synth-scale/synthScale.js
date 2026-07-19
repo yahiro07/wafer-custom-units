@@ -2,6 +2,7 @@ const unitInterface = window.queryUnitInterface?.("wafer-v01");
 const audioContext = unitInterface?.audioContext ?? new AudioContext();
 const audioDestination =
   unitInterface?.audioOutputNode ?? audioContext.destination;
+const noteOutputPort = unitInterface?.createNoteOutputPort();
 
 //helper functions
 var f = function (str) {
@@ -315,11 +316,10 @@ function triggerNote(pitch, time, duration, waveform) {
     oscillator.start(time);
     oscillator.stop(time + duration + 0.001);
   }
-  if (unitInterface) {
+  if (noteOutputPort) {
     const noteNumber = Math.round(12 * Math.log2(frequency / 440) + 69);
-    console.log("noteOn", noteNumber, time, duration);
-    unitInterface.noteOutputPort.noteOn(noteNumber, time, 1);
-    unitInterface.noteOutputPort.noteOff(noteNumber, time + duration);
+    noteOutputPort.noteOn(noteNumber, time, 1);
+    noteOutputPort.noteOff(noteNumber, time + duration);
   }
 }
 

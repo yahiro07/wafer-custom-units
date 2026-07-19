@@ -7,6 +7,7 @@ import { StepCollection } from "../collections/steps";
 import { StepView } from "./step";
 
 const unitInterface = window.queryUnitInterface?.("wafer-v01");
+const noteOutputPort = unitInterface?.createNoteOutputPort();
 
 export const SequenceView = Backbone.View.extend({
   className: "sequence",
@@ -111,12 +112,12 @@ export const SequenceView = Backbone.View.extend({
 
       var pitchDelta = currentStepView.model.get("delta");
       var currentNote = this.noteMapper[pitchDelta];
-      if (unitInterface) {
+      if (unitInterface && noteOutputPort) {
         time = Math.max(time, unitInterface.audioContext.currentTime);
         const noteNumber =
           Math.round(12 * Math.log2(currentNote.freq / 440)) + 69;
-        unitInterface.noteOutputPort.noteOn(noteNumber, time);
-        unitInterface.noteOutputPort.noteOff(noteNumber, time + duration);
+        noteOutputPort.noteOn(noteNumber, time);
+        noteOutputPort.noteOff(noteNumber, time + duration);
       } else {
         this.model.createAndTriggerOscillator(currentNote.freq, 0.1);
       }
