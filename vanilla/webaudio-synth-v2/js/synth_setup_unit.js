@@ -3,8 +3,6 @@ function setupWaferUnit() {
     unitAspects: {
       unitType: "instrument",
       categoryHint: "synthesizer",
-      outputs: ["audio"],
-      inputs: ["note"],
       viewSize: [700, 400],
     },
     noteInput: {
