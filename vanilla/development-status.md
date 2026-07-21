@@ -9,3 +9,4 @@
 | webaudio-spectrum         | visualizer |         | ok          | --                  |
 | webaudio-synth-v2         | synth      |         | ok          | ok                  |
 | webaudio-tinysynth-simple | synth      |         | ok          | ok                  |
+| midi-synth                | synth      |         | ok(json)    |                     |

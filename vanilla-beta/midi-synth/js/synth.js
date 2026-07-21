@@ -149,6 +149,23 @@ function $(id) {
   return document.getElementById(id);
 }
 
+function controlValue(input) {
+  if (typeof input === "number") return input;
+  if (typeof input === "string") return parseFloat(input);
+  if (!input || typeof input !== "object") return input;
+
+  if (input.currentTarget && input.currentTarget.value !== undefined) {
+    return parseFloat(input.currentTarget.value);
+  }
+  if (input.target && input.target.value !== undefined) {
+    return parseFloat(input.target.value);
+  }
+  if (input.value !== undefined) {
+    return parseFloat(input.value);
+  }
+  return input;
+}
+
 // 'value' is normalized to 0..1.
 function controller(number, value) {
   switch (number) {
@@ -243,7 +260,7 @@ function onUpdateModWaveform(ev) {
 }
 
 function onUpdateModFrequency(ev) {
-  var value = ev.currentTarget ? ev.currentTarget.value : ev;
+  var value = controlValue(ev);
   currentModFrequency = value;
   var oscFreq = currentModFrequency * modOscFreqMultiplier;
   for (var i = 0; i < 255; i++) {
@@ -254,7 +271,7 @@ function onUpdateModFrequency(ev) {
 }
 
 function onUpdateModOsc1(ev) {
-  var value = ev.currentTarget ? ev.currentTarget.value : ev;
+  var value = controlValue(ev);
   currentModOsc1 = value;
   for (var i = 0; i < 255; i++) {
     if (voices[i] != null) {
@@ -264,7 +281,7 @@ function onUpdateModOsc1(ev) {
 }
 
 function onUpdateModOsc2(ev) {
-  var value = ev.currentTarget ? ev.currentTarget.value : ev;
+  var value = controlValue(ev);
   currentModOsc2 = value;
   for (var i = 0; i < 255; i++) {
     if (voices[i] != null) {
@@ -274,7 +291,7 @@ function onUpdateModOsc2(ev) {
 }
 
 function onUpdateFilterCutoff(ev) {
-  var value = ev.currentTarget ? ev.currentTarget.value : ev;
+  var value = controlValue(ev);
   //	console.log( "currentFilterCutoff= " + currentFilterCutoff + "new cutoff= " + value );
   currentFilterCutoff = value;
   for (var i = 0; i < 255; i++) {
@@ -285,7 +302,7 @@ function onUpdateFilterCutoff(ev) {
 }
 
 function onUpdateFilterQ(ev) {
-  var value = ev.currentTarget ? ev.currentTarget.value : ev;
+  var value = controlValue(ev);
   currentFilterQ = value;
   for (var i = 0; i < 255; i++) {
     if (voices[i] != null) {
@@ -295,7 +312,7 @@ function onUpdateFilterQ(ev) {
 }
 
 function onUpdateFilterMod(ev) {
-  var value = ev.currentTarget ? ev.currentTarget.value : ev;
+  var value = controlValue(ev);
   currentFilterMod = value;
   for (var i = 0; i < 255; i++) {
     if (voices[i] != null) {
@@ -305,8 +322,7 @@ function onUpdateFilterMod(ev) {
 }
 
 function onUpdateFilterEnv(ev) {
-  var value = ev.currentTarget ? ev.currentTarget.value : ev;
-  currentFilterEnv = value;
+  currentFilterEnv = controlValue(ev);
 }
 
 function onUpdateOsc1Wave(ev) {
@@ -328,7 +344,7 @@ function onUpdateOsc1Octave(ev) {
 }
 
 function onUpdateOsc1Detune(ev) {
-  var value = ev.currentTarget.value;
+  var value = controlValue(ev);
   currentOsc1Detune = value;
   for (var i = 0; i < 255; i++) {
     if (voices[i] != null) {
@@ -338,7 +354,7 @@ function onUpdateOsc1Detune(ev) {
 }
 
 function onUpdateOsc1Mix(value) {
-  if (value.currentTarget) value = value.currentTarget.value;
+  value = controlValue(value);
   currentOsc1Mix = value;
   for (var i = 0; i < 255; i++) {
     if (voices[i] != null) {
@@ -366,7 +382,7 @@ function onUpdateOsc2Octave(ev) {
 }
 
 function onUpdateOsc2Detune(ev) {
-  var value = ev.currentTarget.value;
+  var value = controlValue(ev);
   currentOsc2Detune = value;
   for (var i = 0; i < 255; i++) {
     if (voices[i] != null) {
@@ -376,7 +392,7 @@ function onUpdateOsc2Detune(ev) {
 }
 
 function onUpdateOsc2Mix(ev) {
-  var value = ev.currentTarget.value;
+  var value = controlValue(ev);
   currentOsc2Mix = value;
   for (var i = 0; i < 255; i++) {
     if (voices[i] != null) {
@@ -386,49 +402,50 @@ function onUpdateOsc2Mix(ev) {
 }
 
 function onUpdateEnvA(ev) {
-  currentEnvA = ev.currentTarget.value;
+  currentEnvA = controlValue(ev);
 }
 
 function onUpdateEnvD(ev) {
-  currentEnvD = ev.currentTarget.value;
+  currentEnvD = controlValue(ev);
 }
 
 function onUpdateEnvS(ev) {
-  currentEnvS = ev.currentTarget.value;
+  currentEnvS = controlValue(ev);
 }
 
 function onUpdateEnvR(ev) {
-  currentEnvR = ev.currentTarget.value;
+  currentEnvR = controlValue(ev);
 }
 
 function onUpdateFilterEnvA(ev) {
-  currentFilterEnvA = ev.currentTarget.value;
+  currentFilterEnvA = controlValue(ev);
 }
 
 function onUpdateFilterEnvD(ev) {
-  currentFilterEnvD = ev.currentTarget.value;
+  currentFilterEnvD = controlValue(ev);
 }
 
 function onUpdateFilterEnvS(ev) {
-  currentFilterEnvS = ev.currentTarget.value;
+  currentFilterEnvS = controlValue(ev);
 }
 
 function onUpdateFilterEnvR(ev) {
-  currentFilterEnvR = ev.currentTarget.value;
+  currentFilterEnvR = controlValue(ev);
 }
 
 function onUpdateDrive(value) {
-  currentDrive = value;
+  currentDrive = controlValue(value);
   waveshaper.setDrive(0.01 + (currentDrive * currentDrive) / 500.0);
 }
 
 function onUpdateVolume(ev) {
-  volNode.gain.value = (ev.currentTarget ? ev.currentTarget.value : ev) / 100;
+  currentVol = controlValue(ev);
+  volNode.gain.value = currentVol / 100;
 }
 
 function onUpdateReverb(ev) {
-  var value = ev.currentTarget ? ev.currentTarget.value : ev;
-  value = value / 100;
+  currentRev = controlValue(ev);
+  var value = currentRev / 100;
 
   // equal-power crossfade
   var gain1 = Math.cos(value * 0.5 * Math.PI);
@@ -878,7 +895,6 @@ function initAudio() {
     };
     irRRequest.send();
   }
-
   unitInterface?.completeSetup({
     unitAspects: {
       unitType: "instrument",
@@ -891,6 +907,10 @@ function initAudio() {
       noteOff(note, _time) {
         noteOff(note);
       },
+    },
+    persistence: {
+      emitState: emitPersistedState,
+      applyState: applyPersistedState,
     },
   });
 }
