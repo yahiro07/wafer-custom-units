@@ -10,3 +10,4 @@
 | super-oscillator              | synth      |              |             | ok          |                     |
 | syntho                        | synth      |              |             | ok          |                     |
 | threejs-audio-reactive-visual | visualizer |              |             | ok          | --                  |
+| vue-audio-mixer               | mixer      |              |             | ok(json)    | --                  |

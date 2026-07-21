@@ -9,8 +9,8 @@
 
 <script>
 import Channel from './Channel.vue'
-import EventBus from './../event-bus';
-import { unitWrapper } from '../unit-wrapper';
+import EventBus from '../event-bus.js';
+import { unitWrapper } from '../unit-wrapper.js';
 
 export default {
   name: 'MixerChannel',
