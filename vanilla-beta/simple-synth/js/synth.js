@@ -16,11 +16,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
       viewSize: [810, 410],
     },
     noteInput: waferToneSynthBridge.createNotePortAdapted({
-      triggerAttack(freq) {
-        window.synth.triggerAttack(freq);
+      triggerAttack(freq, time, velocity) {
+        window.synth.triggerAttack(freq, time, velocity);
       },
-      triggerRelease() {
-        window.synth.triggerRelease();
+      triggerRelease(time) {
+        window.synth.triggerRelease(time);
       },
     }),
   });
