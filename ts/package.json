@@ -1,0 +1,10 @@
+{
+  "name": "wafer-units-ts",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r --if-present --filter './packages/**/*' build"
+  },
+  "devDependencies": {
+    "wafer-host": "^0.0.5"
+  }
+}

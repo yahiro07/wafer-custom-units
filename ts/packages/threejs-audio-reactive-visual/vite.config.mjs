@@ -6,7 +6,7 @@ export default defineConfig({
     port: 3000,
   },
   build: {
-    outDir: "../dist/threejs-audio-reactive-visual",
+    outDir: "../../dist/threejs-audio-reactive-visual",
     emptyOutDir: true,
   },
 });
