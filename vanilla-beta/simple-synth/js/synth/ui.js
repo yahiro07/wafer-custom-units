@@ -1,6 +1,8 @@
 Synth.UI = function (synth) {
   "use strict";
 
+  var controls = {};
+
   Nexus.colors = {
     accent: "#FA6900",
     fill: "#E0E4CC",
@@ -20,6 +22,7 @@ Synth.UI = function (synth) {
       typeSelect.element.blur();
     });
     typeSelect.value = defaultValue || options[0];
+    controls[id] = typeSelect;
   }
 
   function DialControl(id, signal, property, options) {
@@ -40,6 +43,7 @@ Synth.UI = function (synth) {
     dial.element.addEventListener("dblclick", function () {
       dial.value = initialValue;
     });
+    controls[id] = dial;
   }
 
   function SliderControl(id, signal, property, options) {
@@ -53,6 +57,7 @@ Synth.UI = function (synth) {
 
     var initialValue = slider.value;
     signal[property] = initialValue;
+    controls[id] = slider;
   }
 
   // oscillator controls
@@ -120,4 +125,6 @@ Synth.UI = function (synth) {
   keyboard.up(function (note) {
     synth.triggerRelease();
   });
+
+  return controls;
 };

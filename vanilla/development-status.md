@@ -13,3 +13,4 @@
 | shiny-drum-machine        | drum machine |         | ok(json)    | --                  |
 | bl-synth-modular          | synth        |         | ok(json)    |                     |
 | darkwave                  | effect       |         | ok(json)    | --                  |
+| simple-synth              | synth        |         | ok(json)    | ok                  |
