@@ -44,7 +44,6 @@ function App() {
     unitInterface?.completeSetup({
       unitAspects: {
         unitType: "instrument",
-        outputs: ["audio"],
         viewSize: [840, 580],
       },
       persistence: {

@@ -43,8 +43,6 @@ const synth = new Tone.MonoSynth({ oscillator: { type: defaultType } }).chain(
 waferToneSynthBridge.unitInterface?.completeSetup({
   unitAspects: {
     unitType: "instrument",
-    outputs: ["audio"],
-    inputs: ["note"],
     viewSize: [756, 370],
   },
   noteInput: waferToneSynthBridge.createNotePortAdapted(synth),

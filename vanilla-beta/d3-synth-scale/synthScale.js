@@ -326,7 +326,6 @@ function triggerNote(pitch, time, duration, waveform) {
 unitInterface?.completeSetup({
   unitAspects: {
     unitType: "sequencer",
-    outputs: ["audio", "note"],
     viewSize: [900, 880],
   },
   clockHandlers: {

@@ -66,12 +66,7 @@
           <div class="col">
             <v-section label="mod matrix">
               <template #label>
-                <Toggle
-                  @input="toggleAnalyser"
-                  :value="Number(!!analyser)"
-                  class="toggle-scope"
-                  id="SCOPE_ON"
-                >
+                <Toggle @input="toggleAnalyser" :value="Number(!!analyser)" class="toggle-scope" id="SCOPE_ON">
                 </Toggle>
               </template>
               <Matrix :modMatrix="synth.getControlMatrix">
@@ -245,8 +240,6 @@ export default {
       unitInterface.completeSetup({
         unitAspects: {
           unitType: "instrument",
-          outputs: ["audio"],
-          inputs: ["note"],
           viewSize: [1082, 720],
         },
         noteInput: {
@@ -314,10 +307,12 @@ export default {
   display: inline-block;
   margin: auto;
   flex-shrink: 0;
+
   &__wrapper {
     margin: 0 auto;
     overflow: hidden;
     border-radius: 0.4em;
+
     &::before {
       content: "";
       z-index: 2;
@@ -333,6 +328,7 @@ export default {
     }
   }
 }
+
 .synth__layout {
   // background: #181b1c;
   background: #050505;
@@ -349,6 +345,7 @@ export default {
     inset 0.6em 0 0.1em -0.5em #000,
     inset -0.6em 0 0.1em -0.5em #000,
     inset 0 0 3em 3em #000;
+
   &::before {
     content: "";
     z-index: 1;
@@ -358,9 +355,11 @@ export default {
     height: 100%;
     box-shadow: 0 0 0.3em 0.1em #111;
   }
+
   .row-divider {
     position: relative;
     z-index: 4;
+
     &::before {
       content: "";
       position: absolute;
@@ -384,6 +383,7 @@ export default {
         inset 1px -1px 2px 2px #000;
     }
   }
+
   .row {
     background: #181b1c;
     // display: flex;
@@ -398,17 +398,20 @@ export default {
     &.row-3 {
       z-index: 2;
     }
+
     &.effects {
       grid-template-columns: min-content auto;
     }
   }
+
   .col {
     position: relative;
     padding: 0.7em 1em;
     display: flex;
+
     // flex: 0 1 auto;
     // flex: 1;
-    + .col {
+    +.col {
       &::before {
         content: "";
         position: absolute;
@@ -429,6 +432,7 @@ export default {
       }
     }
   }
+
   .text {
     position: absolute;
     left: 20%;
@@ -439,6 +443,7 @@ export default {
     mix-blend-mode: overlay;
     color: #fff;
   }
+
   .piano-section {
     margin: auto;
     margin-bottom: 0;
@@ -446,6 +451,7 @@ export default {
     box-shadow: inset 0 0 2px 2px #111;
 
     &__wrapper {
+
       // box-shadow: 0 0 5px 2px #111;
       &::before {
         box-shadow:
@@ -464,6 +470,7 @@ export default {
 
 .section {
   #section {
+
     &__osc-1,
     &__osc-2,
     &__filter-env,
@@ -475,6 +482,7 @@ export default {
       grid-auto-flow: column;
       column-gap: 0.1em;
     }
+
     &__lfo-1,
     &__lfo-2,
     &__filter,
@@ -484,12 +492,15 @@ export default {
 
       column-gap: 0.1em;
     }
+
     &__filter {
       grid-template-columns: repeat(2, 1fr);
     }
+
     &__lfo-1,
     &__lfo-2 {
       min-width: 5em;
+
       .controller:nth-child(-n + 3) {
         align-self: baseline;
       }
@@ -500,6 +511,7 @@ export default {
         align-self: baseline;
       }
     }
+
     &__limiter {
       align-items: center;
     }
@@ -511,10 +523,12 @@ export default {
       flex-wrap: wrap;
       justify-content: space-around;
       align-items: flex-end;
+
       .controller {
         flex: 1 0 33%;
       }
     }
+
     &__distort {
       .controller:first-child {
         flex: 0 0 80%;
@@ -535,10 +549,12 @@ export default {
       grid-template-columns: 1fr auto;
     }
   }
+
   .toggle-fx {
     .checkbox__control {
       width: 2.5em;
       height: 2.5em;
+
       &::after {
         font-family: sans-serif;
         font-size: 1.5em;
@@ -552,6 +568,7 @@ export default {
       }
     }
   }
+
   .toggle-scope {
     .checkbox__control {
       &::after {
@@ -573,6 +590,7 @@ export default {
   perspective: 600px;
 
   z-index: 1;
+
   &__wrapper {
     width: 100%;
     height: 100%;
@@ -582,19 +600,24 @@ export default {
     transform: translateZ(-4.8em);
     transition: transform 1s ease-out;
     will-change: transform;
+
     &.show-kb {
       transform: translateZ(-4.8em) rotateY(0deg);
     }
+
     &.show-fx {
       transform: translateZ(-4.8em) rotateX(-90deg);
     }
+
     .row {
       background: #181b1c;
       border-bottom: 0.1em solid #000;
       transform: rotateY(0deg) translateZ(4.8em); // front
+
       &.effects {
         transform: rotateX(90deg) translateZ(4.8em); //top
       }
+
       grid-column: 1 / -1;
       grid-row: 1 / -1;
     }

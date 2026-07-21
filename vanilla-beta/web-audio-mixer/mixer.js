@@ -396,8 +396,6 @@
     unitInterface?.completeSetup({
       unitAspects: {
         unitType: "effect",
-        outputs: ["audio"],
-        inputs: [],
         viewSize: [852, 464],
       },
       cleanup() {

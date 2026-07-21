@@ -35,7 +35,6 @@ export const SequenceView = Backbone.View.extend({
     unitInterface?.completeSetup({
       unitAspects: {
         unitType: "sequencer",
-        outputs: ["note"],
         viewSize: [600, 414],
       },
       clockHandlers: {

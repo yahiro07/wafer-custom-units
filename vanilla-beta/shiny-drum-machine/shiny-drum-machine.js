@@ -123,7 +123,6 @@ function init() {
   unitInterface?.completeSetup({
     unitAspects: {
       unitType: "instrument",
-      outputs: ["audio"],
       viewSize: [900, 640],
     },
     clockHandlers: {

@@ -219,8 +219,6 @@ document.addEventListener("DOMContentLoaded", function () {
     unitInterface.completeSetup({
       unitAspects: {
         unitType: "effect",
-        inputs: ["audio"],
-        outputs: ["audio"],
         viewSize: [1200, 860],
       },
       cleanup: cleanupConnections,

@@ -95,8 +95,6 @@ function boot() {
   unitInterface?.completeSetup({
     unitAspects: {
       unitType: "effect",
-      outputs: ["audio"],
-      inputs: ["audio"],
       viewSize: [1020, 960],
     },
   });

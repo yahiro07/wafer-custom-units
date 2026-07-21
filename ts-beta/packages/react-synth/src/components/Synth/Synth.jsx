@@ -85,8 +85,6 @@ class Synth extends React.Component {
     unitInterface?.completeSetup({
       unitAspects: {
         unitType: "instrument",
-        outputs: ["audio"],
-        inputs: ["note"],
         viewSize: [1180, 730],
       },
       noteInput: {

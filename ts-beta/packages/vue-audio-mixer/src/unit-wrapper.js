@@ -23,8 +23,6 @@ export const unitWrapper = {
     unitInterface?.completeSetup({
       unitAspects: {
         unitType: "effect",
-        outputs: ["audio"],
-        inputs: [],
         viewSize: [550, 334],
       },
       cleanup() {

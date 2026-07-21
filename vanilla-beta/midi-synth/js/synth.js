@@ -882,8 +882,6 @@ function initAudio() {
   unitInterface?.completeSetup({
     unitAspects: {
       unitType: "instrument",
-      outputs: ["audio"],
-      inputs: ["note"],
       viewSize: [940, 550],
     },
     noteInput: {

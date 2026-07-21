@@ -16,8 +16,6 @@ async function main(): Promise<void> {
   unitInterface?.completeSetup({
     unitAspects: {
       unitType: 'instrument',
-      outputs: ['audio'],
-      inputs: ['note'],
       viewSize: [1000, 500],
     },
     noteInput: {

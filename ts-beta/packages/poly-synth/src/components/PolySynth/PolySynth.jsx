@@ -165,8 +165,6 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
     unitInterface?.completeSetup({
       unitAspects: {
         unitType: "instrument",
-        outputs: ["audio"],
-        inputs: ["note"],
         viewSize: [1280, 770],
       },
       noteInput: {

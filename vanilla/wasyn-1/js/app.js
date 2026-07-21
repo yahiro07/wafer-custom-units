@@ -16,8 +16,6 @@ var app = {
       unitAspects: {
         unitType: "instrument",
         categoryHint: "synthesizer",
-        outputs: ["audio"],
-        inputs: ["note"],
         viewSize: [720, 360],
       },
       noteInput: {

@@ -266,8 +266,6 @@ let lastInputNote = null;
 unitInterface?.completeSetup({
   unitAspects: {
     unitType: "instrument",
-    outputs: ["audio"],
-    inputs: ["note"],
     viewSize: [900, 520],
   },
   noteInput: {

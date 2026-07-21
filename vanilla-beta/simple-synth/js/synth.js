@@ -13,8 +13,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
   waferToneSynthBridge.unitInterface?.completeSetup({
     unitAspects: {
       unitType: "instrument",
-      outputs: ["audio"],
-      inputs: ["note"],
       viewSize: [810, 410],
     },
     noteInput: waferToneSynthBridge.createNotePortAdapted({

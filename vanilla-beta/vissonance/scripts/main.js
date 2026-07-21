@@ -17,8 +17,6 @@ if (!Detector.webgl) {
       unitAspects: {
         unitType: "effect",
         categoryHint: "visualizer",
-        outputs: ["audio"],
-        inputs: ["audio"],
         viewSize: [700, 400],
       },
     });

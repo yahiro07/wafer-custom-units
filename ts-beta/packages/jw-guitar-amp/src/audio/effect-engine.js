@@ -151,8 +151,6 @@ export function setupEffectEngine() {
   unitInterface?.completeSetup({
     unitAspects: {
       unitType: "effect",
-      outputs: ["audio"],
-      inputs: ["audio"],
       viewSize: [860, 520],
     },
     cleanup() {

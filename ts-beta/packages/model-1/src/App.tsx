@@ -64,8 +64,6 @@ function App() {
       unitInterface?.completeSetup({
         unitAspects: {
           unitType: "instrument",
-          outputs: ["audio"],
-          inputs: ["note"],
           viewSize: [1180, 540],
         },
         noteInput: {
