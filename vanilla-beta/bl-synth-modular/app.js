@@ -5,6 +5,8 @@
 const synth = new SynthEngine();
 const seq = new Sequencer(synth);
 let vizAnimId = null;
+let appReady = false;
+let pendingPersistedState = null;
 
 // --- Init ---
 async function initApp() {
@@ -15,6 +17,12 @@ async function initApp() {
   bindControls();
   startVisualization();
   drawEnvelope();
+
+  appReady = true;
+  if (pendingPersistedState) {
+    applySynthState(pendingPersistedState);
+    pendingPersistedState = null;
+  }
 
   unitInterface?.completeSetup({
     unitAspects: {
@@ -28,6 +36,10 @@ async function initApp() {
       noteOff(noteNumber) {
         synth.noteOff(noteNumber);
       },
+    },
+    persistence: {
+      emitState: emitPersistedState,
+      applyState: applyPersistedState,
     },
   });
 }
@@ -72,6 +84,47 @@ function populatePresets() {
   });
 }
 
+function emitPersistedState() {
+  return { ...synth.params };
+}
+
+function parsePersistedState(state) {
+  if (!state || typeof state !== "object") return null;
+  const params = state.params ?? state;
+  if (!params || typeof params !== "object" || Array.isArray(params)) return null;
+  return params;
+}
+
+function applySynthState(params) {
+  for (const [key, val] of Object.entries(params)) {
+    synth.setParam(key, val);
+    const el = document.querySelector(`[data-param="${key}"]`);
+    if (el) {
+      el.value = val;
+      const display = document.querySelector(`[data-for="${key}"]`);
+      if (display) display.textContent = formatVal(key, val);
+    }
+  }
+  const masterVolume = params.masterVolume ?? 0.7;
+  document.getElementById("masterVolume").value = masterVolume;
+  document.getElementById("masterVolumeVal").textContent =
+    masterVolume.toFixed(2);
+  drawEnvelope();
+}
+
+function applyPersistedState(state) {
+  const params = parsePersistedState(state);
+  if (!params) return;
+  if (!appReady) {
+    pendingPersistedState = params;
+    for (const [key, val] of Object.entries(params)) {
+      synth.setParam(key, val);
+    }
+    return;
+  }
+  applySynthState(params);
+}
+
 function loadPreset(name) {
   let preset;
   if (name.startsWith("user:")) {
@@ -83,22 +136,7 @@ function loadPreset(name) {
     preset = PRESETS[name];
   }
   if (!preset) return;
-  for (const [key, val] of Object.entries(preset)) {
-    synth.setParam(key, val);
-    const el = document.querySelector(`[data-param="${key}"]`);
-    if (el) {
-      el.value = val;
-      const display = document.querySelector(`[data-for="${key}"]`);
-      if (display) display.textContent = formatVal(key, val);
-    }
-  }
-  // Update master vol separately
-  document.getElementById("masterVolume").value =
-    preset.masterVolume || 0.7;
-  document.getElementById("masterVolumeVal").textContent = (
-    preset.masterVolume || 0.7
-  ).toFixed(2);
-  drawEnvelope();
+  applySynthState(preset);
 }
 
 document.getElementById("savePresetBtn").addEventListener("click", () => {

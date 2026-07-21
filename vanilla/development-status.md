@@ -11,3 +11,4 @@
 | webaudio-tinysynth-simple | synth        |         | ok          | ok                  |
 | midi-synth                | synth        |         | ok(json)    |                     |
 | shiny-drum-machine        | drum machine |         | ok(json)    | --                  |
+| bl-synth-modular          | synth        |         | ok(json)    |                     |
