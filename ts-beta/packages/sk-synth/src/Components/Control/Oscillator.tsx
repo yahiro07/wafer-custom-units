@@ -1,27 +1,27 @@
 import React from "react";
-import * as Tone from "tone";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import SquareFootIcon from "@material-ui/icons/SquareFoot";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
+import { OscillatorType } from "../../synthState";
 
-export const defaultType = "sawtooth";
+export const defaultType: OscillatorType = "sawtooth";
 
 interface Props {
-  synth: Tone.MonoSynth;
+  value: OscillatorType;
+  onChange: (type: OscillatorType) => void;
 }
 
-export const Oscillator = (props: Props) => {
-  const [type, setType] = React.useState(defaultType);
-
+export const Oscillator = ({ value, onChange }: Props) => {
   return (
     <ToggleButtonGroup
-      value={type}
+      value={value}
       exclusive
-      onChange={(event, value) => {
-        setType(value);
-        props.synth.oscillator.type = value;
+      onChange={(event, nextValue) => {
+        if (nextValue) {
+          onChange(nextValue);
+        }
       }}
     >
       <ToggleButton value={defaultType}>

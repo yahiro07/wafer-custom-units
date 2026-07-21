@@ -23,12 +23,11 @@ const useStyles = makeStyles((theme: Theme) => {
 
 interface Props {
   text: string;
-  action: (selected: boolean) => void;
+  selected: boolean;
+  onChange: (selected: boolean) => void;
 }
 
-export const Toggle = (props: Props) => {
-  const [selected, setSelected] = React.useState(false);
-
+export const Toggle = ({ text, selected, onChange }: Props) => {
   const classes = useStyles();
 
   return (
@@ -37,14 +36,9 @@ export const Toggle = (props: Props) => {
       size="small"
       value="check"
       selected={selected}
-      onChange={() => {
-        const value = !selected;
-
-        setSelected(value);
-        props.action(value);
-      }}
+      onChange={() => onChange(!selected)}
     >
-      <Typography className={classes.label}>{props.text}</Typography>
+      <Typography className={classes.label}>{text}</Typography>
     </ToggleButton>
   );
 };

@@ -7,6 +7,12 @@ import { Keyboard } from "./Keyboard";
 import { Oscillator, Toggle, Parameter, effects } from "./Control";
 import { defaultType } from "./Control/Oscillator";
 import { createWaferToneSynthBridge } from "../wafer-tone-synth-bridge";
+import {
+  applyParameters,
+  DEFAULT_PARAMETERS,
+  parsePersistedState,
+  SynthParameters,
+} from "../synthState";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,31 +46,65 @@ const synth = new Tone.MonoSynth({ oscillator: { type: defaultType } }).chain(
   waferToneSynthBridge.destinationNode,
 );
 
-waferToneSynthBridge.unitInterface?.completeSetup({
-  unitAspects: {
-    unitType: "instrument",
-    viewSize: [756, 370],
-  },
-  noteInput: waferToneSynthBridge.createNotePortAdapted(synth),
-});
+applyParameters(synth, DEFAULT_PARAMETERS);
 
 export const Synth = () => {
   const titleDelimiter = " ";
-  const [titleAdjectiveString, setTitleAdjectiveString] =
-    React.useState(titleDelimiter);
-  const [titleAdjectives]: [{ [effect: string]: string }, any] = React.useState(
-    {},
-  );
+  const [parameters, setParameters] =
+    React.useState<SynthParameters>(DEFAULT_PARAMETERS);
+  const persistenceRef = React.useRef({
+    emitPersistedState: () => ({ parameters: DEFAULT_PARAMETERS }),
+    applyPersistedState: (_state: unknown) => {},
+  });
+
+  persistenceRef.current = {
+    emitPersistedState: () => ({ parameters }),
+    applyPersistedState: (state) => {
+      const nextParameters = parsePersistedState(state);
+      if (!nextParameters) return;
+      setParameters(nextParameters);
+    },
+  };
+
+  React.useEffect(() => {
+    applyParameters(synth, parameters);
+  }, [parameters]);
+
+  React.useEffect(() => {
+    waferToneSynthBridge.unitInterface?.completeSetup({
+      unitAspects: {
+        unitType: "instrument",
+        viewSize: [756, 370],
+      },
+      noteInput: waferToneSynthBridge.createNotePortAdapted(synth),
+      persistence: {
+        emitState() {
+          return persistenceRef.current.emitPersistedState();
+        },
+        applyState(state) {
+          persistenceRef.current.applyPersistedState(state);
+        },
+      },
+    });
+  }, []);
+
+  const updateParameters = (partial: Partial<SynthParameters>) => {
+    setParameters((current) => ({ ...current, ...partial }));
+  };
+
+  const titleAdjectiveString = React.useMemo(() => {
+    const activeAdjectives = [
+      parameters.pitchShift.enabled ? effects.pitchShift.adjective : "",
+      parameters.filter.enabled ? effects.filter.adjective : "",
+      parameters.distortion.enabled ? effects.distortion.adjective : "",
+    ].filter(Boolean);
+
+    return (
+      titleDelimiter + activeAdjectives.join(titleDelimiter) + titleDelimiter
+    );
+  }, [parameters]);
 
   const classes = useStyles();
-  const updateAdjective = (adjective: string, active: boolean) => {
-    titleAdjectives[adjective] = active ? adjective : "";
-    setTitleAdjectiveString(
-      titleDelimiter +
-        Object.values(titleAdjectives).join(titleDelimiter) +
-        titleDelimiter,
-    );
-  };
 
   return (
     <div className={classes.root}>
@@ -82,22 +122,32 @@ export const Synth = () => {
         </Grid>
         <Grid container item xs={3} alignItems="center" justifyContent="center">
           <Grid item xs={12}>
-            <Oscillator synth={synth} />
+            <Oscillator
+              value={parameters.oscillatorType}
+              onChange={(oscillatorType) => updateParameters({ oscillatorType })}
+            />
           </Grid>
         </Grid>
         <Grid container item xs={3} alignItems="center" justifyContent="center">
           <Grid item xs={6}>
             <Toggle
               text={effects.pitchShift.name}
-              action={(selected) => {
-                effects.pitchShift.object.wet.value = Number(selected);
-                updateAdjective(effects.pitchShift.adjective, selected);
-              }}
+              selected={parameters.pitchShift.enabled}
+              onChange={(enabled) =>
+                updateParameters({
+                  pitchShift: { ...parameters.pitchShift, enabled },
+                })
+              }
             />
           </Grid>
           <Grid item xs={6}>
             <Parameter
-              action={(value) => (effects.pitchShift.object.pitch = value)}
+              value={parameters.pitchShift.pitch}
+              onChange={(pitch) =>
+                updateParameters({
+                  pitchShift: { ...parameters.pitchShift, pitch },
+                })
+              }
             />
           </Grid>
         </Grid>
@@ -105,16 +155,23 @@ export const Synth = () => {
           <Grid item xs={6}>
             <Toggle
               text={effects.filter.name}
-              action={(selected) => {
-                effects.filter.object.wet.value = Number(selected);
-                updateAdjective(effects.filter.adjective, selected);
-              }}
+              selected={parameters.filter.enabled}
+              onChange={(enabled) =>
+                updateParameters({
+                  filter: { ...parameters.filter, enabled },
+                })
+              }
             />
           </Grid>
           <Grid item xs={6}>
             <Parameter
+              value={parameters.filter.sensitivity}
               max={50}
-              action={(value) => (effects.filter.object.sensitivity = value)}
+              onChange={(sensitivity) =>
+                updateParameters({
+                  filter: { ...parameters.filter, sensitivity },
+                })
+              }
             />
           </Grid>
         </Grid>
@@ -122,17 +179,23 @@ export const Synth = () => {
           <Grid item xs={6}>
             <Toggle
               text={effects.distortion.name}
-              action={(selected) => {
-                effects.distortion.object.wet.value = Number(selected);
-                updateAdjective(effects.distortion.adjective, selected);
-              }}
+              selected={parameters.distortion.enabled}
+              onChange={(enabled) =>
+                updateParameters({
+                  distortion: { ...parameters.distortion, enabled },
+                })
+              }
             />
           </Grid>
           <Grid item xs={6}>
             <Parameter
-              initialValue={1}
+              value={parameters.distortion.amount}
               max={10}
-              action={(value) => (effects.distortion.object.distortion = value)}
+              onChange={(amount) =>
+                updateParameters({
+                  distortion: { ...parameters.distortion, amount },
+                })
+              }
             />
           </Grid>
         </Grid>
