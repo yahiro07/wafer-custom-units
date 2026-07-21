@@ -300,6 +300,14 @@ class Player {
   stop() {
     this.clockDriver.stop();
   }
+
+  playNote(instrument, rhythmIndex) {
+    this.soundEngine.playNoteAtTime(
+      instrument,
+      rhythmIndex,
+      context.currentTime,
+    );
+  }
 }
 
 export { Beat, Player, Effect, Kit, unitInterface };

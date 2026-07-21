@@ -9,6 +9,11 @@ import {
 } from "./shiny-drum-machine-data.js";
 
 import {
+  createPersistedState,
+  parsePersistedState,
+} from "./shiny-drum-machine-persistence.js";
+
+import {
   DemoButtons,
   EffectPicker,
   KitPicker,
@@ -46,6 +51,7 @@ const KITS = [];
 const EFFECTS = [];
 
 let activeClockSource = null;
+let persistedStateApplied = false;
 
 const ui = Object.seal({
   effectPicker: null,
@@ -93,9 +99,10 @@ function onDemoLoaded(demoIndex) {
 
   // Enable play button and assign it to demo 2.
   if (demoIndex == 1) {
-    // This gets rid of the loading spinner on the play button.
     ui.playButton.state = "stopped";
-    loadBeat(DEMO_BEATS[1]);
+    if (!persistedStateApplied) {
+      loadBeat(DEMO_BEATS[1]);
+    }
   }
 }
 
@@ -149,6 +156,17 @@ function init() {
       setBpm(bpm) {
         theBeat.tempo = bpm;
         ui.tempoInput.value = bpm;
+      },
+    },
+    persistence: {
+      emitState() {
+        return createPersistedState(theBeat);
+      },
+      applyState(state) {
+        const beat = parsePersistedState(state);
+        if (!beat) return;
+        persistedStateApplied = true;
+        loadBeat(beat);
       },
     },
   });
