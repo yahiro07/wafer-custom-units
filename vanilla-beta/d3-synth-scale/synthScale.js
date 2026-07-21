@@ -323,6 +323,43 @@ function triggerNote(pitch, time, duration, waveform) {
   }
 }
 
+// [pitchOffset][bpm f32 LE][duration f32 LE][lockon × beats × pitches]
+var STATE_HEADER_BYTES = 1 + 4 + 4;
+var STATE_BYTE_LENGTH = STATE_HEADER_BYTES + numBeats * pitches.length;
+
+function emitStateBytes() {
+  var bytes = new Uint8Array(STATE_BYTE_LENGTH);
+  var view = new DataView(bytes.buffer);
+  bytes[0] = d3.select("#Pitch").node().valueAsNumber + 2;
+  view.setFloat32(1, d3.select("#BPM").node().valueAsNumber, true);
+  view.setFloat32(5, d3.select("#Duration").node().valueAsNumber, true);
+  var i = STATE_HEADER_BYTES;
+  notes.each(function (d) {
+    bytes[i++] = d.lockon & 3;
+  });
+  return bytes;
+}
+
+function applyStateBytes(stateBytes) {
+  if (!stateBytes || stateBytes.length !== STATE_BYTE_LENGTH) return;
+  var view = new DataView(
+    stateBytes.buffer,
+    stateBytes.byteOffset,
+    stateBytes.byteLength,
+  );
+  var pitch = stateBytes[0] - 2;
+  if (pitch < -2 || pitch > 2) return;
+  d3.select("#Pitch").property("value", pitch);
+  d3.select("#BPM").property("value", view.getFloat32(1, true));
+  d3.select("#Duration").property("value", view.getFloat32(5, true));
+  var i = STATE_HEADER_BYTES;
+  notes.each(function (d) {
+    d.lockon = stateBytes[i++] & 3;
+    d.on = d.lockon;
+  });
+  notes.call(colorNote).style("stroke", "lightgrey");
+}
+
 unitInterface?.completeSetup({
   unitAspects: {
     unitType: "sequencer",
@@ -348,5 +385,9 @@ unitInterface?.completeSetup({
           });
       }
     },
+  },
+  persistence: {
+    emitStateBytes,
+    applyStateBytes,
   },
 });
