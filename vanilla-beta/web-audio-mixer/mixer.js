@@ -232,6 +232,7 @@
     masterChannel.addClass("master-channel");
     this.masterGain = this.ctx.createGain();
     this.masterGain.gain.value = 1;
+    this.masterFader = masterFader;
     this.el.append(masterChannel);
     masterFader.on("fader", function (e, val) {
       newVol =
@@ -246,6 +247,74 @@
     }
     if (this.masterGain) {
       this.masterGain.disconnect();
+    }
+  };
+
+  // [version][masterGain f32][per channel: 6×f32 + flags]
+  var MIXER_STATE_VERSION = 1;
+  var MIXER_CHANNEL_BYTES = 6 * 4 + 1;
+  var MIXER_STATE_BYTES = 1 + 4 + 4 * MIXER_CHANNEL_BYTES;
+
+  function setDialDegree(control, degree) {
+    if (degree < 50) degree = 50;
+    if (degree > 310) degree = 310;
+    var dial = control.find(".dial");
+    dial.data("degree", degree);
+    dial.css({
+      "-moz-transform": "rotate(" + degree + "deg)",
+      "-webkit-transform": "rotate(" + degree + "deg)",
+      transform: "rotate(" + degree + "deg)",
+    });
+  }
+
+  function setDialFromChangeVal(control, val) {
+    setDialDegree(control, val * 4 + 180);
+  }
+
+  function midFreqToChangeVal(frequency) {
+    var pos = frequency < 3000 ? frequency / 100 : frequency / 160;
+    return pos - 32;
+  }
+
+  function setFaderFromVolume(fader, volume, oldMin) {
+    var val = oldMin - (volume / 1.3) * oldMin;
+    var top = val - 35;
+    if (top < -35) top = -35;
+    if (top > 260) top = 260;
+    fader.find(".fader").css("top", top + "px");
+  }
+
+  Mixer.prototype.emitStateBytes = function () {
+    var bytes = new Uint8Array(MIXER_STATE_BYTES);
+    var view = new DataView(bytes.buffer);
+    bytes[0] = MIXER_STATE_VERSION;
+    view.setFloat32(1, this.masterGain.gain.value, true);
+    var offset = 5;
+    for (var i = 0; i < this.channels.length; ++i) {
+      offset = this.channels[i].writeStateBytes(view, bytes, offset);
+    }
+    return bytes;
+  };
+
+  Mixer.prototype.applyStateBytes = function (stateBytes) {
+    if (!stateBytes || stateBytes.length !== MIXER_STATE_BYTES) return;
+    if (stateBytes[0] !== MIXER_STATE_VERSION) return;
+    var view = new DataView(
+      stateBytes.buffer,
+      stateBytes.byteOffset,
+      stateBytes.byteLength,
+    );
+    var masterVol = view.getFloat32(1, true);
+    this.masterGain.gain.value = masterVol;
+    setFaderFromVolume(this.masterFader, masterVol, 285);
+    var offset = 5;
+    this.soloed = 0;
+    for (var i = 0; i < this.channels.length; ++i) {
+      offset = this.channels[i].readStateBytes(view, stateBytes, offset);
+      if (this.channels[i].soloed) this.soloed++;
+    }
+    if (this.channels.length) {
+      this.channels[0].enableDisableChannels();
     }
   };
 
@@ -390,6 +459,50 @@
     this.midFilter = Filter(this.ctx, "peaking", 10000, 0);
   };
 
+  Channel.prototype.writeStateBytes = function (view, bytes, offset) {
+    view.setFloat32(offset, this.highShelfFilter.gain.value, true);
+    view.setFloat32(offset + 4, this.midFilter.gain.value, true);
+    view.setFloat32(offset + 8, this.midFilter.frequency.value, true);
+    view.setFloat32(offset + 12, this.lowShelfFilter.gain.value, true);
+    view.setFloat32(offset + 16, this.panner.pan.value, true);
+    view.setFloat32(offset + 20, this.currGain, true);
+    bytes[offset + 24] = (this.on ? 1 : 0) | (this.soloed ? 2 : 0);
+    return offset + MIXER_CHANNEL_BYTES;
+  };
+
+  Channel.prototype.readStateBytes = function (view, bytes, offset) {
+    var highGain = view.getFloat32(offset, true);
+    var midGain = view.getFloat32(offset + 4, true);
+    var midFreq = view.getFloat32(offset + 8, true);
+    var lowGain = view.getFloat32(offset + 12, true);
+    var pan = view.getFloat32(offset + 16, true);
+    var currGain = view.getFloat32(offset + 20, true);
+    var flags = bytes[offset + 24];
+
+    this.highShelfFilter.gain.value = highGain;
+    this.midFilter.gain.value = midGain;
+    this.midFilter.frequency.value = midFreq;
+    this.lowShelfFilter.gain.value = lowGain;
+    this.panner.pan.value = pan;
+    this.currGain = currGain;
+    this.on = (flags & 1) !== 0;
+    this.soloed = (flags & 2) !== 0;
+
+    setDialFromChangeVal(this.highShelfControl, highGain);
+    setDialFromChangeVal(this.midControl, midGain);
+    setDialFromChangeVal(this.midFrequencyControl, midFreqToChangeVal(midFreq));
+    setDialFromChangeVal(this.lowShelfControl, lowGain);
+    setDialFromChangeVal(this.pannerControl, pan * 31);
+    setFaderFromVolume(this.faderControl, currGain, 295);
+
+    if (this.on) this.muteControl.removeClass("off");
+    else this.muteControl.addClass("off");
+    if (this.soloed) this.soloControl.addClass("on");
+    else this.soloControl.removeClass("on");
+
+    return offset + MIXER_CHANNEL_BYTES;
+  };
+
   function init() {
     var daw = new Daw();
 
@@ -397,6 +510,14 @@
       unitAspects: {
         unitType: "effect",
         viewSize: [852, 464],
+      },
+      persistence: {
+        emitStateBytes() {
+          return daw.mixer.emitStateBytes();
+        },
+        applyStateBytes(stateBytes) {
+          daw.mixer.applyStateBytes(stateBytes);
+        },
       },
       cleanup() {
         daw.mixer.disconnect();
