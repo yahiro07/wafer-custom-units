@@ -22,5 +22,9 @@ async function main(): Promise<void> {
       noteOn: synth.noteOn.bind(synth),
       noteOff: synth.noteOff.bind(synth),
     },
+    persistence: {
+      emitStateBytes: () => synth.emitStateBytes(),
+      applyStateBytes: (stateBytes) => synth.applyStateBytes(stateBytes),
+    },
   });
 }

@@ -36,7 +36,7 @@ export class Synthesizer extends THREE.Group {
     this.pressables.forEach((pressable) => {
       pressable.userData.inputSources = new Set<InputSource>();
     });
-    this.oscillatorType = 'organ';
+    this.oscillatorType = 'sawtooth';
     this.oscillationGraph = new OscillationGraph(notes);
     this.oscillationGraph.setOscillatorType(this.oscillatorType);
     this.setScreenText();
@@ -190,12 +190,12 @@ export class Synthesizer extends THREE.Group {
       } else if ([this.nextButton, this.previousButton].includes(pressable)) {
         pressable.position.y += Synthesizer.buttonPressHeight;
         const increment = pressable === this.nextButton ? 1 : -1;
-        this.oscillatorType = wrapIndex(
-          customOscillatorTypes.indexOf(this.oscillatorType) + increment,
-          customOscillatorTypes,
+        this.setOscillatorType(
+          wrapIndex(
+            customOscillatorTypes.indexOf(this.oscillatorType) + increment,
+            customOscillatorTypes,
+          ),
         );
-        this.oscillationGraph.setOscillatorType(this.oscillatorType);
-        this.setScreenText();
       }
     }
 
@@ -306,6 +306,27 @@ export class Synthesizer extends THREE.Group {
 
   private get screen(): THREE.Object3D {
     return this.model.getObjectByName('screen')!;
+  }
+
+  setOscillatorType(oscillatorType: CustomOscillatorType): void {
+    if (this.oscillatorType === oscillatorType) return;
+    this.oscillatorType = oscillatorType;
+    this.oscillationGraph.setOscillatorType(oscillatorType);
+    this.clearScreenText();
+    this.setScreenText();
+  }
+
+  emitStateBytes(): Uint8Array {
+    const index = customOscillatorTypes.indexOf(this.oscillatorType);
+    return new Uint8Array([index < 0 ? 0 : index]);
+  }
+
+  applyStateBytes(stateBytes: Uint8Array): void {
+    if (!stateBytes || stateBytes.length < 1) return;
+    const oscillatorType = customOscillatorTypes[stateBytes[0]];
+    if (oscillatorType) {
+      this.setOscillatorType(oscillatorType);
+    }
   }
 
   static async loadAssets(): Promise<void> {
