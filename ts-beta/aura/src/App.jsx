@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Play, Pause, Waves, Sparkles, Moon, Volume2 } from "lucide-react";
 import ParticleBackground from "./ParticleBackground";
 import { audioEngine, unitInterface } from "./audioEngine";
 import "./index.css";
 
-unitInterface?.completeSetup({
-  unitAspects: {
-    unitType: "instrument",
-    outputs: ["audio"],
-    viewSize: [840, 580],
-  },
-});
-
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [mood, setMood] = useState("Calm");
   const [volume, setVolume] = useState(0.5);
+
+  const appRef = useRef({ mood, volume, setMood, setVolume });
+  appRef.current = { mood, volume, setMood, setVolume };
 
   const handlePlayPause = () => {
     if (!isPlaying) {
@@ -38,11 +33,43 @@ function App() {
     audioEngine.setVolume(newVolume);
   };
 
-  // Prevent AudioContext warnings before user interaction
   useEffect(() => {
     return () => {
       audioEngine.stop();
     };
+  }, []);
+
+  useEffect(() => {
+    const moods = ["Calm", "Deep", "Ethereal"];
+    unitInterface?.completeSetup({
+      unitAspects: {
+        unitType: "instrument",
+        outputs: ["audio"],
+        viewSize: [840, 580],
+      },
+      persistence: {
+        emitStateBytes() {
+          const moodIndex = moods.indexOf(appRef.current.mood);
+          const bVolume = Math.round(appRef.current.volume * 255);
+          return new Uint8Array([moodIndex, bVolume]);
+        },
+        applyStateBytes(stateBytes) {
+          if (stateBytes.length !== 2) return;
+          const moodIndex = stateBytes[0];
+          const mood = moods[moodIndex];
+          if (mood) {
+            appRef.current.setMood(mood);
+            audioEngine.setMood(mood);
+          }
+          const bVolume = stateBytes[1];
+          const volume = bVolume / 255;
+          if (0 <= volume && volume <= 1) {
+            appRef.current.setVolume(volume);
+            audioEngine.setVolume(volume);
+          }
+        },
+      },
+    });
   }, []);
 
   return (
