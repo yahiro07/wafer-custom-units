@@ -9,6 +9,10 @@ import { keyToNoteMap, scaleOffsets, selectOptions } from "@/util/constants";
 import * as Nodes from "@/nodes";
 import presetData from "./presetData";
 import {
+  extractParameters,
+  parsePersistedState,
+} from "./persistence";
+import {
   ComponentContainer,
   SynthContainer,
   InfoToggle,
@@ -93,6 +97,14 @@ class Synth extends React.Component {
         },
         noteOff(time) {
           self.noteOff(time);
+        },
+      },
+      persistence: {
+        emitState() {
+          return self.emitPersistedState();
+        },
+        applyState(state) {
+          self.applyPersistedState(state);
         },
       },
     });
@@ -197,6 +209,31 @@ class Synth extends React.Component {
         this.syncNodesToState,
       );
     }
+  };
+
+  emitPersistedState = () => ({
+    presetName: this.state.currentPreset,
+    parameters: extractParameters(this.state),
+  });
+
+  applyPersistedState = (saved) => {
+    const persisted = parsePersistedState(saved);
+    if (!persisted) return;
+
+    const { presetName, parameters } = persisted;
+    const base =
+      presetName && this.presets.hasOwnProperty(presetName)
+        ? this.presets[presetName]
+        : {};
+
+    this.setState(
+      {
+        currentPreset: presetName ?? this.state.currentPreset,
+        ...base,
+        ...parameters,
+      },
+      this.syncNodesToState,
+    );
   };
 
   // Analyser Functions
