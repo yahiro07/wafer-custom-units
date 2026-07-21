@@ -61,5 +61,6 @@ export function createSynthActions(
           ...settings,
         },
       })),
+    setSelectedPresetName: (name) => set({ selectedPresetName: name }),
   };
 }

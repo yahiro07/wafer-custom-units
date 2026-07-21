@@ -1,11 +1,45 @@
-import { SynthState } from "../types/synth";
+import { OscillatorType, SynthState } from "../types/synth";
+import { FilterType } from "@/synth/types";
+
+export type ExportedParameters = {
+  octave: number;
+  modMix: number;
+  modWheel: number;
+  glide: number;
+  oscillators: Array<{
+    waveform: OscillatorType;
+    frequency: number;
+    range: "32" | "16" | "8" | "4" | "2";
+    volume: number;
+    detune: number;
+    pan: number;
+  }>;
+  noise: SynthState["noise"];
+  filter: {
+    cutoff: number;
+    resonance: number;
+    contourAmount: number;
+    type: FilterType;
+  };
+  envelope: SynthState["modifiers"]["envelope"];
+  lfo: SynthState["modifiers"]["lfo"];
+  reverb: SynthState["effects"]["reverb"];
+  distortion: SynthState["effects"]["distortion"];
+  delay: SynthState["effects"]["delay"];
+  arpeggiator: SynthState["arpeggiator"];
+};
+
+export type PersistedSynthState = {
+  presetName: string | null;
+  parameters: ExportedParameters;
+};
 
 type GetState = () => SynthState & {
-  exportCurrentPreset: () => Record<string, unknown>;
+  exportCurrentPreset: () => ExportedParameters;
 };
 
 export function createPresetExporter(get: GetState) {
-  return function exportCurrentPreset(): Record<string, unknown> {
+  return function exportCurrentPreset(): ExportedParameters {
     const state = get();
 
     return {

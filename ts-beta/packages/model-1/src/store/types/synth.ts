@@ -87,6 +87,8 @@ export type SynthState = {
     };
     delay: { amount: number; time: number; feedback: number };
   };
+
+  selectedPresetName: string | null;
 };
 
 export type SynthActions = {
@@ -113,4 +115,5 @@ export type SynthActions = {
   updateModifiers: (settings: Partial<SynthState["modifiers"]>) => void;
   updateEffects: (settings: Partial<SynthState["effects"]>) => void;
   updateArpeggiator: (settings: Partial<SynthState["arpeggiator"]>) => void;
+  setSelectedPresetName: (name: string | null) => void;
 };

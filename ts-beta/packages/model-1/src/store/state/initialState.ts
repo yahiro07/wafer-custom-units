@@ -17,6 +17,7 @@ export function createInitialState(): Omit<
   | "updateModifiers"
   | "updateEffects"
   | "updateArpeggiator"
+  | "setSelectedPresetName"
 > {
   return {
     activeKeys: null,
@@ -103,5 +104,6 @@ export function createInitialState(): Omit<
       },
       delay: { amount: 0, time: 0.3, feedback: 13 },
     },
+    selectedPresetName: null,
   };
 }

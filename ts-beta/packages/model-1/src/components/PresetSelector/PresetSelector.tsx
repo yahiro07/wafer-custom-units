@@ -2,10 +2,12 @@ import { presets } from "@/synth/presets";
 import styles from "./PresetSelector.module.css";
 
 type PresetSelectorProps = {
+  selectedPresetName: string | null;
   onPresetSelect: (presetName: string) => void;
 };
 
 export default function PresetSelector({
+  selectedPresetName,
   onPresetSelect,
 }: PresetSelectorProps) {
   // const exportCurrentPreset = useSynthStore((s) => s.exportCurrentPreset);
@@ -23,7 +25,7 @@ export default function PresetSelector({
     <div className={styles.presetSelector}>
       <select
         onChange={(e) => onPresetSelect(e.target.value)}
-        defaultValue=""
+        value={selectedPresetName ?? ""}
         className={styles.select}
       >
         <option value="" disabled>

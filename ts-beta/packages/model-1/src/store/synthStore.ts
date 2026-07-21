@@ -3,11 +3,16 @@ import { shallow } from "zustand/shallow";
 import { SynthState, SynthActions } from "./types/synth";
 import { createInitialState } from "./state/initialState";
 import { createSynthActions } from "./actions/synthActions";
-import { createPresetExporter } from "./utils/presetExporter";
+import {
+  createPresetExporter,
+  ExportedParameters,
+} from "./utils/presetExporter";
 import { createCustomHooks } from "./hooks";
 
 export type Store = SynthState &
-  SynthActions & { exportCurrentPreset: () => Record<string, unknown> };
+  SynthActions & {
+    exportCurrentPreset: () => ExportedParameters;
+  };
 
 export const useSynthStore = create<Store>()((set, get) => ({
   ...createInitialState(),
@@ -81,6 +86,9 @@ export const useSynthSelectors = {
   useUpdateModifiers: () => useSynthStore((state) => state.updateModifiers),
   useUpdateEffects: () => useSynthStore((state) => state.updateEffects),
   useUpdateArpeggiator: () => useSynthStore((state) => state.updateArpeggiator),
+  useSelectedPresetName: () => useSynthStore((state) => state.selectedPresetName),
+  useSetSelectedPresetName: () =>
+    useSynthStore((state) => state.setSelectedPresetName),
 };
 
 export const { useOscillator, useEffect, useModifier } =
