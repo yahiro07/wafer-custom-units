@@ -1,0 +1,50 @@
+.app {
+  background-color: #dbdbdb;
+}
+
+.top-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transform: translateY(40px);
+}
+
+.header {
+  height: 260px;
+  margin-left: -80px;
+}
+
+.header > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mixer {
+  margin-top: 20px;
+  padding: 20px;
+  font-weight: bold;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: auto min-content;
+  justify-content: center;
+  justify-items: end;
+  align-items: center;
+  gap: 20px 10px;
+  transform: scale(1.5);
+}
+
+#visualizer {
+  position: absolute;
+  background-color: #dbdbdb;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
