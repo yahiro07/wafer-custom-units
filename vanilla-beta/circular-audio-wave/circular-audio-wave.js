@@ -286,6 +286,7 @@ class CircularAudioWave {
     this._setupAudioNodes();
     this._init();
 
+    const self = this;
     unitInterface.completeSetup({
       unitAspects: {
         unitType: "effect",
@@ -305,6 +306,15 @@ class CircularAudioWave {
           } else {
             this.pause();
           }
+        },
+      },
+      persistence: {
+        emitStateBytes() {
+          return new Uint8Array([self.opts.mode === "sunburst" ? 1 : 0]);
+        },
+        applyStateBytes(stateBytes) {
+          const mode = stateBytes[0] === 1 ? "sunburst" : "circular";
+          self.setMode(mode);
         },
       },
       cleanup: () => {
@@ -359,12 +369,19 @@ class CircularAudioWave {
     this._init();
   }
 
-  toggleMode() {
-    this.opts.mode = this.opts.mode === "sunburst" ? "circular" : "sunburst";
-    this.reset();
-    if (this.playing && this.opts.mode !== "sunburst") {
-      this.chartOption.series[0].animation = false;
+  setMode(mode) {
+    if (mode !== this.opts.mode) {
+      this.opts.mode = mode;
+      this.reset();
+      if (this.playing && this.opts.mode !== "sunburst") {
+        this.chartOption.series[0].animation = false;
+      }
     }
+  }
+
+  toggleMode() {
+    const nextMode = this.opts.mode === "sunburst" ? "circular" : "sunburst";
+    this.setMode(nextMode);
   }
 
   _setupAudioNodes() {
