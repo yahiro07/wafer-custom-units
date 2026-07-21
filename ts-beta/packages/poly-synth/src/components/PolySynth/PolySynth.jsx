@@ -8,6 +8,11 @@ import Module from "src/components/Module";
 import PeakMeter from "src/components/PeakMeter";
 import Select from "src/components/Select";
 import presetData from "src/util/presetData";
+import {
+  applyParameters,
+  createApplyPersistedState,
+  extractParameters,
+} from "src/util/persistence";
 import { getNoteInfo, WAVEFORM, FILTER, REVERB } from "src/util/util";
 import { THEMES } from "src/styles/themes";
 
@@ -104,6 +109,120 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
   const [eqHighFreq, setEqHighFreq] = useState(3200);
 
   const noteFunctions = useRef({ noteOn: null, noteOff: null });
+  const skipPresetLoadRef = useRef(false);
+  const persistenceRef = useRef({});
+
+  const parameterSetters = {
+    polyphony: setPolyphony,
+    portamentoSpeed: setPortamentoSpeed,
+    masterVolume: setMasterVolume,
+    masterFilterType: setMasterFilterType,
+    masterFilterFreq: setMasterFilterFreq,
+    masterFilterQ: setMasterFilterQ,
+    masterFilterGain: setMasterFilterGain,
+    gainAttack: setGainAttack,
+    gainDecay: setGainDecay,
+    gainSustain: setGainSustain,
+    gainRelease: setGainRelease,
+    vcoType: setVcoType,
+    filterType: setFilterType,
+    filterFreq: setFilterFreq,
+    filterQ: setFilterQ,
+    filterGain: setFilterGain,
+    filterAttack: setFilterAttack,
+    filterDecay: setFilterDecay,
+    filterRelease: setFilterRelease,
+    filterEnvAmount: setFilterEnvAmount,
+    distortionAmount: setDistortionAmount,
+    distortionDist: setDistortionDist,
+    flangerAmount: setFlangerAmount,
+    flangerDepth: setFlangerDepth,
+    flangerRate: setFlangerRate,
+    flangerDelay: setFlangerDelay,
+    flangerFeedback: setFlangerFeedback,
+    delayAmount: setDelayAmount,
+    delayFeedback: setDelayFeedback,
+    delayTime: setDelayTime,
+    delayTone: setDelayTone,
+    pingPongAmount: setPingPongAmount,
+    pingPongDelayTime: setPingPongDelayTime,
+    pingPongTone: setPingPongTone,
+    pingPongFeedback: setPingPongFeedback,
+    reverbType: setReverbType,
+    reverbAmount: setReverbAmount,
+    vibratoDepth: setVibratoDepth,
+    vibratoRate: setVibratoRate,
+    bitCrushAmount: setBitCrushAmount,
+    bitCrushDepth: setBitCrushDepth,
+    eqLowGain: setEqLowGain,
+    eqHighGain: setEqHighGain,
+    eqLowFreq: setEqLowFreq,
+    eqHighFreq: setEqHighFreq,
+  };
+
+  persistenceRef.current = {
+    emitPersistedState: () => ({
+      presetName: currentPreset,
+      parameters: extractParameters({
+        polyphony,
+        portamentoSpeed,
+        masterVolume,
+        masterFilterType,
+        masterFilterFreq,
+        masterFilterQ,
+        masterFilterGain,
+        gainAttack,
+        gainDecay,
+        gainSustain,
+        gainRelease,
+        vcoType,
+        filterType,
+        filterFreq,
+        filterQ,
+        filterGain,
+        filterAttack,
+        filterDecay,
+        filterRelease,
+        filterEnvAmount,
+        distortionAmount,
+        distortionDist,
+        flangerAmount,
+        flangerDepth,
+        flangerRate,
+        flangerDelay,
+        flangerFeedback,
+        delayAmount,
+        delayFeedback,
+        delayTime,
+        delayTone,
+        pingPongAmount,
+        pingPongDelayTime,
+        pingPongTone,
+        pingPongFeedback,
+        reverbType,
+        reverbAmount,
+        vibratoDepth,
+        vibratoRate,
+        bitCrushAmount,
+        bitCrushDepth,
+        eqLowGain,
+        eqHighGain,
+        eqLowFreq,
+        eqHighFreq,
+      }),
+    }),
+    applyPersistedState: createApplyPersistedState({
+      presetData,
+      parameterSetters,
+      setCurrentPreset,
+      getCurrentPreset: () => currentPreset,
+      skipPresetLoadRef,
+      onBeforeApply: () => {
+        synthArr.forEach((synth) => synth.noteStop());
+        resetSynthPos();
+      },
+    }),
+  };
 
   const octaveUp = () => {
     if (octaveMod < 7) {
@@ -177,6 +296,14 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
           const note = `midi-${noteNumber}`;
           const freq = midiToFreq(noteNumber);
           noteFunctions.current?.noteOff({ note, freq });
+        },
+      },
+      persistence: {
+        emitState() {
+          return persistenceRef.current.emitPersistedState();
+        },
+        applyState(state) {
+          persistenceRef.current.applyPersistedState(state);
         },
       },
     });
@@ -272,55 +399,14 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
 
   // Load Preset
   useLayoutEffect(() => {
+    if (skipPresetLoadRef.current) {
+      skipPresetLoadRef.current = false;
+      return;
+    }
+
     const preset = presetData[currentPreset];
     synthArr.forEach((synth) => synth.noteStop());
-
-    setPolyphony(preset.polyphony);
-    setMasterVolume(preset.masterVolume);
-    setPortamentoSpeed(preset.portamentoSpeed);
-    setMasterFilterType(preset.masterFilterType);
-    setMasterFilterFreq(preset.masterFilterFreq);
-    setMasterFilterQ(preset.masterFilterQ);
-    setMasterFilterGain(preset.masterFilterGain);
-    setGainAttack(preset.gainAttack);
-    setGainDecay(preset.gainDecay);
-    setGainSustain(preset.gainSustain);
-    setGainRelease(preset.gainRelease);
-    setVcoType(preset.vcoType);
-    setFilterType(preset.filterType);
-    setFilterFreq(preset.filterFreq);
-    setFilterQ(preset.filterQ);
-    setFilterGain(preset.filterGain);
-    setFilterAttack(preset.filterAttack);
-    setFilterDecay(preset.filterDecay);
-    setFilterRelease(preset.filterRelease);
-    setFilterEnvAmount(preset.filterEnvAmount);
-    setDistortionAmount(preset.distortionAmount);
-    setDistortionDist(preset.distortionDist);
-    setFlangerAmount(preset.flangerAmount);
-    setFlangerDepth(preset.flangerDepth);
-    setFlangerRate(preset.flangerRate);
-    setFlangerDelay(preset.flangerDelay);
-    setFlangerFeedback(preset.flangerFeedback);
-    setDelayAmount(preset.delayAmount);
-    setDelayFeedback(preset.delayFeedback);
-    setDelayTime(preset.delayTime);
-    setDelayTone(preset.delayTone);
-    setPingPongAmount(preset.pingPongAmount);
-    setPingPongDelayTime(preset.pingPongDelayTime);
-    setPingPongTone(preset.pingPongTone);
-    setPingPongFeedback(preset.pingPongFeedback);
-    setReverbType(preset.reverbType);
-    setReverbAmount(preset.reverbAmount);
-    setVibratoDepth(preset.vibratoDepth);
-    setVibratoRate(preset.vibratoRate);
-    setBitCrushAmount(preset.bitCrushAmount);
-    setBitCrushDepth(preset.bitCrushDepth);
-    setEqLowGain(preset.eqLowGain);
-    setEqHighGain(preset.eqHighGain);
-    setEqLowFreq(preset.eqLowFreq);
-    setEqHighFreq(preset.eqHighFreq);
-
+    applyParameters(parameterSetters, preset);
     resetSynthPos();
   }, [currentPreset]);
 
