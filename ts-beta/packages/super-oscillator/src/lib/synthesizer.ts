@@ -6,10 +6,35 @@ import { Note, NoteLiteral, Range, Scale } from 'tonal';
 import wrapIndex from 'wrap-index';
 import * as ThreeUtils from './three-utils';
 import { OscillationGraph } from './oscillation-graph';
-import {
-  CustomOscillatorType,
-  customOscillatorTypes,
-} from 'web-audio-oscillators';
+import { CustomOscillatorType } from 'web-audio-oscillators';
+
+//order arranged
+const customOscillatorTypes: CustomOscillatorType[] = [
+  'sawtooth',
+  'square',
+  'square2',
+  'triangle',
+  'triangle2',
+  'sine',
+  'bass',
+  'bass2',
+  'bass3',
+  'bass4',
+  'brass',
+  'brass2',
+  'organ',
+  'organ2',
+  'organ3',
+  'organ4',
+  'organ5',
+  'aah',
+  'ooh',
+  'eeh',
+  'buzz',
+  'buzz2',
+  'dissonance',
+  'chiptune',
+];
 
 export class Synthesizer extends THREE.Group {
   private static readonly keyPressHeight = 0.6;
