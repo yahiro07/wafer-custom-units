@@ -4,9 +4,6 @@ export const Sequence = Backbone.Model.extend({
   initialize: function (attrs) {
     // console.log('Sequence::initialize()', attrs);
     this.context = this.getAudioContext();
-    this.get("stepCollection")
-      .fetch()
-      .done(function () {});
   },
 
   getAudioContext: function () {

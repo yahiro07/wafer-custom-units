@@ -1,15 +1,17 @@
 import Backbone from "backbone";
 import { Step } from "../models/step";
 
+export const defaultSteps = [
+  { id: 1, frequency: 440, delta: 0 },
+  { id: 2, frequency: 440, delta: 22 },
+  { id: 3, frequency: 440, delta: 12 },
+  { id: 4, frequency: 440, delta: 15 },
+  { id: 5, frequency: 440, delta: 5 },
+  { id: 6, frequency: 440, delta: 10 },
+  { id: 7, frequency: 440, delta: 12 },
+  { id: 8, frequency: 440, delta: 7 },
+];
+
 export const StepCollection = Backbone.Collection.extend({
   model: Step,
-  url: "data/steps.json",
-
-  initialize: function (models, options) {
-    // console.log('StepCollection:initialize()');
-  },
-
-  parse: function (response) {
-    return response.steps;
-  },
 });

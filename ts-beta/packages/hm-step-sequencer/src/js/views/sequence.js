@@ -3,7 +3,7 @@ import _ from "underscore";
 import Backbone from "backbone";
 import { Clock } from "../models/clock";
 import { Sequence } from "../models/sequence";
-import { StepCollection } from "../collections/steps";
+import { StepCollection, defaultSteps } from "../collections/steps";
 import { StepView } from "./step";
 
 const unitInterface = window.queryUnitInterface?.("wafer-v01");
@@ -21,12 +21,10 @@ export const SequenceView = Backbone.View.extend({
     var self = this;
     this.setNoteMapper();
     this.stepIndex = 0;
+    this._pendingStateBytes = null;
     this.clock = new Clock();
     this.listenTo(this.clock, "step", this.stepWasTriggered);
-    this.stepCollection = new StepCollection();
-    this.stepCollection.fetch().done(function () {
-      self.createAndRenderStepViews();
-    });
+    this.stepCollection = new StepCollection(defaultSteps);
     this.model = new Sequence({
       tempo: 120,
       rootPitch: "A4",
@@ -57,12 +55,57 @@ export const SequenceView = Backbone.View.extend({
           self.clock.tempo = bpm;
         },
       },
+      persistence: {
+        emitStateBytes() {
+          return self.emitStateBytes();
+        },
+        applyStateBytes(stateBytes) {
+          self.applyStateBytes(stateBytes);
+        },
+      },
     });
+  },
+
+  // [activeMask u8][delta × 8]
+  emitStateBytes: function () {
+    if (!this._stepViews || this._stepViews.length === 0) {
+      return new Uint8Array(9);
+    }
+    var bytes = new Uint8Array(1 + this._stepViews.length);
+    var activeMask = 0;
+    for (var i = 0; i < this._stepViews.length; i++) {
+      if (this._stepViews[i].isActive()) {
+        activeMask |= 1 << i;
+      }
+      bytes[1 + i] = this._stepViews[i].getDelta() & 0xff;
+    }
+    bytes[0] = activeMask;
+    return bytes;
+  },
+
+  applyStateBytes: function (stateBytes) {
+    if (!stateBytes || stateBytes.length < 1) return;
+    if (!this._stepViews || this._stepViews.length === 0) {
+      this._pendingStateBytes = new Uint8Array(stateBytes);
+      return;
+    }
+    var stepCount = this._stepViews.length;
+    if (stateBytes.length !== 1 + stepCount) return;
+    var activeMask = stateBytes[0];
+    for (var i = 0; i < stepCount; i++) {
+      this._stepViews[i].setActive((activeMask & (1 << i)) !== 0);
+      this._stepViews[i].setDelta(stateBytes[1 + i]);
+    }
   },
 
   render: function () {
     this.template = _.template($("#sequence-template").html());
     this.$el.html(this.template({}));
+    this.createAndRenderStepViews();
+    if (this._pendingStateBytes) {
+      this.applyStateBytes(this._pendingStateBytes);
+      this._pendingStateBytes = null;
+    }
     return this;
   },
 
@@ -81,8 +124,9 @@ export const SequenceView = Backbone.View.extend({
   },
 
   renderStepViews: function () {
+    var $stepViews = this.$("#step-views");
     _.each(this._stepViews, function (stepView) {
-      $("#step-views").append(stepView.render().$el);
+      $stepViews.append(stepView.render().$el);
     });
   },
 

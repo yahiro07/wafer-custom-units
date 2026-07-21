@@ -53,7 +53,7 @@ export const StepView = Backbone.View.extend({
   },
 
   flashLed: function () {
-    var $ledEl = $(".led_" + this.model.id);
+    var $ledEl = this.$(".led_" + this.model.id);
     $ledEl.addClass("lit");
     setTimeout(function () {
       $ledEl.removeClass("lit");
@@ -61,16 +61,24 @@ export const StepView = Backbone.View.extend({
   },
 
   toggleStep: function () {
-    var $triggerEl = $(".trigger_" + this.model.id);
-    $triggerEl.toggleClass("step-active");
+    this.setActive(!this.isActive());
   },
 
   isActive: function () {
-    var $triggerEl = $(".trigger_" + this.model.id);
-    if ($triggerEl.hasClass("step-active")) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.$(".trigger_" + this.model.id).hasClass("step-active");
+  },
+
+  setActive: function (active) {
+    this.$(".trigger_" + this.model.id).toggleClass("step-active", !!active);
+  },
+
+  getDelta: function () {
+    return Number(this.model.get("delta")) || 0;
+  },
+
+  setDelta: function (delta) {
+    delta = Math.max(0, Math.min(24, Number(delta) || 0));
+    this.model.set({ delta: delta });
+    this.$(".slider").val(delta);
   },
 });
