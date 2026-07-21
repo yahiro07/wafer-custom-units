@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let showOscilloscope = false;
   let oscilloscopeScaleMode = "linear"; // 'linear', 'log', 'compand'
   let useSmoothing = false;
+  const OSCILLOSCOPE_SCALE_MODES = ["linear", "log", "compand"];
   const maxFrames = 100; // Number of frames to store in the spectrogram
   const OSCILLOSCOPE_SAMPLES = 4096; // Double the FFT size for longer time window
   let hammingTimeWeights = null; // Precomputed, gain-compensated Hamming window for time-domain samples
@@ -76,37 +77,32 @@ document.addEventListener("DOMContentLoaded", function () {
   let fftWorkIm = null;
   const CUSTOM_SMOOTH_ALPHA = 0.8; // For custom FFT path smoothing
   let customSmoothPrev = null; // Uint8Array for EMA smoothing on custom path
-  scaleBtn.addEventListener("click", function () {
-    isLogScale = !isLogScale; // Toggle between Log and Linear scale
-    console.log(
-      "Frequency scale toggled. Log scale is now " +
-        (isLogScale ? "ON" : "OFF"),
-    );
+
+  function setLogScale(enabled) {
+    isLogScale = !!enabled;
     scaleBtn.textContent = isLogScale ? "Scale: Log" : "Scale: Linear";
     scaleBtn.classList.toggle("active", isLogScale);
-
-    // Update labels
     const scaleText = isLogScale ? "Log" : "Linear";
     spectrumLabel.textContent = `Frequency Spectrum - ${scaleText}`;
     spectrogramLabel.textContent = `Spectrogram (Time-Frequency) - ${scaleText}`;
-  });
+  }
 
-  windowBtn.addEventListener("click", function () {
-    useHammingWindow = !useHammingWindow;
+  function setHammingWindow(enabled) {
+    useHammingWindow = !!enabled;
     windowBtn.textContent = useHammingWindow
       ? "Window: Hamming"
       : "Window: Rectangular";
     windowBtn.classList.toggle("active", useHammingWindow);
-  });
+  }
 
-  smoothBtn.addEventListener("click", function () {
-    useSmoothing = !useSmoothing;
+  function setSmoothing(enabled) {
+    useSmoothing = !!enabled;
     smoothBtn.textContent = useSmoothing ? "Smooth: On" : "Smooth: Off";
     smoothBtn.classList.toggle("active", useSmoothing);
-  });
+  }
 
-  oscilloscopeBtn.addEventListener("click", function () {
-    showOscilloscope = !showOscilloscope;
+  function setShowOscilloscope(enabled) {
+    showOscilloscope = !!enabled;
     oscilloscopeBtn.textContent = showOscilloscope
       ? "Hide Oscilloscope"
       : "Show Oscilloscope";
@@ -117,34 +113,42 @@ document.addEventListener("DOMContentLoaded", function () {
       : "none";
     updateCanvasLayout();
     if (showOscilloscope) {
-      // Resize the oscilloscope canvas when it becomes visible
       setTimeout(() => {
         resizeCanvases();
       }, 10);
     }
+  }
+
+  function setOscilloscopeScaleMode(mode) {
+    if (!OSCILLOSCOPE_SCALE_MODES.includes(mode)) return;
+    oscilloscopeScaleMode = mode;
+    const modeText = mode.charAt(0).toUpperCase() + mode.slice(1);
+    oscilloscopeScaleBtn.textContent = `Scope: ${modeText}`;
+    oscilloscopeScaleBtn.classList.toggle("active", mode !== "linear");
+    oscilloscopeLabel.textContent = `Oscilloscope (Time Domain) - ${modeText}`;
+  }
+
+  scaleBtn.addEventListener("click", function () {
+    setLogScale(!isLogScale);
+  });
+
+  windowBtn.addEventListener("click", function () {
+    setHammingWindow(!useHammingWindow);
+  });
+
+  smoothBtn.addEventListener("click", function () {
+    setSmoothing(!useSmoothing);
+  });
+
+  oscilloscopeBtn.addEventListener("click", function () {
+    setShowOscilloscope(!showOscilloscope);
   });
 
   oscilloscopeScaleBtn.addEventListener("click", function () {
-    if (oscilloscopeScaleMode === "linear") {
-      oscilloscopeScaleMode = "log";
-      oscilloscopeScaleBtn.textContent = "Scope: Log";
-    } else if (oscilloscopeScaleMode === "log") {
-      oscilloscopeScaleMode = "compand";
-      oscilloscopeScaleBtn.textContent = "Scope: Compand";
-    } else {
-      oscilloscopeScaleMode = "linear";
-      oscilloscopeScaleBtn.textContent = "Scope: Linear";
-    }
-    oscilloscopeScaleBtn.classList.toggle(
-      "active",
-      oscilloscopeScaleMode !== "linear",
-    );
-
-    // Update oscilloscope label
-    const modeText =
-      oscilloscopeScaleMode.charAt(0).toUpperCase() +
-      oscilloscopeScaleMode.slice(1);
-    oscilloscopeLabel.textContent = `Oscilloscope (Time Domain) - ${modeText}`;
+    const nextIndex =
+      (OSCILLOSCOPE_SCALE_MODES.indexOf(oscilloscopeScaleMode) + 1) %
+      OSCILLOSCOPE_SCALE_MODES.length;
+    setOscilloscopeScaleMode(OSCILLOSCOPE_SCALE_MODES[nextIndex]);
   });
 
   function setupAudioSource() {
@@ -213,18 +217,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   }
-
-  if (unitInterface) {
-    setupAudioSource();
-    unitInterface.completeSetup({
-      unitAspects: {
-        unitType: "effect",
-        viewSize: [1200, 860],
-      },
-      cleanup: cleanupConnections,
-    });
-  }
-  btn.addEventListener("click", handleStartButtonClick);
 
   function applyScaling(bufferLength, width, sampleRate, mode) {
     const xs = new Array(bufferLength);
@@ -834,4 +826,40 @@ document.addEventListener("DOMContentLoaded", function () {
       drawSpectrum();
     }
   }
+
+  if (unitInterface) {
+    setupAudioSource();
+    unitInterface.completeSetup({
+      unitAspects: {
+        unitType: "effect",
+        viewSize: [1200, 860],
+      },
+      persistence: {
+        // [flags: log|hamming|scope|smooth][scopeScaleMode]
+        emitStateBytes() {
+          const flags =
+            (isLogScale ? 1 : 0) |
+            (useHammingWindow ? 2 : 0) |
+            (showOscilloscope ? 4 : 0) |
+            (useSmoothing ? 8 : 0);
+          const modeIndex = OSCILLOSCOPE_SCALE_MODES.indexOf(
+            oscilloscopeScaleMode,
+          );
+          return new Uint8Array([flags, modeIndex < 0 ? 0 : modeIndex]);
+        },
+        applyStateBytes(stateBytes) {
+          if (!stateBytes || stateBytes.length < 2) return;
+          const flags = stateBytes[0];
+          setLogScale((flags & 1) !== 0);
+          setHammingWindow((flags & 2) !== 0);
+          setShowOscilloscope((flags & 4) !== 0);
+          setSmoothing((flags & 8) !== 0);
+          const mode = OSCILLOSCOPE_SCALE_MODES[stateBytes[1]];
+          if (mode) setOscilloscopeScaleMode(mode);
+        },
+      },
+      cleanup: cleanupConnections,
+    });
+  }
+  btn.addEventListener("click", handleStartButtonClick);
 });
