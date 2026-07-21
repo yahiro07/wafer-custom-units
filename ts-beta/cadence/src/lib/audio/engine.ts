@@ -2,8 +2,63 @@ import { Voice } from "@/lib/audio/voice";
 import type { EngineParams } from "@/lib/audio/types";
 import { queryUnitInterface } from "wafer-host/unit-types";
 import { midiToFreq } from "@/lib/audio/notes";
+import { WAVEFORMS } from "@/lib/constants";
 
 export const unitInterface = queryUnitInterface("wafer-v01");
+
+/** Float fields serialized after the waveform index byte (little-endian f32). */
+const PARAM_FLOAT_KEYS = [
+  "cutoff",
+  "resonance",
+  "delayTime",
+  "delayFeedback",
+  "volume",
+  "attack",
+  "decay",
+  "sustain",
+  "release",
+] as const satisfies ReadonlyArray<keyof EngineParams>;
+
+const STATE_BYTE_LENGTH = 1 + PARAM_FLOAT_KEYS.length * 4;
+
+function encodeEngineParams(params: EngineParams): Uint8Array {
+  const bytes = new Uint8Array(STATE_BYTE_LENGTH);
+  const view = new DataView(bytes.buffer);
+  const waveIndex = WAVEFORMS.indexOf(params.waveform);
+  bytes[0] = waveIndex < 0 ? 0 : waveIndex;
+  let offset = 1;
+  for (const key of PARAM_FLOAT_KEYS) {
+    view.setFloat32(offset, params[key], true);
+    offset += 4;
+  }
+  return bytes;
+}
+
+function decodeEngineParams(stateBytes: Uint8Array): EngineParams | null {
+  if (stateBytes.length !== STATE_BYTE_LENGTH) {
+    return null;
+  }
+  const waveform = WAVEFORMS[stateBytes[0]];
+  if (!waveform) {
+    return null;
+  }
+  const view = new DataView(
+    stateBytes.buffer,
+    stateBytes.byteOffset,
+    stateBytes.byteLength,
+  );
+  const params = { waveform } as EngineParams;
+  let offset = 1;
+  for (const key of PARAM_FLOAT_KEYS) {
+    const value = view.getFloat32(offset, true);
+    if (!Number.isFinite(value)) {
+      return null;
+    }
+    params[key] = value;
+    offset += 4;
+  }
+  return params;
+}
 
 /**
  * The cadence synth engine. Owns the AudioContext and a hand-wired signal
@@ -30,13 +85,18 @@ export class AudioEngine {
 
   private params: EngineParams;
   private readonly voices = new Map<string, Voice>();
+  private readonly onParamsChange?: (params: EngineParams) => void;
 
-  constructor(params: EngineParams) {
+  constructor(
+    params: EngineParams,
+    onParamsChange?: (params: EngineParams) => void,
+  ) {
     this.ctx = unitInterface?.audioContext ?? new AudioContext();
     const destinationNode =
       unitInterface?.audioOutputNode ?? this.ctx.destination;
 
     this.params = params;
+    this.onParamsChange = onParamsChange;
 
     this.voiceBus = this.ctx.createGain();
     this.filter = this.ctx.createBiquadFilter();
@@ -84,7 +144,30 @@ export class AudioEngine {
           self.noteOff(id);
         },
       },
+      persistence: {
+        emitStateBytes() {
+          return self.emitStateBytes();
+        },
+        applyStateBytes(stateBytes) {
+          self.applyStateBytes(stateBytes);
+        },
+      },
     });
+  }
+
+  /** Serialize live engine params for the host persistence layer. */
+  emitStateBytes(): Uint8Array {
+    return encodeEngineParams(this.params);
+  }
+
+  /** Restore params from the host; updates audio nodes and notifies React. */
+  applyStateBytes(stateBytes: Uint8Array): void {
+    const next = decodeEngineParams(stateBytes);
+    if (!next) {
+      return;
+    }
+    this.setParams(next);
+    this.onParamsChange?.(next);
   }
 
   /** Smoothly push parameter values onto the live audio nodes. */

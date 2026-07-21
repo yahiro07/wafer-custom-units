@@ -29,7 +29,8 @@ export function useAudioEngine(): UseAudioEngine {
   const ensureEngine = useCallback(async (): Promise<AudioEngine | null> => {
     if (!engineRef.current) {
       try {
-        engineRef.current = new AudioEngine(paramsRef.current);
+        // Pass setParams so host persistence (applyStateBytes) can sync the UI.
+        engineRef.current = new AudioEngine(paramsRef.current, setParams);
       } catch {
         return null;
       }
