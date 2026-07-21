@@ -1,14 +1,14 @@
 | name                      | type         | node cleanup | DOM cleanup | persistence | timeAccurateVoicing |
 | ------------------------- | ------------ | ------------ | ----------- | ----------- | ------------------- |
-| additive                  | synth        |              |             | ok          | ok                  |
-| circular-audio-wave       | visualizer   |              |             | ok          | --                  |
-| d3-synth-scale            | sequencer    |              |             | ok          | --                  |
-| vissonance                | visualizer   |              |             | ok          | --                  |
-| wasyn-1                   | synth        |              |             | ok          | ok                  |
-| web-audio-mixer           | mixer        |              |             | ok          | --                  |
-| webaudio-spectrum         | visualizer   |              |             | ok          | --                  |
-| webaudio-synth-v2         | synth        |              |             | ok          | ok                  |
-| webaudio-tinysynth-simple | synth        |              |             | ok          | ok                  |
+| additive                  | synth        |              |             | ok(json)    |                     |
+| circular-audio-wave       | visualizer   |              |             | ok(binary)  | --                  |
+| d3-synth-scale            | sequencer    |              |             | ok(binary)  | --                  |
+| vissonance                | visualizer   |              |             | ok(binary)  | --                  |
+| wasyn-1                   | synth        |              |             | ok(binary)  |                     |
+| web-audio-mixer           | mixer        |              |             | ok(binary)  | --                  |
+| webaudio-spectrum         | visualizer   |              |             | ok(binary)  | --                  |
+| webaudio-synth-v2         | synth        |              |             | ok(json)    |                     |
+| webaudio-tinysynth-simple | synth        |              |             | ok(binary)  | ok                  |
 | midi-synth                | synth        |              |             | ok(json)    |                     |
 | shiny-drum-machine        | drum machine |              |             | ok(json)    | --                  |
 | bl-synth-modular          | synth        |              |             | ok(json)    |                     |
