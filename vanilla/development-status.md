@@ -14,3 +14,4 @@
 | bl-synth-modular          | synth        |         | ok(json)    |                     |
 | darkwave                  | effect       |         | ok(json)    | --                  |
 | simple-synth              | synth        |         | ok(json)    | ok                  |
+| audio-input-effects       | effect       |         | ok(json)    | --                  |

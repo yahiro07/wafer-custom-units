@@ -95,20 +95,44 @@ function createLPInputFilter() {
   return lpInputFilter;
 }
 
-function toggleMono() {
-  if (audioInput != realAudioInput) {
-    audioInput.disconnect();
+function connectEffectInput() {
+  if (audioInput && currentEffectNode) {
+    audioInput.connect(currentEffectNode);
+  }
+}
+
+function rebuildInputRouting() {
+  if (!realAudioInput || !dryGain) return;
+
+  if (audioInput) {
+    try {
+      audioInput.disconnect();
+    } catch (e) {}
+  }
+  try {
     realAudioInput.disconnect();
-    audioInput = realAudioInput;
-  } else {
-    realAudioInput.disconnect();
+  } catch (e) {}
+
+  var monoCheckbox = document.querySelector("#effectMix input[type=checkbox]");
+  var wantMono = monoCheckbox ? monoCheckbox.checked : true;
+
+  if (wantMono) {
     audioInput = convertToMono(realAudioInput);
+    if (useFeedbackReduction) {
+      audioInput.connect(createLPInputFilter());
+      audioInput = lpInputFilter;
+    }
+  } else {
+    audioInput = realAudioInput;
   }
 
-  createLPInputFilter();
-  lpInputFilter.connect(dryGain);
-  lpInputFilter.connect(analyser1);
-  lpInputFilter.connect(effectInput);
+  audioInput.connect(dryGain);
+  audioInput.connect(analyser1);
+  connectEffectInput();
+}
+
+function toggleMono() {
+  rebuildInputRouting();
 }
 
 var useFeedbackReduction = true;
@@ -119,39 +143,25 @@ function gotStream(stream) {
 }
 
 function gotStreamInput(input) {
-  // Create an AudioNode from the stream.
-  //    realAudioInput = audioContext.createMediaStreamSource(stream);
+  realAudioInput = input;
 
-  /*
-    realAudioInput = audioContext.createBiquadFilter();
-    realAudioInput.frequency.value = 60.0;
-    realAudioInput.type = realAudioInput.NOTCH;
-    realAudioInput.Q = 10.0;
-
-    input.connect( realAudioInput );
-*/
-  audioInput = convertToMono(input);
-
-  if (useFeedbackReduction) {
-    audioInput.connect(createLPInputFilter());
-    audioInput = lpInputFilter;
-  }
-  // create mix gain nodes
   outputMix = audioContext.createGain();
   dryGain = audioContext.createGain();
   wetGain = audioContext.createGain();
   effectInput = audioContext.createGain();
-  audioInput.connect(dryGain);
-  audioInput.connect(analyser1);
-  audioInput.connect(effectInput);
   dryGain.connect(outputMix);
   wetGain.connect(outputMix);
   outputMix.connect(audioDestination);
   outputMix.connect(analyser2);
+  rebuildInputRouting();
   crossfade(1.0);
   changeEffect();
   cancelAnalyserUpdates();
   updateAnalysers();
+
+  if (typeof flushPendingPersistedState === "function") {
+    flushPendingPersistedState();
+  }
 }
 
 function changeInput() {
@@ -224,6 +234,10 @@ function initAudio() {
       unitAspects: {
         unitType: "effect",
         viewSize: [1000, 780],
+      },
+      persistence: {
+        emitState: emitPersistedState,
+        applyState: applyPersistedState,
       },
     });
     const hideElement = (id) => {
@@ -414,7 +428,7 @@ function changeEffect() {
     default:
       break;
   }
-  audioInput.connect(currentEffectNode);
+  connectEffectInput();
 }
 
 function createTelephonizer() {
