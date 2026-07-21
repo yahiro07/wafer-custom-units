@@ -7,10 +7,18 @@ import { AdsrComponent } from "./adsr.component";
 import { SynthoEngine } from "../audio/engine";
 import { FrequencyMap } from "../audio/frequency-map";
 import { PhysicalKeyboard } from "./physical-keyboard";
+import { UnitInterface } from "wafer-host/unit-types";
+import { createNoteRoute } from "../noteRoute";
+import {
+  applyParameters,
+  extractParameters,
+  parsePersistedState,
+} from "../synthState";
 
 interface SynthUIProps {
   engine: SynthoEngine;
   frequencyMap: FrequencyMap;
+  unitInterface: UnitInterface | undefined;
 }
 
 export class SynthUI extends Component<SynthUIProps, any> {
@@ -21,6 +29,36 @@ export class SynthUI extends Component<SynthUIProps, any> {
     this.physicalKeyboard = new PhysicalKeyboard({
       keyEvent: (note) => this.changeNote(note),
       triggerEvent: (val) => this.trigger(val),
+    });
+  }
+
+  componentDidMount() {
+    const noteRoute = createNoteRoute(this.props.engine, this.props.frequencyMap);
+
+    this.props.unitInterface?.completeSetup({
+      unitAspects: {
+        unitType: "instrument",
+        viewSize: [1200, 620],
+      },
+      noteInput: {
+        noteOn(noteNumber) {
+          noteRoute.noteOn(noteNumber);
+        },
+        noteOff(noteNumber) {
+          noteRoute.noteOff(noteNumber);
+        },
+      },
+      persistence: {
+        emitState: () => ({
+          parameters: extractParameters(this.props.engine),
+        }),
+        applyState: (state) => {
+          const parameters = parsePersistedState(state);
+          if (!parameters) return;
+          applyParameters(this.props.engine, parameters);
+          this.forceUpdate();
+        },
+      },
     });
   }
 
