@@ -4,6 +4,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["vite/client"],
     "jsx": "react",
     "strict": true,
     "noEmit": true,

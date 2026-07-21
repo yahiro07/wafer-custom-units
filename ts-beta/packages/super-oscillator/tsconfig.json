@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "ES2015",
-    "moduleResolution": "Bundler",
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["vite/client"],
     "esModuleInterop": true,
     "strict": true,
     "noEmitOnError": true,
