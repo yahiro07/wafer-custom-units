@@ -58,6 +58,7 @@ import TransportButtons from './TransportButtons.vue';
 import Loader from './Loader.vue';
 import EventBus from './../event-bus';
 import { unitWrapper } from '../unit-wrapper';
+import { parsePersistedState } from '../persistence';
 // import Recorder from './../recorder';
 
 
@@ -148,7 +149,15 @@ export default {
 
   },
 
+  mounted() {
+    unitWrapper.registerPersistenceHandlers({
+      emitState: () => this.getPersistedState(),
+      applyState: (state) => this.applyPersistedState(state),
+    });
+  },
+
   beforeDestroy() {
+    unitWrapper.unregisterPersistenceHandlers();
     EventBus.$off(this.mixerVars.instance_id + 'soloChange', this.detectedSoloChange);
     EventBus.$off(this.mixerVars.instance_id + 'track_loaded', this.trackLoaded);
     EventBus.$off(this.mixerVars.instance_id + 'stop', this.stopped);
@@ -496,6 +505,53 @@ export default {
       this.pannerNode.setPosition(x, 0, z);
 
       this.masterPanValue = pan;
+    },
+
+    getPersistedState() {
+      return {
+        parameters: {
+          tracks: this.tracks.map((track) => ({
+            channelId: track.channelId,
+            pan: parseFloat(track.pan),
+            gain: parseFloat(track.gain),
+            muted: !!track.muted,
+            hidden: !!track.hidden,
+          })),
+          master: {
+            pan: parseFloat(this.masterPanValue),
+            gain: parseFloat(this.masterGainValue),
+            muted: !!this.masterMuted,
+          },
+        },
+      };
+    },
+
+    applyPersistedState(state) {
+      const parameters = parsePersistedState(state);
+      if (!parameters) return;
+
+      parameters.tracks.forEach((savedTrack) => {
+        const track = this.tracks.find(
+          (entry) => entry.channelId === savedTrack.channelId,
+        );
+        if (!track) return;
+        track.pan = savedTrack.pan;
+        track.gain = savedTrack.gain;
+        track.muted = savedTrack.muted;
+        track.hidden = savedTrack.hidden;
+      });
+
+      this.masterPanValue = parameters.master.pan;
+      this.masterGainValue = parameters.master.gain;
+      this.changeMasterPan(this.masterPanValue);
+
+      if (parameters.master.muted) {
+        this.masterMuted = true;
+        this.gainNode.gain.value = 0;
+      } else {
+        this.masterMuted = false;
+        this.gainNode.gain.value = this.masterGainValue;
+      }
     },
 
     // Master Audio Nodes

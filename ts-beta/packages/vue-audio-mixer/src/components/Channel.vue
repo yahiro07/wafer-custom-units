@@ -129,6 +129,20 @@ export default {
 
   watch: {
 
+    defaultPan(value) {
+      this.pan = value;
+      this.changePan();
+    },
+
+    defaultGain(value) {
+      this.gain = value;
+      this.changeGain();
+    },
+
+    defaultMuted(value) {
+      this.mute = value;
+    },
+
     pan: function () {
       this.changePan();
     },

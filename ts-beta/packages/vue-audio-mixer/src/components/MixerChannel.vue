@@ -1,8 +1,8 @@
 <template>
 
-  <Channel v-if="loaded" :index="_uid" :trackIndex="trackIndex" :title="title" :defaultPan="pan" :defaultMuted="muted"
-    :defaultGain="defaultGain" @gainChange="changeGain" @muteChange="muteChange" @soloChange="soloChange"
-    @panChange="changePan" :leftAnalyser="leftAnalyser" :rightAnalyser="rightAnalyser"
+  <Channel v-if="loaded" :index="_uid" :trackIndex="trackIndex" :title="title" :defaultPan="pan"
+    :defaultMuted="mutedByMute" :defaultGain="defaultGain" @gainChange="changeGain" @muteChange="muteChange"
+    @soloChange="soloChange" @panChange="changePan" :leftAnalyser="leftAnalyser" :rightAnalyser="rightAnalyser"
     :scriptProcessorNode="scriptProcessorNode" :showMute="true" :mixerVars="mixerVars" />
 
 </template>
@@ -52,6 +52,18 @@ export default {
 
   watch: {
 
+    defaultPan(value) {
+      this.changePan(value);
+    },
+
+    defaultGain(value) {
+      this.changeGain(value);
+    },
+
+    defaultMuted(value) {
+      this.muteChange(value, false);
+    },
+
     solodTracks(newVal) {
       if (this.solodTracks.length && this.solodTracks.indexOf(this.trackIndex) === -1)
         this.muteChange(true, true);
@@ -88,13 +100,11 @@ export default {
       this.gainValue = this.gainNode.gain.value; // store gain value
       this.gainNode.gain.value = 0; // mute the gain node
       this.muted = true;
-      this.$emit('muteChange', { index: this.trackIndex, muted: this.muted });
     },
 
     unMute() {
       this.muted = false;
       this.gainNode.gain.value = this.gainValue; // restore previous gain value
-      this.$emit('muteChange', { index: this.trackIndex, muted: this.muted });
     },
 
 
@@ -127,6 +137,7 @@ export default {
           this.unMute();
 
         this.mutedByMute = value;
+        this.$emit('muteChange', { index: this.trackIndex, muted: value });
       }
 
     },
