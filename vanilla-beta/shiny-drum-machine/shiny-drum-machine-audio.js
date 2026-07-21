@@ -25,7 +25,7 @@ class Kit {
   }
 
   getSampleUrl(instrumentName) {
-    return `./sound/drum-samples/${this.id}/${instrumentName.toLowerCase()}.wav`;
+    return `./sound/drum-samples/${this.id}/${instrumentName.toLowerCase()}.m4a`;
   }
 
   load() {
