@@ -37,9 +37,9 @@
   };
 
   function oscillatorSection() {
-    var mid = new Tone.Oscillator().start();
-    var hi = new Tone.Oscillator().start();
-    var lo = new Tone.Oscillator().start();
+    var mid = new Tone.Oscillator({ type: "sawtooth" }).start();
+    var hi = new Tone.Oscillator({ type: "sawtooth" }).start();
+    var lo = new Tone.Oscillator({ type: "sawtooth" }).start();
 
     // Frequency control and pitch modulation affect all three oscillators
     var frequency = new Tone.Signal();

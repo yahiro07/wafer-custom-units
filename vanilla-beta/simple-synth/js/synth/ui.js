@@ -10,7 +10,7 @@ Synth.UI = function (synth) {
     mediumDark: "#666",
   };
 
-  function TypeSelect(id, property, options) {
+  function TypeSelect(id, property, options, defaultValue) {
     var typeSelect = new Nexus.Select("#" + id + "-select", {
       options: options,
     });
@@ -19,6 +19,7 @@ Synth.UI = function (synth) {
       // Don't take over keyboard focus
       typeSelect.element.blur();
     });
+    typeSelect.value = defaultValue || options[0];
   }
 
   function DialControl(id, signal, property, options) {
@@ -55,12 +56,12 @@ Synth.UI = function (synth) {
   }
 
   // oscillator controls
-  TypeSelect("osc-type", synth.oscillator, [
-    "sine",
-    "triangle",
+  TypeSelect(
+    "osc-type",
+    synth.oscillator,
+    ["sine", "triangle", "sawtooth", "square"],
     "sawtooth",
-    "square",
-  ]);
+  );
   DialControl("osc-detune", synth.oscillator.detune, "value", {
     max: 100,
   });
