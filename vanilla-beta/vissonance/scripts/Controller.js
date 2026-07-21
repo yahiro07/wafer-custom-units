@@ -61,24 +61,40 @@ function Controller() {
         }
 
         $(this).on("click", function () {
-          $(this).siblings().removeClass("active");
-          $(this).addClass("active");
-
-          var name = $(this).text();
-          if (!controller.activeViz || controller.activeViz.name != name) {
-            if (controller.visualizers.hasOwnProperty(name)) {
-              if (controller.activeViz) {
-                controller.activeViz.destroy();
-              }
-              controller.activeViz = controller.visualizers[name];
-              controller.activeViz.make();
-              View.renderVisualization = controller.activeViz.render;
-            }
-          }
+          controller.setActiveVisualizer($(this).text());
         });
       });
 
-      $("#vis_Iris").trigger("click");
+      controller.setActiveVisualizer("Iris");
+    },
+    getActiveVisualizerName: function () {
+      return controller.activeViz ? controller.activeViz.name : null;
+    },
+    setActiveVisualizer: function (name) {
+      if (!controller.visualizers.hasOwnProperty(name)) return;
+      if (controller.activeViz && controller.activeViz.name === name) return;
+
+      var $li = $(document.getElementById("vis_" + name));
+      $li.siblings().removeClass("active");
+      $li.addClass("active");
+
+      if (controller.activeViz) {
+        controller.activeViz.destroy();
+      }
+
+      // Siphon/Fracture/Silk leave autoClearColor=false or leftover scene
+      // objects; reset so the next visualizer starts from a clean canvas.
+      while (view.scene.children.length > 0) {
+        view.scene.remove(view.scene.children[0]);
+      }
+      view.renderer.autoClearColor = true;
+      view.renderer.autoClear = true;
+      view.renderer.setClearColor(0x000000, 0);
+      view.renderer.clear();
+
+      controller.activeViz = controller.visualizers[name];
+      controller.activeViz.make();
+      view.renderVisualization = controller.activeViz.render;
     },
   };
 
