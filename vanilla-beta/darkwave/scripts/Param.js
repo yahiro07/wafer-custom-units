@@ -111,6 +111,32 @@ Object.assign(Param, {
         new Param(...args.split(","));
       });
   },
+  serializeAll: function () {
+    return Param.all.map(function (param) {
+      return {
+        waveType: param.waveType,
+        frequencyFactor: param.frequencyFactor,
+        volumeFactor: param.volumeFactor,
+      };
+    });
+  },
+  applyAll: function (serializedParams) {
+    if (!Array.isArray(serializedParams)) return;
+
+    while (Param.all.length > 0) {
+      Param.remove(Param.all[Param.all.length - 1]);
+    }
+
+    if (serializedParams.length === 0) {
+      new Param();
+      return;
+    }
+
+    serializedParams.forEach(function (entry) {
+      if (!entry || typeof entry !== "object") return;
+      new Param(entry.waveType, entry.frequencyFactor, entry.volumeFactor);
+    });
+  },
 });
 
 Object.assign(Param.prototype, {

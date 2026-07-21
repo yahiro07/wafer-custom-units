@@ -97,7 +97,32 @@ function boot() {
       unitType: "effect",
       viewSize: [1020, 960],
     },
+    persistence: {
+      emitState: emitPersistedState,
+      applyState: applyPersistedState,
+    },
   });
+}
+
+function emitPersistedState() {
+  return { params: Param.serializeAll() };
+}
+
+function parsePersistedState(state) {
+  if (!state || typeof state !== "object") return null;
+  const params = state.params ?? state;
+  if (!Array.isArray(params)) return null;
+  return params;
+}
+
+function applyParamsState(params) {
+  Param.applyAll(params);
+}
+
+function applyPersistedState(state) {
+  const params = parsePersistedState(state);
+  if (!params) return;
+  applyParamsState(params);
 }
 
 function loop() {
