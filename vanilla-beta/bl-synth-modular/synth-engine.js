@@ -57,7 +57,7 @@ class SynthEngine {
     if (this.initialized) return;
     this.ctx = unitInterface?.audioContext ?? new AudioContext();
     const destinationNode =
-      unitInterface?.audioDestination ?? this.ctx.destination;
+      unitInterface?.audioOutputNode ?? this.ctx.destination;
 
     // Master chain: filter -> effects -> compressor -> analyser -> master gain -> destination
     this.masterGain = this.ctx.createGain();
