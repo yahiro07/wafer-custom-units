@@ -176,28 +176,30 @@ function buildKeyboard() {
   }
 }
 
-function handleKeyDown(midi) {
-  if (activeKeys.has(midi)) return;
-  activeKeys.add(midi);
+function handleKeyDown(midi, time) {
+  if (!activeKeys.has(midi)) {
+    activeKeys.add(midi);
+    const keyEl = document.querySelector(`.key[data-midi="${midi}"]`);
+    if (keyEl) keyEl.classList.add("active");
+  }
 
-  const keyEl = document.querySelector(`.key[data-midi="${midi}"]`);
-  if (keyEl) keyEl.classList.add("active");
-
+  const play = () => engine.noteOn(noteFreq(midi), midi, time);
   if (!isInitialized) {
-    initAudio().then(() => engine.noteOn(noteFreq(midi), midi));
+    initAudio().then(play);
   } else {
-    engine.noteOn(noteFreq(midi), midi);
+    play();
   }
 }
 
-function handleKeyUp(midi) {
-  if (!activeKeys.has(midi)) return;
+function handleKeyUp(midi, time) {
   activeKeys.delete(midi);
 
   const keyEl = document.querySelector(`.key[data-midi="${midi}"]`);
   if (keyEl) keyEl.classList.remove("active");
 
-  engine.noteOff(midi);
+  if (isInitialized) {
+    engine.noteOff(midi, time);
+  }
 }
 
 // ── Slider Controls ──
@@ -473,12 +475,12 @@ document.addEventListener("DOMContentLoaded", () => {
         viewSize: [1100, 640],
       },
       noteInput: {
-        noteOn(noteNumber) {
+        noteOn(noteNumber, time) {
           initAudio();
-          handleKeyDown(noteNumber);
+          handleKeyDown(noteNumber, time);
         },
-        noteOff(noteNumber) {
-          handleKeyUp(noteNumber);
+        noteOff(noteNumber, time) {
+          handleKeyUp(noteNumber, time);
         },
       },
       persistence: {

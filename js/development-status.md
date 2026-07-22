@@ -1,6 +1,6 @@
 | name                      | type         | node cleanup | DOM cleanup | persistence | timeAccurateVoicing |
 | ------------------------- | ------------ | ------------ | ----------- | ----------- | ------------------- |
-| additive                  | synth        |              |             | ok(json)    |                     |
+| additive                  | synth        |              |             | ok(json)    | ok                  |
 | circular-audio-wave       | visualizer   |              |             | ok(binary)  | --                  |
 | d3-synth-scale            | sequencer    |              |             | ok(binary)  | --                  |
 | vissonance                | visualizer   |              |             | ok(binary)  | --                  |
