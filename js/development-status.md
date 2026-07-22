@@ -4,7 +4,7 @@
 | circular-audio-wave       | visualizer   |              |             | ok(binary)  | --                  |
 | d3-synth-scale            | sequencer    |              |             | ok(binary)  | --                  |
 | vissonance                | visualizer   |              |             | ok(binary)  | --                  |
-| wasyn-1                   | synth        |              |             | ok(binary)  |                     |
+| wasyn-1                   | synth        |              |             | ok(binary)  | ok                  |
 | web-audio-mixer           | mixer        |              |             | ok(binary)  | --                  |
 | webaudio-spectrum         | visualizer   |              |             | ok(binary)  | --                  |
 | webaudio-synth-v2         | synth        |              |             | ok(json)    | ok                  |
