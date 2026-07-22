@@ -1,13 +1,15 @@
-| name                          | type       | node cleanup | DOM cleanup | persistence | timeAccurateVoicing |
-| ----------------------------- | ---------- | ------------ | ----------- | ----------- | ------------------- |
-| aura                          |            |              |             | ok(binary)  | --                  |
-| cadence                       | synth      |              |             | ok(binary)  | ok                  |
-| hm-step-sequencer             | sequencer  |              |             | ok(binary)  | --                  |
-| model-1                       | synth      |              |             | ok(json)    | ok                  |
-| poly-synth                    | synth      |              |             | ok(json)    | ok                  |
-| react-synth                   | synth      |              |             | ok(json)    | ok                  |
-| sk-synth                      | synth      |              |             | ok(json)    | ok                  |
-| super-oscillator              | synth      |              |             | ok(binary)  | ok                  |
-| syntho                        | synth      |              |             | ok(json)    | ok                  |
-| threejs-audio-reactive-visual | visualizer |              |             | --          | --                  |
-| vue-audio-mixer               | mixer      |              |             | ok(json)    | --                  |
+| name                          | type       | node cleanup | DOM cleanup | persistence | time | automation |
+| ----------------------------- | ---------- | ------------ | ----------- | ----------- | ---- | ---------- |
+| aura                          |            |              |             | ok(binary)  | --   |
+| cadence                       | synth      |              |             | ok(binary)  | ok   |
+| hm-step-sequencer             | sequencer  |              |             | ok(binary)  | --   |
+| model-1                       | synth      |              |             | ok(json)    | ok   |
+| poly-synth                    | synth      |              |             | ok(json)    | ok   |
+| react-synth                   | synth      |              |             | ok(json)    | ok   |
+| sk-synth                      | synth      |              |             | ok(json)    | ok   |
+| super-oscillator              | synth      |              |             | ok(binary)  | ok   |
+| syntho                        | synth      |              |             | ok(json)    | ok   |
+| threejs-audio-reactive-visual | visualizer |              |             | --          | --   |
+| vue-audio-mixer               | mixer      |              |             | ok(json)    | --   |
+
+time: Time Accurate Voicing
