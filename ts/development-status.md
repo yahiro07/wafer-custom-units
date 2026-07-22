@@ -1,7 +1,7 @@
 | name                          | type       | node cleanup | DOM cleanup | persistence | timeAccurateVoicing |
 | ----------------------------- | ---------- | ------------ | ----------- | ----------- | ------------------- |
 | aura                          |            |              |             | ok(binary)  | --                  |
-| cadence                       | synth      |              |             | ok(binary)  |                     |
+| cadence                       | synth      |              |             | ok(binary)  | ok                  |
 | hm-step-sequencer             | sequencer  |              |             | ok(binary)  | --                  |
 | model-1                       | synth      |              |             | ok(json)    |                     |
 | poly-synth                    | synth      |              |             | ok(json)    |                     |

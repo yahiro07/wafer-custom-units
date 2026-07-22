@@ -33,6 +33,8 @@ export function Keypad({ noteOn, noteOff }: KeypadProps) {
       next.add(id);
       return next;
     });
+    // Always fire noteOn so rapid re-triggers reach the engine even if UI
+    // state still marks this key as active (e.g. missed keyup).
     void noteOnRef.current(id, midiToFreq(midi));
   };
 

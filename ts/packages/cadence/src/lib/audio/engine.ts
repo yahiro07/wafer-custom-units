@@ -132,14 +132,14 @@ export class AudioEngine {
         viewSize: [1120, 775],
       },
       noteInput: {
-        noteOn(noteNumber) {
+        noteOn(noteNumber, time) {
           const id = `note-${noteNumber}`;
           const freq = midiToFreq(noteNumber);
-          self.noteOn(id, freq);
+          self.noteOn(id, freq, time);
         },
-        noteOff(noteNumber) {
+        noteOff(noteNumber, time) {
           const id = `note-${noteNumber}`;
-          self.noteOff(id);
+          self.noteOff(id, time);
         },
       },
       persistence: {
@@ -198,13 +198,25 @@ export class AudioEngine {
     }
   }
 
-  /** Start a note keyed by a stable id (ignores re-triggers of a held note). */
-  noteOn(id: string, frequency: number): void {
-    if (this.voices.has(id)) {
-      return;
+  /** Start a note keyed by a stable id; re-triggers replace the prior voice. */
+  noteOn(id: string, frequency: number, time?: number): void {
+    const existing = this.voices.get(id);
+    if (existing) {
+      existing.dispose();
+      this.voices.delete(id);
     }
-    const voice = new Voice(this.ctx, this.voiceBus, frequency, this.params);
+    const when = time ?? this.ctx.currentTime;
+    const voice = new Voice(
+      this.ctx,
+      this.voiceBus,
+      frequency,
+      this.params,
+      when,
+    );
     voice.onEnded(() => {
+      if (this.voices.get(id) !== voice) {
+        return;
+      }
       voice.dispose();
       this.voices.delete(id);
     });
@@ -212,12 +224,12 @@ export class AudioEngine {
   }
 
   /** Release a held note into its envelope tail. */
-  noteOff(id: string): void {
+  noteOff(id: string, time?: number): void {
     const voice = this.voices.get(id);
     if (!voice) {
       return;
     }
-    voice.release(this.params.release);
+    voice.release(this.params.release, time ?? this.ctx.currentTime);
   }
 
   getAnalyser(): AnalyserNode {
