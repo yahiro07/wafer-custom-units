@@ -41,11 +41,11 @@ export class SynthUI extends Component<SynthUIProps, any> {
         viewSize: [1200, 620],
       },
       noteInput: {
-        noteOn(noteNumber) {
-          noteRoute.noteOn(noteNumber);
+        noteOn(noteNumber, time) {
+          noteRoute.noteOn(noteNumber, time);
         },
-        noteOff(noteNumber) {
-          noteRoute.noteOff(noteNumber);
+        noteOff(noteNumber, time) {
+          noteRoute.noteOff(noteNumber, time);
         },
       },
       persistence: {

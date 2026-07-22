@@ -8,6 +8,6 @@
 | react-synth                   | synth      |              |             | ok(json)    |                     |
 | sk-synth                      | synth      |              |             | ok(json)    | ok                  |
 | super-oscillator              | synth      |              |             | ok(binary)  | ok                  |
-| syntho                        | synth      |              |             | ok(json)    |                     |
+| syntho                        | synth      |              |             | ok(json)    | ok                  |
 | threejs-audio-reactive-visual | visualizer |              |             | --          | --                  |
 | vue-audio-mixer               | mixer      |              |             | ok(json)    | --                  |

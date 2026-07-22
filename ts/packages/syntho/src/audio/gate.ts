@@ -7,11 +7,13 @@ export class Gate {
     this.output.start();
   }
 
-  public triggerOn() {
-    this.output.offset.setValueAtTime(1, this.context.currentTime);
+  public triggerOn(time: number = this.context.currentTime) {
+    this.output.offset.cancelScheduledValues(time);
+    this.output.offset.setValueAtTime(1, time);
   }
 
-  public triggerOff() {
-    this.output.offset.setValueAtTime(0, this.context.currentTime);
+  public triggerOff(time: number = this.context.currentTime) {
+    this.output.offset.cancelScheduledValues(time);
+    this.output.offset.setValueAtTime(0, time);
   }
 }

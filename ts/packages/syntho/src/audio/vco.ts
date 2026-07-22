@@ -16,10 +16,17 @@ export class Vco {
   }
 
   set frequency(value: number) {
-    this.oscillator.frequency.setValueAtTime(value, this.context.currentTime);
+    this.setFrequency(value);
   }
   get frequency() {
     return this.oscillator.frequency.value;
+  }
+
+  setFrequency(value: number, time?: number): void {
+    this.oscillator.frequency.setValueAtTime(
+      value,
+      time ?? this.context.currentTime,
+    );
   }
 
   set detune(value: number) {

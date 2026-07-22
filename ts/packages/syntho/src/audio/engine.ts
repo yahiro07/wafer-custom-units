@@ -106,16 +106,17 @@ export class SynthoEngine {
     this.lpf.patch = to;
   }
 
-  trigger(value: number) {
+  trigger(value: number, time?: number) {
+    const when = time ?? this.context.currentTime;
     if (value == 1) {
       if (this.context.state == "suspended") {
         this.context.resume();
       }
-      this.adsr.triggerOn();
-      this.gate.triggerOn();
+      this.adsr.triggerOn(when);
+      this.gate.triggerOn(when);
     } else {
-      this.adsr.triggerOff();
-      this.gate.triggerOff();
+      this.adsr.triggerOff(when);
+      this.gate.triggerOff(when);
     }
   }
 }
