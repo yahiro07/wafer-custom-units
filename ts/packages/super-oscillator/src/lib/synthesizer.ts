@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTF, GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Font, FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { Note, NoteLiteral, Range, Scale } from 'tonal';
+import { NoteLiteral, Range, Scale } from 'tonal';
 import wrapIndex from 'wrap-index';
 import * as ThreeUtils from './three-utils';
 import { OscillationGraph } from './oscillation-graph';
@@ -62,7 +62,7 @@ export class Synthesizer extends THREE.Group {
       pressable.userData.inputSources = new Set<InputSource>();
     });
     this.oscillatorType = 'sawtooth';
-    this.oscillationGraph = new OscillationGraph(notes);
+    this.oscillationGraph = new OscillationGraph();
     this.oscillationGraph.setOscillatorType(this.oscillatorType);
     this.setScreenText();
   }
@@ -364,16 +364,12 @@ export class Synthesizer extends THREE.Group {
     };
   }
 
-  noteOn(noteNumber: number): void {
-    this.oscillationGraph.openNoteGate(
-      Note.fromMidi(noteNumber) as NoteLiteral,
-    );
+  noteOn(noteNumber: number, time?: number): void {
+    this.oscillationGraph.openNoteGateByMidi(noteNumber, time);
   }
 
-  noteOff(noteNumber: number): void {
-    this.oscillationGraph.closeNoteGate(
-      Note.fromMidi(noteNumber) as NoteLiteral,
-    );
+  noteOff(noteNumber: number, time?: number): void {
+    this.oscillationGraph.closeNoteGateByMidi(noteNumber, time);
   }
 }
 
