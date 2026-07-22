@@ -9,7 +9,7 @@
 | webaudio-spectrum         | visualizer   |              |             | ok(binary)  | --                  |
 | webaudio-synth-v2         | synth        |              |             | ok(json)    |                     |
 | webaudio-tinysynth-simple | synth        |              |             | ok(binary)  | ok                  |
-| midi-synth                | synth        |              |             | ok(json)    |                     |
+| midi-synth                | synth        |              |             | ok(json)    | ok                  |
 | shiny-drum-machine        | drum machine |              |             | ok(json)    | --                  |
 | bl-synth-modular          | synth        |              |             | ok(json)    | ok                  |
 | darkwave                  | effect       |              |             | ok(json)    | --                  |

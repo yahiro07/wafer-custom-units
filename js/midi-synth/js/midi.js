@@ -11,7 +11,7 @@ function midiMessageReceived(ev) {
     noteOff(noteNumber);
   } else if (cmd == 9) {
     // note on
-    noteOn(noteNumber, velocity / 127.0);
+    noteOn(noteNumber, undefined, velocity / 127.0);
   } else if (cmd == 11) {
     controller(noteNumber, velocity / 127.0);
   } else if (cmd == 14) {

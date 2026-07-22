@@ -121,22 +121,23 @@ function frequencyFromNoteNumber(note) {
   return 440 * Math.pow(2, (note - 69) / 12);
 }
 
-function noteOn(note, velocity) {
+function noteOn(note, time, velocity = 0.75) {
   console.log("note on: " + note);
-  if (voices[note] == null) {
-    // Create a new synth node
-    voices[note] = new Voice(note, velocity);
-    //Ensure that the highlight on pressed key is added, regardless of selected octave
-    var e = document.getElementById("k" + (note + 12 * (currentOctave - 3)));
-
-    if (e) e.classList.add("pressed");
+  if (voices[note] != null) {
+    voices[note].noteOff(time);
+    voices[note] = null;
   }
+  voices[note] = new Voice(note, time, velocity);
+  //Ensure that the highlight on pressed key is added, regardless of selected octave
+  var e = document.getElementById("k" + (note + 12 * (currentOctave - 3)));
+
+  if (e) e.classList.add("pressed");
 }
 
-function noteOff(note) {
+function noteOff(note, time) {
   if (voices[note] != null) {
     // Shut off the note playing and clear it
-    voices[note].noteOff();
+    voices[note].noteOff(time);
     voices[note] = null;
     //Ensure that the highlight on pressed key is removed, regardless of selected octave
     var e = document.getElementById("k" + (note + 12 * (currentOctave - 3)));
@@ -485,7 +486,7 @@ function filterFrequencyFromCutoff(pitch, cutoff) {
   return filterFrequency;
 }
 
-function Voice(note, velocity) {
+function Voice(note, time, velocity) {
   this.originalFrequency = frequencyFromNoteNumber(note);
 
   // create osc 1
@@ -553,7 +554,7 @@ function Voice(note, velocity) {
   this.envelope.connect(effectChain);
 
   // set up the volume and filter envelopes
-  var now = audioContext.currentTime;
+  var now = time ?? audioContext.currentTime;
   var envAttackEnd = now + currentEnvA / 20.0;
 
   this.envelope.gain.value = 0.0;
@@ -595,9 +596,9 @@ function Voice(note, velocity) {
     currentFilterEnvD / 100.0,
   );
 
-  this.osc1.start(0);
-  this.osc2.start(0);
-  this.modOsc.start(0);
+  this.osc1.start(now);
+  this.osc2.start(now);
+  this.modOsc.start(now);
 }
 
 Voice.prototype.setModWaveform = function (value) {
@@ -662,8 +663,8 @@ Voice.prototype.setFilterMod = function (value) {
   //	console.log( "filterMod.gain=" + currentFilterMod*24);
 };
 
-Voice.prototype.noteOff = function () {
-  var now = audioContext.currentTime;
+Voice.prototype.noteOff = function (time) {
+  var now = time ?? audioContext.currentTime;
   var release = now + currentEnvR / 10.0;
   var initFilter = filterFrequencyFromCutoff(
     this.originalFrequency,
@@ -672,7 +673,7 @@ Voice.prototype.noteOff = function () {
 
   //    console.log("noteoff: now: " + now + " val: " + this.filter1.frequency.value + " initF: " + initFilter + " fR: " + currentFilterEnvR/100 );
   this.envelope.gain.cancelScheduledValues(now);
-  this.envelope.gain.setValueAtTime(this.envelope.gain.value, now); // this is necessary because of the linear ramp
+  this.envelope.gain.cancelAndHoldAtTime(now);
   this.envelope.gain.setTargetAtTime(0.0, now, currentEnvR / 100);
   this.filter1.detune.cancelScheduledValues(now);
   this.filter1.detune.setTargetAtTime(0, now, currentFilterEnvR / 100.0);
@@ -701,7 +702,7 @@ function keyDown(ev) {
   }
 
   var note = keys[ev.keyCode];
-  if (note) noteOn(note + 12 * (3 - currentOctave), 0.75);
+  if (note) noteOn(note + 12 * (3 - currentOctave));
   console.log("key down: " + ev.keyCode);
 
   return false;
@@ -737,7 +738,7 @@ function touchstart(ev) {
         note,
     );
     if (!isNaN(note)) {
-      noteOn(note + 12 * (3 - currentOctave), 0.75);
+      noteOn(note + 12 * (3 - currentOctave));
       var keybox = document.getElementById("keybox");
       pointers[touch.identifier] = note;
     }
@@ -765,7 +766,7 @@ function touchmove(ev) {
       pointers[touch.identifier] != note
     ) {
       noteOff(pointers[touch.identifier] + 12 * (3 - currentOctave));
-      noteOn(note + 12 * (3 - currentOctave), 0.75);
+      noteOn(note + 12 * (3 - currentOctave));
       var keybox = document.getElementById("keybox");
       pointers[touch.identifier] = note;
     }
@@ -799,7 +800,7 @@ function pointerDown(ev) {
         note,
     );
   if (!isNaN(note)) {
-    noteOn(note + 12 * (3 - currentOctave), 0.75);
+    noteOn(note + 12 * (3 - currentOctave));
     var keybox = document.getElementById("keybox");
     pointers[ev.pointerId] = note;
   }
@@ -824,7 +825,7 @@ function pointerMove(ev) {
   ) {
     if (pointers[ev.pointerId])
       noteOff(pointers[ev.pointerId] + 12 * (3 - currentOctave));
-    noteOn(note + 12 * (3 - currentOctave), 0.75);
+    noteOn(note + 12 * (3 - currentOctave));
     pointers[ev.pointerId] = note;
   }
   ev.preventDefault();
@@ -901,11 +902,11 @@ function initAudio() {
       viewSize: [940, 550],
     },
     noteInput: {
-      noteOn(note, _time, velocity) {
-        noteOn(note, velocity);
+      noteOn(note, time, velocity) {
+        noteOn(note, time, velocity);
       },
-      noteOff(note, _time) {
-        noteOff(note);
+      noteOff(note, time) {
+        noteOff(note, time);
       },
     },
     persistence: {
