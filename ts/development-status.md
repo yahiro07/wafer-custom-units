@@ -6,7 +6,7 @@
 | model-1                       | synth      |              |             | ok(json)    |                     |
 | poly-synth                    | synth      |              |             | ok(json)    |                     |
 | react-synth                   | synth      |              |             | ok(json)    |                     |
-| sk-synth                      | synth      |              |             | ok(json)    |                     |
+| sk-synth                      | synth      |              |             | ok(json)    | ok                  |
 | super-oscillator              | synth      |              |             | ok(binary)  |                     |
 | syntho                        | synth      |              |             | ok(json)    |                     |
 | threejs-audio-reactive-visual | visualizer |              |             | --          | --                  |
