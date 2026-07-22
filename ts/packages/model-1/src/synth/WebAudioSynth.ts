@@ -1073,8 +1073,9 @@ function triggerAttack(
   synthContext: SynthContext,
   note: Note,
   lastFrequency: number | null = null,
+  time?: number,
 ): void {
-  const now = synthContext.context.currentTime;
+  const now = time ?? synthContext.context.currentTime;
 
   // Clean up any existing note data before creating new one
   if (state.noteData) {
@@ -1250,7 +1251,7 @@ function triggerAttack(
   lfo.connect(lfoGains.oscillatorVolume);
 
   // Start LFO
-  lfo.start();
+  lfo.start(now);
 
   // Create the note data object
   const noteData: NoteData = {
@@ -1296,6 +1297,7 @@ function triggerRelease(
   state: SynthState,
   synthContext: SynthContext,
   note: Note,
+  time?: number,
 ): void {
   if (
     !state.noteData ||
@@ -1305,7 +1307,7 @@ function triggerRelease(
   )
     return;
 
-  const now = synthContext.context.currentTime;
+  const now = time ?? synthContext.context.currentTime;
   state.noteState.isReleased = true;
   state.noteState.releaseTime = now;
 
@@ -1314,9 +1316,7 @@ function triggerRelease(
 
   // Handle amplitude envelope release
   if (noteDataToCleanup.gainNode) {
-    const currentValue = noteDataToCleanup.gainNode.gain.value;
-    noteDataToCleanup.gainNode.gain.cancelScheduledValues(now);
-    noteDataToCleanup.gainNode.gain.setValueAtTime(currentValue, now);
+    noteDataToCleanup.gainNode.gain.cancelAndHoldAtTime(now);
     noteDataToCleanup.gainNode.gain.linearRampToValueAtTime(
       0,
       now + state.settings.envelope.release,
@@ -1329,9 +1329,7 @@ function triggerRelease(
       Math.max(state.settings.filter.cutoff, 20),
       1541.27,
     );
-    const currentCutoff = noteDataToCleanup.filterNode.frequency.value;
-    noteDataToCleanup.filterNode.frequency.cancelScheduledValues(now);
-    noteDataToCleanup.filterNode.frequency.setValueAtTime(currentCutoff, now);
+    noteDataToCleanup.filterNode.frequency.cancelAndHoldAtTime(now);
     noteDataToCleanup.filterNode.frequency.linearRampToValueAtTime(
       baseCutoff,
       now + state.settings.envelope.release,
@@ -1361,9 +1359,7 @@ function triggerRelease(
 
   // Clean up noise if it exists
   if (noteDataToCleanup.noiseGain) {
-    const currentValue = noteDataToCleanup.noiseGain.gain.value;
-    noteDataToCleanup.noiseGain.gain.cancelScheduledValues(now);
-    noteDataToCleanup.noiseGain.gain.setValueAtTime(currentValue, now);
+    noteDataToCleanup.noiseGain.gain.cancelAndHoldAtTime(now);
     noteDataToCleanup.noiseGain.gain.linearRampToValueAtTime(
       0,
       now + state.settings.envelope.release,
@@ -1371,6 +1367,10 @@ function triggerRelease(
   }
 
   // Schedule cleanup after the release is complete
+  const cleanupDelayMs =
+    Math.max(0, (now - synthContext.context.currentTime) * 1000) +
+    state.settings.envelope.release * 1000 +
+    150;
   setTimeout(
     () => {
       // Only cleanup if this is still the note that was released
@@ -1441,7 +1441,7 @@ function triggerRelease(
         state.noteData = null;
       }
     },
-    state.settings.envelope.release * 1000 + 150,
+    cleanupDelayMs,
   ); // Increased buffer to ensure complete release
 }
 
@@ -1477,8 +1477,10 @@ export async function createSynth() {
   }
 
   return {
-    triggerAttack: (note: Note) => triggerAttack(state, synthContext, note),
-    triggerRelease: (note: Note) => triggerRelease(state, synthContext, note),
+    triggerAttack: (note: Note, time?: number) =>
+      triggerAttack(state, synthContext, note, null, time),
+    triggerRelease: (note: Note, time?: number) =>
+      triggerRelease(state, synthContext, note, time),
     updateSettings: (newSettings: Partial<SynthSettings>) =>
       updateSettings(state, synthContext, newSettings),
     dispose: () => dispose(state, synthContext),

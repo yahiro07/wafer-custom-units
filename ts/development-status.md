@@ -3,7 +3,7 @@
 | aura                          |            |              |             | ok(binary)  | --                  |
 | cadence                       | synth      |              |             | ok(binary)  | ok                  |
 | hm-step-sequencer             | sequencer  |              |             | ok(binary)  | --                  |
-| model-1                       | synth      |              |             | ok(json)    |                     |
+| model-1                       | synth      |              |             | ok(json)    | ok                  |
 | poly-synth                    | synth      |              |             | ok(json)    |                     |
 | react-synth                   | synth      |              |             | ok(json)    |                     |
 | sk-synth                      | synth      |              |             | ok(json)    | ok                  |

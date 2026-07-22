@@ -35,11 +35,11 @@ function App() {
           viewSize: [1180, 540],
         },
         noteInput: {
-          noteOn(noteNumber) {
-            synth?.triggerAttack(midiNoteToNote(noteNumber));
+          noteOn(noteNumber, time) {
+            synth?.triggerAttack(midiNoteToNote(noteNumber), time);
           },
-          noteOff(noteNumber) {
-            synth?.triggerRelease(midiNoteToNote(noteNumber));
+          noteOff(noteNumber, time) {
+            synth?.triggerRelease(midiNoteToNote(noteNumber), time);
           },
         },
         persistence: {
