@@ -46,10 +46,10 @@ class Filter {
     setGain = val => {
         this.node.gain.setValueAtTime(val, this.AC.currentTime);
     }
-    setDetune = (val, time = 0) => {
+    setDetune = (val, time = 0, when = this.AC.currentTime) => {
         time
-            ? this.node.detune.setTargetAtTime(val, this.AC.currentTime, time)
-            : this.node.detune.setValueAtTime(val, this.AC.currentTime);
+            ? this.node.detune.setTargetAtTime(val, when, time)
+            : this.node.detune.setValueAtTime(val, when);
     }
 }
 
