@@ -30,11 +30,11 @@ async function initApp() {
       viewSize: [1060, 630],
     },
     noteInput: {
-      noteOn(noteNumber) {
-        synth.noteOn(noteNumber);
+      noteOn(noteNumber, time, velocity) {
+        synth.noteOn(noteNumber, velocity ?? 1, time);
       },
-      noteOff(noteNumber) {
-        synth.noteOff(noteNumber);
+      noteOff(noteNumber, time) {
+        synth.noteOff(noteNumber, time);
       },
     },
     persistence: {

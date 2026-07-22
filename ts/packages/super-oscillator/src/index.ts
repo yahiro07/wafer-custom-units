@@ -19,8 +19,12 @@ async function main(): Promise<void> {
       viewSize: [1000, 500],
     },
     noteInput: {
-      noteOn: synth.noteOn.bind(synth),
-      noteOff: synth.noteOff.bind(synth),
+      noteOn(noteNumber, time) {
+        synth.noteOn(noteNumber, time);
+      },
+      noteOff(noteNumber, time) {
+        synth.noteOff(noteNumber, time);
+      },
     },
     persistence: {
       emitStateBytes: () => synth.emitStateBytes(),

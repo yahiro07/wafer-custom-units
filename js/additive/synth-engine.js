@@ -1,4 +1,6 @@
 const unitInterface = window.queryUnitInterface?.("wafer-v01");
+const audioContext = unitInterface?.audioContext ?? new window.AudioContext();
+const destinationNode = unitInterface?.audioOutputNode ?? this.ctx.destination;
 
 class AdditiveEngine {
   constructor() {
@@ -21,10 +23,7 @@ class AdditiveEngine {
 
   async init() {
     if (this.isInitialized) return;
-    this.ctx = unitInterface?.audioContext ?? new window.AudioContext();
-    const destinationNode =
-      unitInterface?.audioOutputNode ?? this.ctx.destination;
-
+    this.ctx = audioContext;
     if (this.ctx instanceof AudioContext && this.ctx.state === "suspended") {
       await this.ctx.resume();
     }
@@ -78,11 +77,11 @@ class AdditiveEngine {
     return buffer;
   }
 
-  noteOn(freq, noteId) {
+  noteOn(freq, noteId, time) {
     if (!this.isInitialized) return;
-    if (this.activeVoices[noteId]) this.noteOff(noteId);
+    if (this.activeVoices[noteId]) this.noteOff(noteId, time);
 
-    const now = this.ctx.currentTime;
+    const now = time ?? this.ctx.currentTime;
     const voice = {
       oscillators: [],
       gains: [],
@@ -123,18 +122,21 @@ class AdditiveEngine {
     this.activeVoices[noteId] = voice;
   }
 
-  noteOff(noteId) {
+  noteOff(noteId, time) {
     const voice = this.activeVoices[noteId];
     if (!voice) return;
 
-    const now = this.ctx.currentTime;
+    const now = time ?? this.ctx.currentTime;
     voice.envelope.gain.cancelScheduledValues(now);
-    voice.envelope.gain.setValueAtTime(voice.envelope.gain.value, now);
+    voice.envelope.gain.cancelAndHoldAtTime(now);
     voice.envelope.gain.linearRampToValueAtTime(0, now + this.adsr.release);
 
     const stopTime = now + this.adsr.release + 0.05;
     voice.oscillators.forEach((osc) => osc.stop(stopTime));
 
+    const cleanupDelayMs =
+      Math.max(0, (now - this.ctx.currentTime) * 1000) +
+      (this.adsr.release + 0.1) * 1000;
     setTimeout(
       () => {
         voice.oscillators.forEach((osc) => {
@@ -151,7 +153,7 @@ class AdditiveEngine {
           voice.envelope.disconnect();
         } catch (e) {}
       },
-      (this.adsr.release + 0.1) * 1000,
+      cleanupDelayMs,
     );
 
     delete this.activeVoices[noteId];

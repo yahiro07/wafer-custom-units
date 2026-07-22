@@ -17,10 +17,10 @@ class Gain {
     getGain = () => this.node.gain.value;
 
     // Setters
-    setGain = (val, time = 0) => {
+    setGain = (val, time = 0, when = this.AC.currentTime) => {
         time
-            ? this.node.gain.setTargetAtTime(val, this.AC.currentTime, time)
-            : this.node.gain.setValueAtTime(val, this.AC.currentTime);
+            ? this.node.gain.setTargetAtTime(val, when, time)
+            : this.node.gain.setValueAtTime(val, when);
     }
 }
 

@@ -22,11 +22,11 @@ class Oscillator {
     if (!this.WAVEFORMS.includes(type)) return false;
     this.node.type = type;
   };
-  setFreq = (freq, time = 0) => {
+  setFreq = (freq, time = 0, when = this.AC.currentTime) => {
     if (freq < 0 || freq > this.maxFreq) return false;
     time
-      ? this.node.frequency.setTargetAtTime(freq, this.AC.currentTime, time)
-      : this.node.frequency.setValueAtTime(freq, this.AC.currentTime);
+      ? this.node.frequency.setTargetAtTime(freq, when, time)
+      : this.node.frequency.setValueAtTime(freq, when);
   };
   setGain = (val) => this.gainNode.setGain(val);
 }

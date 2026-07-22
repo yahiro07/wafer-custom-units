@@ -8,23 +8,23 @@ export function createNoteRoute(
 ) {
   let lastNoteNumber = 0;
 
-  function affectVcoFrequency(vco: Vco, noteNumber: number) {
+  function affectVcoFrequency(vco: Vco, noteNumber: number, time?: number) {
     const relOctave = vco.octave - 4;
     const note = noteNumber + relOctave * 12;
-    vco.frequency = frequencyMap.getFrequency(note);
+    vco.setFrequency(frequencyMap.getFrequency(note), time);
   }
 
   return {
-    noteOn(noteNumber: number) {
-      affectVcoFrequency(engine.vco1, noteNumber);
-      affectVcoFrequency(engine.vco2, noteNumber);
-      affectVcoFrequency(engine.vco3, noteNumber);
-      engine.trigger(1);
+    noteOn(noteNumber: number, time?: number) {
+      affectVcoFrequency(engine.vco1, noteNumber, time);
+      affectVcoFrequency(engine.vco2, noteNumber, time);
+      affectVcoFrequency(engine.vco3, noteNumber, time);
+      engine.trigger(1, time);
       lastNoteNumber = noteNumber;
     },
-    noteOff(noteNumber: number) {
+    noteOff(noteNumber: number, time?: number) {
       if (noteNumber === lastNoteNumber) {
-        engine.trigger(0);
+        engine.trigger(0, time);
         lastNoteNumber = -1;
       }
     },

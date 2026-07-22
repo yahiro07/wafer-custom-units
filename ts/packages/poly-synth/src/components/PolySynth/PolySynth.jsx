@@ -287,15 +287,14 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
         viewSize: [1280, 770],
       },
       noteInput: {
-        noteOn(noteNumber) {
+        noteOn(noteNumber, time) {
           const note = `midi-${noteNumber}`;
           const freq = midiToFreq(noteNumber);
-          noteFunctions.current?.noteOn({ note, freq });
+          noteFunctions.current?.noteOn({ note, freq, time });
         },
-        noteOff(noteNumber) {
+        noteOff(noteNumber, time) {
           const note = `midi-${noteNumber}`;
-          const freq = midiToFreq(noteNumber);
-          noteFunctions.current?.noteOff({ note, freq });
+          noteFunctions.current?.noteOff({ note, time });
         },
       },
       persistence: {
@@ -323,25 +322,27 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
   });
 
   // Functions to pass envelope data to the synth
-  const synthNoteOn = (synth, note) => {
+  const synthNoteOn = (synth, note, time) => {
     const gainEnv = getGainEnv();
     const filterEnv = getFilterEnv();
     synth.noteOn(note, {
       gainEnv,
       filterEnv,
       portamentoSpeed: polyphony === 1 ? portamentoSpeed : 0,
+      time,
     });
   };
-  const synthNoteOff = (synth) => {
+  const synthNoteOff = (synth, time) => {
     const gainEnv = getGainEnv();
     const filterEnv = getFilterEnv();
-    synth.noteOff({ gainEnv, filterEnv });
+    synth.noteOff({ gainEnv, filterEnv, time });
   };
 
   // Function to delegate played notes to each of the synths
   const noteOn = (note) => {
+    const { time } = note;
     if (!synthArr[synthPos].currentNote) {
-      synthNoteOn(synthArr[synthPos], note);
+      synthNoteOn(synthArr[synthPos], note, time);
     } else {
       const initialPos = synthPos;
       incrementSynthPos();
@@ -350,16 +351,17 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
         if (!synthArr[synthPos].currentNote) break;
         incrementSynthPos();
       }
-      synthNoteOn(synthArr[synthPos], note);
+      synthNoteOn(synthArr[synthPos], note, time);
     }
 
     incrementSynthPos();
   };
   const noteOff = (note) => {
+    const { time } = note;
     const targetSynths = synthArr.filter(
       (synth) => synth.currentNote === note.note,
     );
-    targetSynths.forEach((synth) => synthNoteOff(synth));
+    targetSynths.forEach((synth) => synthNoteOff(synth, time));
   };
 
   noteFunctions.current = { noteOn, noteOff };

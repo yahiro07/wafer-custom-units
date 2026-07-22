@@ -6,11 +6,11 @@ function setupWaferUnit() {
       viewSize: [700, 400],
     },
     noteInput: {
-      noteOn(noteNumber) {
-        ctrl.note_on(noteNumber);
+      noteOn(noteNumber, time) {
+        ctrl.note_on(noteNumber, time);
       },
-      noteOff(noteNumber) {
-        ctrl.note_off(noteNumber);
+      noteOff(noteNumber, time) {
+        ctrl.note_off(noteNumber, time);
       },
     },
     persistence: {

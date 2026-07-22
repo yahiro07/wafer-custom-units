@@ -19,12 +19,12 @@ var app = {
         viewSize: [720, 360],
       },
       noteInput: {
-        noteOn(noteNumber, velocity) {
+        noteOn(noteNumber, time, velocity) {
           app.checkContext();
-          app.synth.noteOn(noteNumber, velocity * 127);
+          app.synth.noteOn(noteNumber, time, (velocity ?? 1) * 127);
         },
-        noteOff(noteNumber) {
-          app.synth.noteOff(noteNumber);
+        noteOff(noteNumber, time) {
+          app.synth.noteOff(noteNumber, time);
         },
       },
       persistence: {
