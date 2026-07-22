@@ -7,7 +7,7 @@
 | wasyn-1                   | synth        |              |             | ok(binary)  |                     |
 | web-audio-mixer           | mixer        |              |             | ok(binary)  | --                  |
 | webaudio-spectrum         | visualizer   |              |             | ok(binary)  | --                  |
-| webaudio-synth-v2         | synth        |              |             | ok(json)    |                     |
+| webaudio-synth-v2         | synth        |              |             | ok(json)    | ok                  |
 | webaudio-tinysynth-simple | synth        |              |             | ok(binary)  | ok                  |
 | midi-synth                | synth        |              |             | ok(json)    | ok                  |
 | shiny-drum-machine        | drum machine |              |             | ok(json)    | --                  |

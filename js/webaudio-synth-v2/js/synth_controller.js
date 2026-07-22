@@ -323,15 +323,15 @@ Ctrl.prototype.keyUp = function (note) {
   gui.setDirty();
 };
 
-Ctrl.prototype.note_on = function (note) {
-  synth.play(note);
+Ctrl.prototype.note_on = function (note, time) {
+  synth.play(note, time);
   this.playingNote = note;
   ctrl.keyDown(note);
 };
 
-Ctrl.prototype.note_off = function (note) {
+Ctrl.prototype.note_off = function (note, time) {
   if (note === this.playingNote) {
-    synth.stop();
+    synth.stop(time);
     this.playingNote = null;
   }
   ctrl.keyUp(note);
