@@ -4,7 +4,7 @@ import Knob from "@/components/Knob";
 import Effect from "@/components/Effect";
 import Select from "@/components/Select";
 import Modal from "@/components/Modal";
-import { getFreqFromNote, getNoteFromKeyCode } from "@/util/util";
+import { getFreqFromNote, getNoteFromKeyCode, midiToInternalNote } from "@/util/util";
 import { keyToNoteMap, scaleOffsets, selectOptions } from "@/util/constants";
 import * as Nodes from "@/nodes";
 import presetData from "./presetData";
@@ -92,11 +92,11 @@ class Synth extends React.Component {
         viewSize: [1180, 730],
       },
       noteInput: {
-        noteOn(time) {
-          self.noteOn(time);
+        noteOn(noteNumber, time) {
+          self.noteOn(midiToInternalNote(noteNumber), time);
         },
-        noteOff(time) {
-          self.noteOff(time);
+        noteOff(noteNumber, time) {
+          self.noteOff(midiToInternalNote(noteNumber), time);
         },
       },
       persistence: {
@@ -347,10 +347,10 @@ class Synth extends React.Component {
   };
 
   // Note trigger methods
-  noteOn = (noteNum) => {
+  noteOn = (noteNum, audioTime) => {
     this.clearTimouts();
     this.setState({ noteHeld: noteNum });
-    const noteCopy = noteNum; // For checking if key is released before attack is finished
+    const when = audioTime ?? this.AC.currentTime;
     const {
       gainAttack,
       gainDecay,
@@ -368,51 +368,55 @@ class Synth extends React.Component {
     const freq = getFreqFromNote(this.quantizeNote(noteNum));
     const subFreq1 = getFreqFromNote(this.quantizeNote(noteNum + sub1Offset));
     const subFreq2 = getFreqFromNote(this.quantizeNote(noteNum + sub2Offset));
-    this.osc.setFreq(freq, portamentoSpeed);
-    this.sub1.setFreq(subFreq1, portamentoSpeed);
-    this.sub2.setFreq(subFreq2, portamentoSpeed);
+    this.osc.setFreq(freq, portamentoSpeed, when);
+    this.sub1.setFreq(subFreq1, portamentoSpeed, when);
+    this.sub2.setFreq(subFreq2, portamentoSpeed, when);
 
     // Gain Envelope ADS (R is on release of key in noteOff())
+    this.gainNode.node.gain.cancelScheduledValues(when);
     if (gainAttack) {
-      this.gainNode.setGain(0); // Reset Volume
-      this.gainNode.setGain(masterVolume, gainAttack); // Attack
-      const timeoutId = setTimeout(() => {
-        // If attack is complete and the note is still held, decay
-        if (noteCopy === this.state.noteHeld) {
-          const sustVolume = this.state.masterVolume * this.state.gainSustain;
-          this.gainNode.setGain(sustVolume, this.state.gainDecay); // Decay
-        }
-      }, gainAttack * 1000);
-      this.timeoutIds.push(timeoutId);
-    } else {
-      this.gainNode.setGain(masterVolume); // Reset Volume
+      this.gainNode.setGain(0, 0, when);
+      this.gainNode.setGain(masterVolume, gainAttack, when);
       const sustVolume = masterVolume * gainSustain;
-      this.gainNode.setGain(sustVolume, gainDecay); // Decay
+      this.gainNode.node.gain.setTargetAtTime(
+        sustVolume,
+        when + gainAttack,
+        gainDecay,
+      );
+    } else {
+      this.gainNode.setGain(masterVolume, 0, when);
+      const sustVolume = masterVolume * gainSustain;
+      this.gainNode.setGain(sustVolume, gainDecay, when);
     }
 
     // Filter Envelope AD
     if (filterEnvAmount) {
+      this.filterNode.node.detune.cancelScheduledValues(when);
       if (filterAttack) {
-        this.filterNode.setDetune(0); // Reset Detune
-        this.filterNode.setDetune(filterEnvAmount, filterAttack); // Attack
-        const timeoutId = setTimeout(() => {
-          // If attack is complete and the note is still held, decay
-          if (noteCopy === this.state.noteHeld) {
-            this.filterNode.setDetune(0, this.state.filterDecay); // Decay
-          }
-        }, filterAttack * 1000);
-        this.timeoutIds.push(timeoutId);
+        this.filterNode.setDetune(0, 0, when);
+        this.filterNode.setDetune(filterEnvAmount, filterAttack, when);
+        this.filterNode.node.detune.setTargetAtTime(
+          0,
+          when + filterAttack,
+          filterDecay,
+        );
       } else {
-        this.filterNode.setDetune(filterEnvAmount); // Reset Detune
-        this.filterNode.setDetune(0, filterDecay); // Decay
+        this.filterNode.setDetune(filterEnvAmount, 0, when);
+        this.filterNode.setDetune(0, filterDecay, when);
       }
     }
   };
-  noteOff = () => {
+  noteOff = (noteNum, audioTime) => {
+    if (noteNum !== undefined && noteNum !== this.state.noteHeld) {
+      return;
+    }
     this.clearTimouts();
     this.setState({ noteHeld: 0 });
-    this.gainNode.setGain(0, this.state.gainRelease);
-    this.filterNode.setDetune(0, this.state.filterDecay); // Should this be 0 or decay?
+    const when = audioTime ?? this.AC.currentTime;
+    this.gainNode.node.gain.cancelScheduledValues(when);
+    this.gainNode.setGain(0, this.state.gainRelease, when);
+    this.filterNode.node.detune.cancelScheduledValues(when);
+    this.filterNode.setDetune(0, this.state.filterDecay, when);
   };
   noteStop = () => {
     this.clearTimouts();

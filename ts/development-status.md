@@ -5,7 +5,7 @@
 | hm-step-sequencer             | sequencer  |              |             | ok(binary)  | --                  |
 | model-1                       | synth      |              |             | ok(json)    | ok                  |
 | poly-synth                    | synth      |              |             | ok(json)    |                     |
-| react-synth                   | synth      |              |             | ok(json)    |                     |
+| react-synth                   | synth      |              |             | ok(json)    | ok                  |
 | sk-synth                      | synth      |              |             | ok(json)    | ok                  |
 | super-oscillator              | synth      |              |             | ok(binary)  | ok                  |
 | syntho                        | synth      |              |             | ok(json)    | ok                  |

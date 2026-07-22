@@ -92,3 +92,6 @@ const noteToFreqMap = {
 };
 
 export const getMsFromBpm = (bpm) => (60 / bpm) * 1000;
+
+/** Maps a MIDI note number to react-synth's internal note index (65 = C4). */
+export const midiToInternalNote = (midi) => midi + 5;
