@@ -1,4 +1,6 @@
 const unitInterface = window.queryUnitInterface?.("wafer-v01");
+const audioContext = unitInterface?.audioContext ?? new window.AudioContext();
+const destinationNode = unitInterface?.audioOutputNode ?? this.ctx.destination;
 
 class AdditiveEngine {
   constructor() {
@@ -21,10 +23,7 @@ class AdditiveEngine {
 
   async init() {
     if (this.isInitialized) return;
-    this.ctx = unitInterface?.audioContext ?? new window.AudioContext();
-    const destinationNode =
-      unitInterface?.audioOutputNode ?? this.ctx.destination;
-
+    this.ctx = audioContext;
     if (this.ctx instanceof AudioContext && this.ctx.state === "suspended") {
       await this.ctx.resume();
     }
