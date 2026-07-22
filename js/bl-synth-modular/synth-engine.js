@@ -269,13 +269,13 @@ class SynthEngine {
     return buffer;
   }
 
-  noteOn(note, velocity = 1.0) {
+  noteOn(note, velocity = 1.0, time) {
     if (!this.initialized) return;
     const freq = 440 * Math.pow(2, (note - 69 + this.params.octave * 12) / 12);
-    const t = this.ctx.currentTime;
+    const t = time ?? this.ctx.currentTime;
 
     // Kill existing voice for this note
-    this.noteOff(note);
+    this.noteOff(note, t);
 
     const voice = {};
 
@@ -341,12 +341,12 @@ class SynthEngine {
     this.voices.set(note, voice);
   }
 
-  noteOff(note) {
+  noteOff(note, time) {
     const voice = this.voices.get(note);
     if (!voice) return;
-    const t = this.ctx.currentTime;
+    const t = time ?? this.ctx.currentTime;
     voice.vca.gain.cancelScheduledValues(t);
-    voice.vca.gain.setValueAtTime(voice.vca.gain.value, t);
+    voice.vca.gain.cancelAndHoldAtTime(t);
     voice.vca.gain.linearRampToValueAtTime(0, t + this.params.release);
 
     const releaseTime = this.params.release + 0.05;
@@ -354,13 +354,16 @@ class SynthEngine {
     voice.osc2.stop(t + releaseTime);
     if (voice.noise) voice.noise.stop(t + releaseTime);
 
+    const cleanupDelayMs =
+      Math.max(0, (t - this.ctx.currentTime) * 1000) +
+      (releaseTime + 0.1) * 1000;
     setTimeout(
       () => {
         try {
           voice.vca.disconnect();
         } catch (e) {}
       },
-      (releaseTime + 0.1) * 1000,
+      cleanupDelayMs,
     );
 
     this.voices.delete(note);

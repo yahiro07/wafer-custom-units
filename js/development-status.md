@@ -11,7 +11,7 @@
 | webaudio-tinysynth-simple | synth        |              |             | ok(binary)  | ok                  |
 | midi-synth                | synth        |              |             | ok(json)    |                     |
 | shiny-drum-machine        | drum machine |              |             | ok(json)    | --                  |
-| bl-synth-modular          | synth        |              |             | ok(json)    |                     |
+| bl-synth-modular          | synth        |              |             | ok(json)    | ok                  |
 | darkwave                  | effect       |              |             | ok(json)    | --                  |
 | simple-synth              | synth        |              |             | ok(json)    | ok                  |
 | audio-input-effects       | effect       |              |             | ok(json)    | --                  |
