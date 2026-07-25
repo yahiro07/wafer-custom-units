@@ -16,7 +16,8 @@
     "react-dom": "^19.1.0",
     "tone": "^15.1.22",
     "tunajs": "^1.0.15",
-    "zustand": "^4.5.7"
+    "zustand": "^4.5.7",
+    "wafer-host": "catalog:"
   },
   "devDependencies": {
     "@babel/plugin-transform-react-jsx": "^7.27.1",
