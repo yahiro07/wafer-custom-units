@@ -16,7 +16,7 @@ async function Init() {
     unitAspects: {
       unitType: "instrument",
       categoryHint: "synthesizer",
-      viewSize: [580, 280],
+      viewSize: [570, 278],
     },
     noteInput: {
       noteOn(noteNumber, time, velocity) {
@@ -48,7 +48,7 @@ async function Init() {
         document.getElementById("prog").selectedIndex = pg;
         document.getElementById("vol").value = master;
         document.getElementById("rev").value = reverb;
-        Prog(pg);
+        ProgChange(pg);
         Ctrl();
         SetQuality(quality);
       },
