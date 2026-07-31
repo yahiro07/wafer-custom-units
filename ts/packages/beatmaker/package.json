@@ -1,0 +1,17 @@
+{
+  "name": "beatmaker",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.5",
+    "clsx": "^2.1.1",
+    "preact": "^10.29.2",
+    "snap-store": "^0.1.12",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.5",
+    "wafer-host": "catalog:"
+  }
+}
