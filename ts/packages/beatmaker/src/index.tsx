@@ -2,8 +2,17 @@ import clsx from "clsx";
 import { render } from "preact";
 import { useMemo, useState } from "preact/hooks";
 import { PadItem, padItems } from "./definitions";
-import { player, sequencer, unitInterface } from "./engine";
 import { arrayPackN } from "./helper";
+import { BeatSourceItem, createLoopPlayerEngine } from "./loop-player-engine";
+
+const player = createLoopPlayerEngine();
+const beatSourceItems: BeatSourceItem[] = padItems.map((padItem) => ({
+  id: padItem.id,
+  uri: `beats/0_${padItem.beat}.m4a`,
+  barLength: padItem.bars ?? 2,
+  originalBpm: 85,
+}));
+player.registerBeatSourceItems(beatSourceItems);
 
 const PadView = ({ padItem }: { padItem: PadItem }) => {
   const [isActive, setIsActive] = useState(false);
@@ -12,12 +21,12 @@ const PadView = ({ padItem }: { padItem: PadItem }) => {
     const nextActive = !isActive;
     if (padItem.oneShot) {
       if (nextActive) {
-        sequencer.playPadOneShot(padItem.id, () => setIsActive(false));
+        player.playInstantBeat(padItem.id, () => setIsActive(false));
       } else {
-        sequencer.stopPadOneShot(padItem.id);
+        player.stopInstantBeat(padItem.id);
       }
     } else {
-      sequencer.setPadActive(padItem.id, nextActive);
+      player.setBeatState(padItem.id, nextActive);
     }
     setIsActive(nextActive);
   };
@@ -50,20 +59,14 @@ const App = () => {
 const rootDiv = document.getElementById("root")!;
 render(<App />, rootDiv);
 
-unitInterface?.completeSetup({
+player.unitInterface?.completeSetup({
   unitAspects: {
     unitType: "instrument",
     viewSize: [1000, 700],
   },
   hostCallbacks: {
-    setBpm: sequencer.setBpm,
+    setBpm: player.setBpm,
   },
-  clockHandlers: {
-    start: sequencer.onHostStart,
-    processScheduling(timeFrom, barFrom, _barTo, bpm) {
-      sequencer.onHostScheduling(timeFrom, barFrom, bpm);
-    },
-    stop: sequencer.onHostStop,
-  },
+  clockHandlers: player.clockHandlers,
   cleanup: player.cleanup,
 });
