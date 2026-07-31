@@ -4,6 +4,7 @@ import { useMemo, useState } from "preact/hooks";
 import { PadItem, padItems } from "./definitions";
 import { arrayPackN } from "./helper";
 import { BeatSourceItem, createLoopPlayerEngine } from "./loop-player-engine";
+import { onIframeUnitUnloading } from "wafer-host/unit-types";
 
 const player = createLoopPlayerEngine();
 const beatSourceItems: BeatSourceItem[] = padItems.map((padItem) => ({
@@ -69,4 +70,8 @@ player.unitInterface?.completeSetup({
   },
   clockHandlers: player.clockHandlers,
   cleanup: player.cleanup,
+});
+
+onIframeUnitUnloading(() => {
+  render(null, rootDiv);
 });
