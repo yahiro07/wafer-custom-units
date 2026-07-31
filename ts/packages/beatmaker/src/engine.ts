@@ -56,9 +56,7 @@ function createPlayer() {
       if (!padItem) {
         throw new Error(`Pad item not found for padId: ${padId}`);
       }
-      const uri = padItem.beat.startsWith("aks")
-        ? `beats/${padItem.beat}.wav`
-        : `beats/0_${padItem.beat}.flac`;
+      const uri = `beats/0_${padItem.beat}.m4a`;
       console.log(`load audio ${uri}`);
       const audioBlobObjectURL = await wrapFetchAudioBlobObjectURL(uri);
       const audio = new Audio(audioBlobObjectURL);
