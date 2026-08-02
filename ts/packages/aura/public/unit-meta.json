@@ -3,7 +3,6 @@
   "unitType": "instrument",
   "outputSignalTypes": "audio",
   "protocol": "wafer-v01",
-  "unitTypesVersion": "0.0.1",
   "integrationFormat": "iframe",
   "originalRepositoryUrl": "https://github.com/AritraMalik804/ambient-music",
   "originalAuthor": "Aritra Malik",

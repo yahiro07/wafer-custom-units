@@ -3,7 +3,6 @@
   "unitType": "sequencer",
   "outputSignalTypes": "audio,note",
   "protocol": "wafer-v01",
-  "unitTypesVersion": "0.0.1",
   "integrationFormat": "iframe",
   "originalRepositoryUrl": "https://github.com/1wheel/roadtolarissa.git",
   "originalAuthor": "Adam Pearce",

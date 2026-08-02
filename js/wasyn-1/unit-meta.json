@@ -5,7 +5,6 @@
   "outputSignalTypes": "audio",
   "inputSignalTypes": "note",
   "protocol": "wafer-v01",
-  "unitTypesVersion": "0.0.1",
   "integrationFormat": "iframe",
   "originalRepositoryUrl": "https://github.com/errozero/poly-synth",
   "originalAuthor": "Mark H",
