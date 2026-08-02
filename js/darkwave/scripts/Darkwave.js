@@ -96,6 +96,7 @@ function boot() {
     unitAspects: {
       unitType: "effect",
       viewSize: [1020, 960],
+      preferJustSize: true,
     },
     persistence: {
       emitState: emitPersistedState,
