@@ -1,0 +1,13 @@
+{
+  "name": "web-audio-mixer",
+  "unitType": "effect",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "audio",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/jamesfiltness/web-audio-mixer",
+  "originalAuthor": "James Filtness",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

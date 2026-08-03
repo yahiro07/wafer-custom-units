@@ -1,0 +1,14 @@
+{
+  "name": "Vissonance",
+  "unitType": "effect",
+  "categoryHint": "visualizer",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "audio",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/tariqksoliman/Vissonance.git",
+  "originalAuthor": "Tariq Soliman",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

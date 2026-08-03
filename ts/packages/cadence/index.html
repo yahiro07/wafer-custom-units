@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cadence — play sound in your browser</title>
+    <meta
+      name="description"
+      content="A single-page audio-visual instrument built on the raw Web Audio API. A hand-wired synth you play by mouse or keyboard, driving a live canvas visualizer of real frequency and waveform data."
+    />
+    <meta property="og:title" content="cadence" />
+    <meta
+      property="og:description"
+      content="A hand-wired Web Audio synth and live canvas visualizer. Vite, TypeScript, Tailwind."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("cadence-theme");
+          var theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.classList.toggle("dark", theme === "dark");
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

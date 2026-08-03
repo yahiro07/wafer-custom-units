@@ -1,0 +1,13 @@
+{
+  "name": "syntho",
+  "unitType": "instrument",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "note",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/MichaelMarner/Syntho",
+  "originalAuthor": "Michael Marner",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

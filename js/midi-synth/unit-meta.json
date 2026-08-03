@@ -1,0 +1,14 @@
+{
+  "name": "midi-synth",
+  "unitType": "instrument",
+  "category": "synthesizer",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "note",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/cwilso/midi-synth.git",
+  "originalAuthor": "Chris Wilson",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

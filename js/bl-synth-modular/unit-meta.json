@@ -1,0 +1,13 @@
+{
+  "name": "bl-synth-modular",
+  "unitType": "instrument",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "note",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/BrendanJamesLynskey/Synth_Modular",
+  "originalAuthor": "Brendan James Lynskey",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

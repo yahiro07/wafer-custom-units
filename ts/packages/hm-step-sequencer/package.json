@@ -1,0 +1,24 @@
+{
+  "name": "web-audio-step-sequencer",
+  "version": "0.0.1",
+  "description": "Web Audio Step Sequencer",
+  "author": "heissmusik@gmail.com",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "backbone": "~1.1.2",
+    "connect-modrewrite": "~0.7.9",
+    "jquery": "~2.1.1",
+    "less": "^4.6.7",
+    "nouislider": "^7.0.10",
+    "twitter-bootstrap": "~2.1.1",
+    "underscore": "~1.7.0",
+    "vite": "^8.1.4",
+    "wafer-host": "catalog:"
+  }
+}

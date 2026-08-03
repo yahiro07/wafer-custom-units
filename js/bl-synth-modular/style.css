@@ -1,0 +1,564 @@
+/* ============================================================
+   SYNTH MODULAR — Shared Styles
+   Retro analog synthesizer aesthetic
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap");
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0f;
+  --panel: #111118;
+  --panel-border: #1a1a25;
+  --module-bg: #0e0e16;
+  --accent: #ff6b2b;
+  --accent2: #00e5ff;
+  --accent3: #b388ff;
+  --text: #d4d0c8;
+  --dim: #555;
+  --knob-track: #222;
+  --screw: #333;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Share Tech Mono", monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scanline overlay */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ---- TOP BAR ---- */
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(180deg, #151520, var(--panel));
+  border-bottom: 1px solid var(--panel-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-wrap: wrap;
+}
+
+.home-link {
+  font-family: "Orbitron", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.preset-bar,
+.master-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.preset-bar label,
+.master-section label,
+.seq-header label {
+  font-size: 0.65rem;
+  color: var(--dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.top-bar select,
+.seq-header select {
+  background: var(--module-bg);
+  color: var(--text);
+  border: 1px solid var(--panel-border);
+  padding: 0.3rem 0.5rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.75rem;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.sm-btn {
+  background: var(--module-bg);
+  color: var(--accent);
+  border: 1px solid rgba(255, 107, 43, 0.3);
+  padding: 0.25rem 0.6rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.sm-btn:hover {
+  background: rgba(255, 107, 43, 0.15);
+  border-color: var(--accent);
+}
+
+.val-display {
+  font-size: 0.65rem;
+  color: var(--accent2);
+  min-width: 40px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- VISUALIZER ---- */
+.viz-container {
+  height: 120px;
+  background: var(--module-bg);
+  border-bottom: 1px solid var(--panel-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.viz-container canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- SYNTH PANEL (MODULE GRID) ---- */
+.synth-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1px;
+  background: var(--panel-border);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+/* ---- MODULE ---- */
+.module {
+  background: var(--panel);
+  padding: 0.75rem;
+  position: relative;
+}
+
+.module.wide {
+  grid-column: span 2;
+}
+
+/* Ensure 3-column grid fills evenly on desktop */
+@media (min-width: 769px) {
+  .synth-panel {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.module-title {
+  font-family: "Orbitron", sans-serif;
+  font-weight: 500;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+}
+
+.led-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  display: inline-block;
+}
+.led-dot.cyan {
+  background: var(--accent2);
+  box-shadow: 0 0 6px var(--accent2);
+}
+.led-dot.orange {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+.led-dot.purple {
+  background: var(--accent3);
+  box-shadow: 0 0 6px var(--accent3);
+}
+
+/* Screw decoration */
+.module::before,
+.module::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--screw);
+  border: 1px solid #444;
+}
+.module::before {
+  top: 6px;
+  right: 6px;
+}
+.module::after {
+  bottom: 6px;
+  left: 6px;
+}
+
+.control-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+  align-items: flex-end;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.control label {
+  font-size: 0.55rem;
+  color: var(--dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.control select {
+  background: var(--module-bg);
+  color: var(--text);
+  border: 1px solid var(--panel-border);
+  padding: 0.25rem 0.3rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.7rem;
+  border-radius: 2px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.control .val-display {
+  font-size: 0.6rem;
+}
+
+/* ---- RANGE SLIDER (retro knob style) ---- */
+.knob-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--knob-track);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.knob-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #666, #333);
+  border: 2px solid #888;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+.knob-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #666, #333);
+  border: 2px solid #888;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+/* Accent colored tracks */
+.knob-range.accent::-webkit-slider-thumb {
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(255, 107, 43, 0.3);
+}
+.knob-range.cyan::-webkit-slider-thumb {
+  border-color: var(--accent2);
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.3);
+}
+.knob-range.purple::-webkit-slider-thumb {
+  border-color: var(--accent3);
+  box-shadow: 0 0 6px rgba(179, 136, 255, 0.3);
+}
+
+/* ---- ENVELOPE DISPLAY ---- */
+.env-display {
+  width: 100%;
+  height: 50px;
+  background: var(--module-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 2px;
+  margin-top: 0.3rem;
+}
+
+/* ---- FX SUB-SECTIONS ---- */
+.fx-sub {
+  border-top: 1px solid var(--panel-border);
+  padding-top: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.fx-sub:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.fx-sub h4 {
+  font-family: "Orbitron", sans-serif;
+  font-weight: 400;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: var(--dim);
+  margin-bottom: 0.3rem;
+}
+
+/* ---- SEQUENCER ---- */
+.sequencer-panel {
+  background: var(--panel);
+  border-bottom: 1px solid var(--panel-border);
+  padding: 0.75rem;
+}
+
+.seq-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.seq-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.seq-btn {
+  background: var(--module-bg);
+  color: var(--text);
+  border: 1px solid var(--panel-border);
+  padding: 0.3rem 0.8rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.seq-btn:hover {
+  border-color: var(--accent);
+}
+
+.seq-btn.play-btn.active {
+  background: rgba(255, 107, 43, 0.2);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 10px rgba(255, 107, 43, 0.2);
+}
+
+.bpm-input {
+  background: var(--module-bg);
+  color: var(--accent2);
+  border: 1px solid var(--panel-border);
+  padding: 0.3rem 0.4rem;
+  width: 50px;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.75rem;
+  border-radius: 2px;
+  text-align: center;
+}
+
+.seq-grid {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 3px;
+  margin-bottom: 3px;
+}
+
+.seq-step {
+  aspect-ratio: 1;
+  background: var(--module-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-height: 28px;
+}
+
+.seq-step.active {
+  background: rgba(255, 107, 43, 0.3);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(255, 107, 43, 0.2);
+}
+
+.seq-step.current {
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+  border-color: var(--accent2);
+}
+
+.seq-step.active.current {
+  background: rgba(255, 107, 43, 0.6);
+  box-shadow:
+    0 0 15px rgba(255, 107, 43, 0.4),
+    0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.seq-notes {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 3px;
+}
+
+.seq-note-select {
+  background: var(--module-bg);
+  color: var(--dim);
+  border: 1px solid var(--panel-border);
+  padding: 1px;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.5rem;
+  border-radius: 2px;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* ---- KEYBOARD ---- */
+.keyboard-panel {
+  padding: 0.5rem;
+  background: linear-gradient(180deg, var(--panel), #0d0d14);
+  border-top: 1px solid var(--panel-border);
+  overflow-x: auto;
+}
+
+.keyboard {
+  display: flex;
+  position: relative;
+  height: 120px;
+  min-width: 600px;
+  margin: 0 auto;
+  max-width: 900px;
+}
+
+.key {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.1s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.key.white {
+  flex: 1;
+  background: linear-gradient(180deg, #e8e4dc, #d4d0c8);
+  border: 1px solid #999;
+  border-radius: 0 0 4px 4px;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
+}
+
+.key.white:active,
+.key.white.active {
+  background: linear-gradient(180deg, #ccc8c0, #bbb7af);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.key.black {
+  width: 28px;
+  height: 65%;
+  background: linear-gradient(180deg, #222, #111);
+  border: 1px solid #000;
+  border-radius: 0 0 3px 3px;
+  position: absolute;
+  z-index: 2;
+  margin-left: -14px;
+}
+
+.key.black:active,
+.key.black.active {
+  background: linear-gradient(180deg, #333, #222);
+  height: 63%;
+}
+
+.key-label {
+  font-size: 0.5rem;
+  color: #888;
+  font-family: "Share Tech Mono", monospace;
+}
+
+/* Position black keys - handled by JS flex layout */
+.key.black {
+  position: relative;
+  margin-left: -14px;
+  margin-right: -14px;
+}
+
+/* ---- MOBILE OVERRIDES ---- */
+@media (max-width: 768px) {
+  .synth-panel {
+    grid-template-columns: 1fr;
+  }
+  .module.wide {
+    grid-column: span 1;
+  }
+  .top-bar {
+    gap: 0.5rem;
+    padding: 0.4rem 0.5rem;
+  }
+  .keyboard {
+    min-width: 500px;
+    height: 100px;
+  }
+  .seq-grid,
+  .seq-notes {
+    grid-template-columns: repeat(16, 1fr);
+  }
+  .seq-step {
+    min-height: 22px;
+  }
+  .viz-container {
+    height: 80px;
+  }
+}
+
+/* customization */
+.sequencer-panel {
+  display: none;
+}
+.keyboard-panel {
+  display: none;
+}

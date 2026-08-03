@@ -1,0 +1,22 @@
+{
+  "name": "react-synth",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "styled-components": "^5.1.0",
+    "wafer-host": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "@vitejs/plugin-react": "^6.0.3",
+    "vite": "^8.1.4"
+  }
+}

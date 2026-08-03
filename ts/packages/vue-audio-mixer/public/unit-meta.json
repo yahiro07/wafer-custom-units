@@ -1,0 +1,13 @@
+{
+  "name": "vue-audio-mixer",
+  "unitType": "effect",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "audio",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/julescole/vue-audio-mixer",
+  "originalAuthor": "Julian Cole",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

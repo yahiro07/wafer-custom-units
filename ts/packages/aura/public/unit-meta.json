@@ -1,0 +1,12 @@
+{
+  "name": "aura",
+  "unitType": "instrument",
+  "outputSignalTypes": "audio",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/AritraMalik804/ambient-music",
+  "originalAuthor": "Aritra Malik",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

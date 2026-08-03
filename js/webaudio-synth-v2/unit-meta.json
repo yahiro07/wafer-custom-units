@@ -1,0 +1,14 @@
+{
+  "name": "webaudio-synth-v2",
+  "unitType": "instrument",
+  "category": "synthesizer",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "note",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/aike/webaudiosynthv2",
+  "originalAuthor": "aike",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

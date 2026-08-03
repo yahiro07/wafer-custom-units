@@ -1,0 +1,153 @@
+.knobContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--spacing-lg);
+  height: fit-content;
+}
+
+.knobContainerSmall {
+  --knob-size: 27px;
+}
+
+.knobContainerMedium {
+  --knob-size: 38px;
+  margin-top: var(--spacing-xs);
+}
+
+.knobContainerLarge {
+  --knob-size: 45px;
+}
+
+.knob {
+  position: relative;
+  width: var(--knob-size);
+  height: var(--knob-size);
+  border-radius: 50%;
+  z-index: 5;
+  filter: drop-shadow(0 -1px 0 hsl(0deg 0% 50% / 50%));
+}
+
+.knobBtm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--knob-size);
+  height: var(--knob-size);
+  filter: drop-shadow(0 1px 1px hsl(0deg 0% 0% / 95%));
+}
+
+.outerKnob {
+  position: absolute;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  background: url("./knob-bg.svg") no-repeat center center;
+  border-radius: 50%;
+  place-items: center;
+  z-index: 1;
+}
+
+.outerKnobBottom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    hsl(0deg 0% 70% / 50%) 0%,
+    hsl(0deg 0% 25% / 50%) 35%,
+    hsl(0deg 0% 0% / 50%) 35%,
+    hsl(0deg 0% 5% / 100%) 100%
+  );
+  border-radius: 50%;
+  place-items: center;
+  z-index: 0;
+}
+
+.dot {
+  position: absolute;
+  top: 12.5%;
+  left: 50%;
+  z-index: 5;
+  width: 3px;
+  height: 3px;
+  background: linear-gradient(
+    to bottom,
+    hsl(220deg 13% 85%),
+    hsl(220deg 13% 55%)
+  );
+  border-radius: 50%;
+  transform: translate(-50%, -100%);
+  content: "";
+}
+
+.innerKnob {
+  position: absolute;
+  top: 17.5%;
+  left: 17.5%;
+  z-index: 1;
+  width: 65%;
+  height: 65%;
+  border-radius: 50%;
+  pointer-events: none;
+
+  /* outer shine */
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: conic-gradient(
+      from 59.5deg at 50% 50%,
+      hsl(180deg 0% 68%) 0%,
+      hsl(180deg 0% 30%) 16.5%,
+      hsl(240deg 0% 28%) 16.5%,
+      hsl(240deg 0% 78%) 33%,
+      hsl(180deg 0% 68%) 33%,
+      hsl(180deg 0% 30%) 49.5%,
+      hsl(240deg 0% 28%) 49.5%,
+      hsl(240deg 0% 78%) 66%,
+      hsl(180deg 0% 68%) 66%,
+      hsl(180deg 0% 30%) 83.5%,
+      hsl(240deg 0% 28%) 83.5%,
+      hsl(240deg 0% 78%) 100%
+    );
+    border-radius: 50%;
+  }
+}
+
+.knobLabel,
+.knobValue {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  user-select: none;
+}
+
+.knobValueMedium,
+.knobLabelMedium {
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.knobValue {
+  text-transform: unset;
+}
+
+.knobValue span {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+}

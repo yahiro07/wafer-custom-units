@@ -1,0 +1,82 @@
+.slider {
+  position: relative;
+  top: 50px;
+  height: var(--spacing-lg);
+  cursor: pointer;
+  user-select: none;
+  transform: rotate(270deg);
+}
+
+.track {
+  position: relative;
+  top: 50%;
+  right: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 105px;
+  height: 14px;
+  background: linear-gradient(90deg, hsl(217deg 30% 20%), hsl(217deg 40% 25%));
+  background: var(--base-texture);
+  box-shadow: 0 1px 2px hsl(217deg 40% 3% / 95%),
+    0 2px 4px hsl(217deg 40% 3% / 95%);
+  cursor: pointer;
+  transform: translateY(-50%);
+
+  --base-texture: linear-gradient(
+    270deg,
+    hsl(217deg 25% 10%),
+    hsl(0deg 0% 100%) 28%,
+    hsl(217deg 25% 10%)
+  );
+}
+
+.thumb {
+  position: absolute;
+  top: 1px;
+  left: clamp(4.5px, calc(var(--thumb-position, 0%)), calc(100% - 4.5px));
+  display: flex;
+  width: 9px;
+  height: 14px;
+  background: linear-gradient(
+    270deg,
+    hsl(0deg 0% 25%) 0%,
+    hsl(0deg 0% 75%) 37.5%,
+    hsl(0deg 0% 85%) 62.5%,
+    hsl(0deg 0% 25%) 100%
+  );
+  border-right: 1px solid hsl(0deg 0% 0%);
+  border-left: 1px solid hsl(0deg 0% 0%);
+
+  /* border-top: 1.5px solid hsl(0deg 0% 25%);
+  border-bottom: 1.5px solid hsl(0deg 0% 25%); */
+  transform: translateX(-50%);
+}
+
+.modLabel {
+  position: relative;
+  top: 104px;
+  left: 1px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  text-transform: uppercase;
+  user-select: none;
+  letter-spacing: 0.08em;
+}
+
+.modWheelShadow {
+  position: absolute;
+  top: var(--spacing-lg);
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    hsl(217deg 30% 0% / 50%),
+    hsl(217deg 40% 5% / 0%)
+  );
+  filter: blur(6px);
+  transform: translateY(-50%);
+}

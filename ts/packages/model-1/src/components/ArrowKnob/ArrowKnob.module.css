@@ -1,0 +1,164 @@
+.knobContainer {
+  --knob-size: 45px;
+  position: relative;
+  top: -7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: var(--spacing-lg) -10px -36px -10px;
+}
+
+.knobRing {
+  &::before {
+    content: "";
+    position: absolute;
+    width: var(--knob-size);
+    height: var(--knob-size);
+    background: linear-gradient(
+      to bottom,
+      hsl(0deg 0% 70% / 50%) 0%,
+      hsl(0deg 0% 25% / 50%) 35%,
+      hsl(0deg 0% 0% / 50%) 35%,
+      hsl(0deg 0% 5% / 100%) 100%
+    );
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: calc(50% - 10px);
+    z-index: 0;
+    filter: drop-shadow(0 -1px hsl(0deg 0% 0%));
+  }
+}
+
+.knob {
+  position: relative;
+  width: var(--knob-size);
+  height: var(--knob-size);
+  border-radius: 50%;
+  filter: drop-shadow(0 -1px 0 hsl(0deg 0% 50% / 50%));
+}
+
+.knobBtm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--knob-size);
+  height: var(--knob-size);
+  filter: drop-shadow(0 1px 1px hsl(0deg 0% 0% / 50%));
+}
+
+.outerKnob {
+  position: relative;
+  top: 2px;
+  left: -4px;
+  display: grid;
+  width: 120%;
+  height: 120%;
+  background: url("./arrow-knob.svg") no-repeat center center;
+  border-radius: 50%;
+  place-items: center;
+}
+
+.knobLabel {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.line {
+  position: absolute;
+  top: 28%;
+  left: 50.5%;
+  z-index: 5;
+  width: 1px;
+  height: 12px;
+  background: linear-gradient(
+    to bottom,
+    hsl(220deg 13% 65%),
+    hsl(220deg 13% 85%)
+  );
+  border-radius: 1px;
+  transform: translate(-50%, -100%);
+  content: "";
+}
+
+.innerKnob {
+  position: absolute;
+  top: 32.5%;
+  left: 32.5%;
+  z-index: 1;
+  width: 35%;
+  height: 35%;
+  border-radius: 50%;
+  pointer-events: none;
+
+  /* inner shine */
+  &::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: conic-gradient(
+      from 0deg at 50% 50%,
+      hsl(180deg 0% 68%) 0%,
+      hsl(180deg 0% 30%) 16.5%,
+      hsl(240deg 0% 28%) 16.5%,
+      hsl(240deg 0% 78%) 33%,
+      hsl(180deg 0% 68%) 33%,
+      hsl(180deg 0% 30%) 49.5%,
+      hsl(240deg 0% 28%) 49.5%,
+      hsl(240deg 0% 78%) 66%,
+      hsl(180deg 0% 68%) 66%,
+      hsl(180deg 0% 30%) 83.5%,
+      hsl(240deg 0% 28%) 83.5%,
+      hsl(240deg 0% 78%) 100%
+    );
+    border-radius: 50%;
+  }
+
+  /* outer shine */
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2.5%;
+    left: 2.5%;
+    width: 95%;
+    height: 95%;
+    background-image: conic-gradient(
+      from 59.5deg at 50% 50%,
+      hsl(180deg 0% 68%) 0%,
+      hsl(180deg 0% 30%) 16.5%,
+      hsl(240deg 0% 28%) 16.5%,
+      hsl(240deg 0% 78%) 33%,
+      hsl(180deg 0% 68%) 33%,
+      hsl(180deg 0% 30%) 49.5%,
+      hsl(240deg 0% 28%) 49.5%,
+      hsl(240deg 0% 78%) 66%,
+      hsl(180deg 0% 68%) 66%,
+      hsl(180deg 0% 30%) 83.5%,
+      hsl(240deg 0% 28%) 83.5%,
+      hsl(240deg 0% 78%) 100%
+    );
+    border-radius: 50%;
+  }
+}
+
+.knobValue {
+  position: absolute;
+  white-space: nowrap;
+  user-select: none;
+  font-size: var(--font-size-xs);
+  svg {
+    color: var(--color-text-primary);
+  }
+}
+
+.knobValueContainer {
+  position: absolute;
+  left: 12.5%;
+  top: -1px;
+}

@@ -3,3 +3,4 @@ node_modules/
 dist/
 .vscode/settings.json
 *.code-workspace
+build_single.sh

@@ -1,0 +1,12 @@
+{
+  "name": "d3-synth-scale",
+  "unitType": "sequencer",
+  "outputSignalTypes": "audio,note",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/1wheel/roadtolarissa.git",
+  "originalAuthor": "Adam Pearce",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

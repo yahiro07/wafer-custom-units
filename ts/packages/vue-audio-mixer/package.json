@@ -1,0 +1,30 @@
+{
+  "name": "vue-audio-mixer",
+  "version": "1.2.2",
+  "private": true,
+  "description": "An audio mixer app for vue.js",
+  "author": "Julian Cole <julian@juliancole.co.uk>",
+  "keywords": [
+    "vue",
+    "audio",
+    "mixer",
+    "music",
+    "mixingdesk"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^2.7.16",
+    "vue-knob-control": "^1.6.0",
+    "wafer-host": "catalog:"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue2": "^2.3.4",
+    "sass": "^1.89.2",
+    "vite": "^5.4.21"
+  }
+}

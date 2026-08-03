@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SYNTH MODULAR — Desktop</title>
+    <meta name="theme-color" content="#0a0a0f" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <a class="home-link">SYNTH MODULAR</a>
+      <div class="preset-bar">
+        <label>PRESET</label>
+        <select id="presetSelect"></select>
+        <button id="savePresetBtn" class="sm-btn">SAVE</button>
+      </div>
+      <div class="master-section">
+        <label>MASTER</label>
+        <input
+          type="range"
+          id="masterVolume"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0.7"
+          class="knob-range"
+        />
+        <span id="masterVolumeVal" class="val-display">0.70</span>
+      </div>
+    </header>
+
+    <!-- Visualizer -->
+    <div class="viz-container">
+      <canvas id="vizCanvas"></canvas>
+    </div>
+
+    <!-- Main Synth Panel -->
+    <main class="synth-panel">
+      <!-- OSC 1 -->
+      <section class="module osc-module">
+        <h3 class="module-title"><span class="led-dot"></span> OSC 1</h3>
+        <div class="control-row">
+          <div class="control">
+            <label>WAVE</label>
+            <select id="oscType" data-param="oscType">
+              <option value="sawtooth">SAW</option>
+              <option value="square">SQUARE</option>
+              <option value="sine">SINE</option>
+              <option value="triangle">TRI</option>
+            </select>
+          </div>
+          <div class="control">
+            <label>OCTAVE</label>
+            <select id="octave" data-param="octave">
+              <option value="-2">-2</option>
+              <option value="-1">-1</option>
+              <option value="0" selected>0</option>
+              <option value="1">+1</option>
+              <option value="2">+2</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- OSC 2 -->
+      <section class="module osc-module">
+        <h3 class="module-title"><span class="led-dot cyan"></span> OSC 2</h3>
+        <div class="control-row">
+          <div class="control">
+            <label>WAVE</label>
+            <select id="osc2Type" data-param="osc2Type">
+              <option value="sawtooth">SAW</option>
+              <option value="square" selected>SQUARE</option>
+              <option value="sine">SINE</option>
+              <option value="triangle">TRI</option>
+            </select>
+          </div>
+          <div class="control">
+            <label>OCTAVE</label>
+            <select id="osc2Octave" data-param="osc2Octave">
+              <option value="-2">-2</option>
+              <option value="-1">-1</option>
+              <option value="0" selected>0</option>
+              <option value="1">+1</option>
+              <option value="2">+2</option>
+            </select>
+          </div>
+        </div>
+        <div class="control-row">
+          <div class="control">
+            <label>DETUNE</label>
+            <input
+              type="range"
+              id="osc2Detune"
+              data-param="osc2Detune"
+              min="0"
+              max="50"
+              step="1"
+              value="7"
+              class="knob-range"
+            />
+            <span class="val-display" data-for="osc2Detune">7</span>
+          </div>
+          <div class="control">
+            <label>MIX</label>
+            <input
+              type="range"
+              id="osc2Mix"
+              data-param="osc2Mix"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.5"
+              class="knob-range"
+            />
+            <span class="val-display" data-for="osc2Mix">0.50</span>
+          </div>
+        </div>
+        <div class="control-row">
+          <div class="control">
+            <label>NOISE</label>
+            <input
+              type="range"
+              id="noiseLevel"
+              data-param="noiseLevel"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0"
+              class="knob-range"
+            />
+            <span class="val-display" data-for="noiseLevel">0.00</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- FILTER -->
+      <section class="module filter-module">
+        <h3 class="module-title">
+          <span class="led-dot orange"></span> FILTER
+        </h3>
+        <div class="control-row">
+          <div class="control">
+            <label>TYPE</label>
+            <select id="filterType" data-param="filterType">
+              <option value="lowpass">LPF</option>
+              <option value="highpass">HPF</option>
+              <option value="bandpass">BPF</option>
+              <option value="notch">NOTCH</option>
+            </select>
+          </div>
+        </div>
+        <div class="control-row">
+          <div class="control">
+            <label>CUTOFF</label>
+            <input
+              type="range"
+              id="filterCutoff"
+              data-param="filterCutoff"
+              min="20"
+              max="20000"
+              step="1"
+              value="5000"
+              class="knob-range accent"
+            />
+            <span class="val-display" data-for="filterCutoff">5000</span>
+          </div>
+          <div class="control">
+            <label>RESO</label>
+            <input
+              type="range"
+              id="filterResonance"
+              data-param="filterResonance"
+              min="0"
+              max="20"
+              step="0.1"
+              value="1"
+              class="knob-range accent"
+            />
+            <span class="val-display" data-for="filterResonance">1.0</span>
+          </div>
+        </div>
+        <div class="control-row">
+          <div class="control">
+            <label>ENV AMT</label>
+            <input
+              type="range"
+              id="filterEnvAmount"
+              data-param="filterEnvAmount"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0"
+              class="knob-range accent"
+            />
+            <span class="val-display" data-for="filterEnvAmount">0.00</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ENVELOPE -->
+      <section class="module env-module">
+        <h3 class="module-title">
+          <span class="led-dot purple"></span> ENVELOPE
+        </h3>
+        <div class="control-row">
+          <div class="control">
+            <label>ATK</label>
+            <input
+              type="range"
+              id="attack"
+              data-param="attack"
+              min="0.001"
+              max="5"
+              step="0.001"
+              value="0.01"
+              class="knob-range purple"
+            />
+            <span class="val-display" data-for="attack">0.01</span>
+          </div>
+          <div class="control">
+            <label>DEC</label>
+            <input
+              type="range"
+              id="decay"
+              data-param="decay"
+              min="0.001"
+              max="5"
+              step="0.001"
+              value="0.3"
+              class="knob-range purple"
+            />
+            <span class="val-display" data-for="decay">0.30</span>
+          </div>
+        </div>
+        <div class="control-row">
+          <div class="control">
+            <label>SUS</label>
+            <input
+              type="range"
+              id="sustain"
+              data-param="sustain"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.7"
+              class="knob-range purple"
+            />
+            <span class="val-display" data-for="sustain">0.70</span>
+          </div>
+          <div class="control">
+            <label>REL</label>
+            <input
+              type="range"
+              id="release"
+              data-param="release"
+              min="0.01"
+              max="10"
+              step="0.01"
+              value="0.5"
+              class="knob-range purple"
+            />
+            <span class="val-display" data-for="release">0.50</span>
+          </div>
+        </div>
+        <canvas
+          id="envCanvas"
+          class="env-display"
+          width="180"
+          height="60"
+        ></canvas>
+      </section>
+
+      <!-- LFO -->
+      <section class="module lfo-module">
+        <h3 class="module-title"><span class="led-dot cyan"></span> LFO</h3>
+        <div class="control-row">
+          <div class="control">
+            <label>SHAPE</label>
+            <select id="lfoShape" data-param="lfoShape">
+              <option value="sine">SINE</option>
+              <option value="square">SQUARE</option>
+              <option value="sawtooth">SAW</option>
+              <option value="triangle">TRI</option>
+            </select>
+          </div>
+          <div class="control">
+            <label>TARGET</label>
+            <select id="lfoTarget" data-param="lfoTarget">
+              <option value="filter">FILTER</option>
+              <option value="pitch">PITCH</option>
+              <option value="amplitude">AMP</option>
+            </select>
+          </div>
+        </div>
+        <div class="control-row">
+          <div class="control">
+            <label>RATE</label>
+            <input
+              type="range"
+              id="lfoRate"
+              data-param="lfoRate"
+              min="0.01"
+              max="30"
+              step="0.01"
+              value="4"
+              class="knob-range cyan"
+            />
+            <span class="val-display" data-for="lfoRate">4.00</span>
+          </div>
+          <div class="control">
+            <label>DEPTH</label>
+            <input
+              type="range"
+              id="lfoDepth"
+              data-param="lfoDepth"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0"
+              class="knob-range cyan"
+            />
+            <span class="val-display" data-for="lfoDepth">0.00</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- EFFECTS -->
+      <section class="module fx-module">
+        <h3 class="module-title">
+          <span class="led-dot orange"></span> EFFECTS
+        </h3>
+
+        <div class="fx-sub">
+          <h4>DELAY</h4>
+          <div class="control-row">
+            <div class="control">
+              <label>TIME</label>
+              <input
+                type="range"
+                id="delayTime"
+                data-param="delayTime"
+                min="0.01"
+                max="1.5"
+                step="0.01"
+                value="0.3"
+                class="knob-range"
+              />
+              <span class="val-display" data-for="delayTime">0.30</span>
+            </div>
+            <div class="control">
+              <label>FDBK</label>
+              <input
+                type="range"
+                id="delayFeedback"
+                data-param="delayFeedback"
+                min="0"
+                max="0.9"
+                step="0.01"
+                value="0.3"
+                class="knob-range"
+              />
+              <span class="val-display" data-for="delayFeedback">0.30</span>
+            </div>
+            <div class="control">
+              <label>MIX</label>
+              <input
+                type="range"
+                id="delayMix"
+                data-param="delayMix"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.2"
+                class="knob-range"
+              />
+              <span class="val-display" data-for="delayMix">0.20</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fx-sub">
+          <h4>REVERB</h4>
+          <div class="control-row">
+            <div class="control">
+              <label>DECAY</label>
+              <input
+                type="range"
+                id="reverbDecay"
+                data-param="reverbDecay"
+                min="0.1"
+                max="8"
+                step="0.1"
+                value="2.5"
+                class="knob-range"
+              />
+              <span class="val-display" data-for="reverbDecay">2.5</span>
+            </div>
+            <div class="control">
+              <label>MIX</label>
+              <input
+                type="range"
+                id="reverbMix"
+                data-param="reverbMix"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.2"
+                class="knob-range"
+              />
+              <span class="val-display" data-for="reverbMix">0.20</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fx-sub">
+          <h4>DISTORTION</h4>
+          <div class="control-row">
+            <div class="control">
+              <label>DRIVE</label>
+              <input
+                type="range"
+                id="distortionAmount"
+                data-param="distortionAmount"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0"
+                class="knob-range"
+              />
+              <span class="val-display" data-for="distortionAmount">0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fx-sub">
+          <h4>CHORUS</h4>
+          <div class="control-row">
+            <div class="control">
+              <label>RATE</label>
+              <input
+                type="range"
+                id="chorusRate"
+                data-param="chorusRate"
+                min="0.1"
+                max="10"
+                step="0.1"
+                value="1.5"
+                class="knob-range"
+              />
+              <span class="val-display" data-for="chorusRate">1.5</span>
+            </div>
+            <div class="control">
+              <label>DEPTH</label>
+              <input
+                type="range"
+                id="chorusDepth"
+                data-param="chorusDepth"
+                min="0"
+                max="0.01"
+                step="0.0001"
+                value="0.002"
+                class="knob-range"
+              />
+              <span class="val-display" data-for="chorusDepth">0.002</span>
+            </div>
+            <div class="control">
+              <label>MIX</label>
+              <input
+                type="range"
+                id="chorusMix"
+                data-param="chorusMix"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0"
+                class="knob-range"
+              />
+              <span class="val-display" data-for="chorusMix">0.00</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Sequencer -->
+    <section class="sequencer-panel">
+      <div class="seq-header">
+        <h3 class="module-title"><span class="led-dot"></span> SEQUENCER</h3>
+        <div class="seq-controls">
+          <button id="seqPlayBtn" class="seq-btn play-btn">&#9654; PLAY</button>
+          <button id="seqStopBtn" class="seq-btn">&#9632; STOP</button>
+          <label>BPM</label>
+          <input
+            type="number"
+            id="seqBPM"
+            value="120"
+            min="30"
+            max="300"
+            class="bpm-input"
+          />
+          <label>PATTERN</label>
+          <select id="seqPresetSelect"></select>
+          <button id="seqRandomBtn" class="sm-btn">RANDOM</button>
+          <label>SCALE</label>
+          <select id="seqScale">
+            <option value="minor">Minor</option>
+            <option value="major">Major</option>
+            <option value="pentatonic">Pentatonic</option>
+            <option value="minorPentatonic">Minor Pent</option>
+            <option value="blues">Blues</option>
+            <option value="dorian">Dorian</option>
+            <option value="phrygian">Phrygian</option>
+            <option value="lydian">Lydian</option>
+            <option value="arabic">Arabic</option>
+          </select>
+        </div>
+      </div>
+      <div class="seq-grid" id="seqGrid"></div>
+      <div class="seq-notes" id="seqNotes"></div>
+    </section>
+
+    <!-- Keyboard -->
+    <section class="keyboard-panel">
+      <div class="keyboard" id="keyboard"></div>
+    </section>
+
+    <script src="synth-engine.js"></script>
+    <script src="presets.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

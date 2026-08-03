@@ -1,0 +1,14 @@
+{
+  "name": "circular-audio-wave",
+  "unitType": "effect",
+  "categoryHint": "visualizer",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "audio",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/kelvinau/circular-audio-wave",
+  "originalAuthor": "Kelvin Au",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

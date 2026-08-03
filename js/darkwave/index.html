@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Darkwave</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Chunky analog synth sounds from your guitar fretboard."
+    />
+    <meta name="copyright" content="Stewart Smith 2020–2021" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/styles.css" />
+
+    <script type="module" src="scripts/Darkwave.js"></script>
+  </head>
+  <body>
+    <h1>Darkwave</h1>
+    <div id="frequencies-container">
+      <canvas id="frequencies-graph"></canvas>
+      <div id="banks"></div>
+    </div>
+    <div id="params">
+      <table>
+        <thead>
+          <td>&nbsp;</td>
+          <td>Wave type</td>
+          <td>Frequency factor</td>
+          <td>Volume factor</td>
+          <td>&nbsp;</td>
+        </thead>
+        <template id="param">
+          <tr class="param">
+            <td class="param-index">1</td>
+            <td>
+              <select name="waveType" id="pet-select">
+                <option value="sine">Sine</option>
+                <option value="square">Square</option>
+                <option value="sawtooth">Sawtooth</option>
+                <option value="triangle">Triangle</option>
+              </select>
+            </td>
+            <td><input type="text" name="frequencyFactor" value="0.5" /></td>
+            <td><input type="text" name="volumeFactor" value="0.5" /></td>
+            <td><div class="param-remove">–</div></td>
+          </tr>
+        </template>
+      </table>
+      <div id="param-add">+</div>
+    </div>
+
+    <!-- <div class="pad">
+      Tap anywhere to activate Darkwave.<br />
+      Then tap “Allow” to allow microphone use (or whatever line input you’re
+      piping in via the OS).
+      <br />
+      <br />
+      You can use URLs to load this page with oscillator settings preset like
+      so:
+      <code>/darkwave/#square,0.5,0.8;triangle,0.75,0.2;sine,1,0.3</code>
+      <br />
+      <br />
+      <a target="_blank" href="https://github.com/stewdio/darkwave"
+        >Contribute to Darkwave on GitHub!</a
+      >
+    </div> -->
+  </body>
+</html>

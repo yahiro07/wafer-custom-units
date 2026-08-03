@@ -1,0 +1,7 @@
+{
+  "name": "wafer-units-ts",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r --if-present --filter './packages/**/*' build"
+  }
+}

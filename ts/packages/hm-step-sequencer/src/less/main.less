@@ -1,0 +1,149 @@
+@import "variables";
+@import "codepen-buttons";
+
+* {
+  -webkit-user-drag: none;
+  user-select: none;
+  // cursor: pointer !important;
+}
+
+body {
+  font-family: "PT Serif", serif;
+  background: @ivory;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+
+.wrapper {
+  background: @dark-grey;
+  width: 500px;
+  padding: 15px 30px;
+  // border-radius: 10px;
+  border-right: 20px solid @brown;
+  border-left: 20px solid @brown;
+  header {
+    text-align: left;
+    border-bottom: 1px solid @gold;
+    padding: 10px 0 15px;
+    margin-bottom: 20px;
+    span {
+      color: @gold;
+      font-size: 20px;
+      position: relative;
+    }
+    img {
+      max-width: 50px;
+      margin-right: 20px;
+    }
+  }
+  #seq {
+    width: 480px;
+    padding: 10px;
+
+    .step {
+      width: 50px;
+      text-align: center;
+      display: inline-block;
+
+      .trigger {
+        margin-bottom: 20px;
+        padding: 2px;
+      }
+      .step-active {
+        background: #000000;
+      }
+
+      .slider {
+        position: relative;
+        display: inline-block;
+        height: 120px;
+
+        .track {
+          display: inline-block;
+          width: 5px;
+          height: 60px;
+          background: #999;
+        }
+        .fader {
+          background: #333;
+          position: absolute;
+          left: -7px;
+          bottom: 30px;
+          width: 20px;
+          height: 10px;
+          position: absolute;
+          display: inline-block;
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+      .led {
+        margin-top: 20px;
+      }
+      .lit {
+        background: @red;
+      }
+    }
+    .controls {
+      margin-top: 25px;
+    }
+  }
+}
+
+menu {
+  text-align: center;
+  margin: 0;
+  padding: 25px 0 0;
+  border-top: 2px solid #eeeeee;
+}
+
+.stop,
+.play {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.square-button {
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: 0 auto;
+  border: 2px solid #f5f5f5;
+  color: #f5f5f5;
+  background: #c3c3c3;
+  box-shadow: 0 0 4px grey;
+  &:hover {
+    cursor: pointer;
+    // background: #6f6f6f;
+  }
+}
+
+.round-button {
+  display: block;
+  width: 15px;
+  height: 15px;
+  margin: 0 auto;
+  border: 2px solid #f5f5f5;
+  border-radius: 50%;
+  text-align: center;
+  text-decoration: none;
+  background: #999999;
+  box-shadow: 0 0 3px gray;
+  .active {
+    background: red;
+  }
+}
+
+.play.started {
+  background: green !important;
+}
+.play.started:before {
+  border-left-color: @white !important;
+}
