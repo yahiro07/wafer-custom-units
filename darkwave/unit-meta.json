@@ -1,0 +1,13 @@
+{
+  "name": "darkwave",
+  "unitType": "effect",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "audio",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/stewdio/darkwave",
+  "originalAuthor": "Stewart Smith",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

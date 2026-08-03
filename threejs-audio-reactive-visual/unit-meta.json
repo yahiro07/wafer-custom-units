@@ -1,0 +1,14 @@
+{
+  "name": "threejs-audio-reactive-visual",
+  "unitType": "effect",
+  "categoryHint": "visualizer",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "audio",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/kekkorider/threejs-audio-reactive-visual.git",
+  "originalAuthor": "Francesco Michelini",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

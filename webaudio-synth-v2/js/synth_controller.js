@@ -21,6 +21,7 @@ var Ctrl = function () {
   this.sensitivity = 2;
   this.infomode = 0;
   this.playingNote = null;
+  this.parameters = {};
 
   var self = this;
   document.body.onmousedown = function (e) {
@@ -191,6 +192,7 @@ Ctrl.prototype.setDspParam = function (key, val) {
       synth.delay.set(val);
       break;
   }
+  this.parameters[key] = val;
 };
 
 Ctrl.prototype.getKnobValue = function (o) {
@@ -321,15 +323,15 @@ Ctrl.prototype.keyUp = function (note) {
   gui.setDirty();
 };
 
-Ctrl.prototype.note_on = function (note) {
-  synth.play(note);
+Ctrl.prototype.note_on = function (note, time) {
+  synth.play(note, time);
   this.playingNote = note;
   ctrl.keyDown(note);
 };
 
-Ctrl.prototype.note_off = function (note) {
+Ctrl.prototype.note_off = function (note, time) {
   if (note === this.playingNote) {
-    synth.stop();
+    synth.stop(time);
     this.playingNote = null;
   }
   ctrl.keyUp(note);
@@ -370,41 +372,58 @@ Ctrl.prototype.stop_demo = function (wait_release) {
   }, wait);
 };
 
+Ctrl.prototype.setParameters = function (params) {
+  const wrapSetParameter = (id, value) => {
+    const isSwitch = ["s_glide", "s_osc1", "s_osc2"].includes(id);
+    if (isSwitch) {
+      this.setSwitchValue(gui.obj(id), value ? 100 : 0);
+    } else {
+      const isThreeStepKnob = [
+        "c_freq1",
+        "c_freq2",
+        "c_wave1",
+        "c_wave2",
+      ].includes(id);
+      this.normalKnob = !isThreeStepKnob;
+      this.setKnobValue(gui.obj(id), value);
+    }
+    this.setDspParam(id, value);
+  };
+  for (const [key, value] of Object.entries(params)) {
+    wrapSetParameter(key, value);
+  }
+};
+
+Ctrl.prototype.getParameters = function () {
+  return this.parameters;
+};
+
 Ctrl.prototype.setDefaultValues = function () {
-  const wrapSetSwitchValue = (id, enabled) => {
-    const value = enabled ? 100 : 0;
-    this.setSwitchValue(gui.obj(id), value);
-    this.setDspParam(id, value);
-  };
-  const wrapSetKnobValue = (id, value, isThreeStep) => {
-    this.normalKnob = !isThreeStep;
-    this.setKnobValue(gui.obj(id), value);
-    this.setDspParam(id, value);
-  };
-  wrapSetSwitchValue("s_glide", true);
-  wrapSetKnobValue("k_glide", 20);
-  wrapSetKnobValue("c_freq1", 0, true);
-  wrapSetKnobValue("c_freq2", 50, true);
-  wrapSetKnobValue("k_fine1", 50);
-  wrapSetKnobValue("k_fine2", 50);
-  wrapSetKnobValue("c_wave1", 50, true);
-  wrapSetKnobValue("c_wave2", 50, true);
-  wrapSetKnobValue("k_fine1", 50);
-  wrapSetKnobValue("k_vol1", 50);
-  wrapSetKnobValue("k_vol2", 50);
-  wrapSetSwitchValue("s_osc1", true);
-  wrapSetSwitchValue("s_osc2", true);
-  wrapSetKnobValue("k_cut", 50);
-  wrapSetKnobValue("k_emp", 50);
-  wrapSetKnobValue("k_amo", 50);
-  wrapSetKnobValue("k_fa", 20);
-  wrapSetKnobValue("k_fd", 10);
-  wrapSetKnobValue("k_fs", 50);
-  wrapSetKnobValue("k_la", 10);
-  wrapSetKnobValue("k_ld", 20);
-  wrapSetKnobValue("k_ls", 100);
-  wrapSetKnobValue("k_vol", 50);
-  wrapSetKnobValue("k_dly", 40);
+  this.setParameters({
+    s_glide: true,
+    k_glide: 20,
+    c_freq1: 0,
+    c_freq2: 50,
+    k_fine1: 50,
+    k_fine2: 50,
+    c_wave1: 50,
+    c_wave2: 50,
+    k_vol1: 50,
+    k_vol2: 50,
+    s_osc1: true,
+    s_osc2: true,
+    k_cut: 50,
+    k_emp: 50,
+    k_amo: 50,
+    k_fa: 20,
+    k_fd: 10,
+    k_fs: 50,
+    k_la: 10,
+    k_ld: 20,
+    k_ls: 100,
+    k_vol: 50,
+    k_dly: 40,
+  });
 };
 
 $(function () {

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Circular Audio Wave</title>
+    <script src="
+    https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js
+    "></script>
+    <script src="./circular-audio-wave.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const containerElement = document.getElementById("chart-container");
+        const wave = new CircularAudioWave(containerElement);
+        wave.start();
+
+        containerElement.addEventListener("click", () => {
+          wave.toggleMode();
+        });
+      });
+    </script>
+  </head>
+  <body style="height: 100dvh; overflow: hidden">
+    <div id="chart-container" style="width: 100%; height: 100%"></div>
+  </body>
+</html>

@@ -79,24 +79,6 @@ var ui = {
         ui.updateSynthVisualControls();
         //ui.highlightPreset(presetID);
       });
-
-    window.unitInterface?.completeSetup({
-      unitAspects: {
-        unitType: "instrument",
-        categoryHint: "synthesizer",
-        outputs: ["audio"],
-        inputs: ["note"],
-      },
-      noteInput: {
-        noteOn(noteNumber, velocity) {
-          app.checkContext();
-          app.synth.noteOn(noteNumber, velocity * 127);
-        },
-        noteOff(noteNumber) {
-          app.synth.noteOff(noteNumber);
-        },
-      },
-    });
   },
 
   //-------------
@@ -147,7 +129,7 @@ var ui = {
 
     if (midiNote) {
       this.keysDown[keyCode] = midiNote;
-      app.synth.noteOn(midiNote, 127);
+      app.synth.noteOn(midiNote);
     }
   },
 

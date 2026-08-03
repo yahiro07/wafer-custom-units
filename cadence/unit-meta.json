@@ -1,0 +1,13 @@
+{
+  "name": "cadence",
+  "unitType": "instrument",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "note",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/leisurelyleon/cadence",
+  "originalAuthor": "Joseph Edwards",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

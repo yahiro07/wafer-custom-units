@@ -1,0 +1,13 @@
+{
+  "name": "simple-synth",
+  "unitType": "instrument",
+  "outputSignalTypes": "audio",
+  "inputSignalTypes": "note",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/TimMoore/simple-synth",
+  "originalAuthor": "Tim Moore",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

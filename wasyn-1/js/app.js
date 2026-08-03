@@ -1,8 +1,6 @@
-window.checkUnitInterfaceCompatibility?.("wafer-v01");
-
 var app = {
   //Web audio context (Passed in to instruments)
-  context: window.unitInterface?.audioContext ?? new AudioContext(),
+  context: unitInterface?.audioContext ?? new AudioContext(),
   keyboardOctave: 3,
   synth: null,
   instructionsHidden: false,
@@ -13,6 +11,32 @@ var app = {
     //Init the main UI and create the synth
     ui.init();
     app.createSynth();
+
+    unitInterface?.completeSetup({
+      unitAspects: {
+        unitType: "instrument",
+        categoryHint: "synthesizer",
+        viewSize: [720, 360],
+      },
+      noteInput: {
+        noteOn(noteNumber, time, velocity) {
+          app.checkContext();
+          app.synth.noteOn(noteNumber, time, (velocity ?? 1) * 127);
+        },
+        noteOff(noteNumber, time) {
+          app.synth.noteOff(noteNumber, time);
+        },
+      },
+      persistence: {
+        emitStateBytes: function () {
+          return app.synth.emitStateBytes();
+        },
+        applyStateBytes: function (bytes) {
+          app.synth.applyStateBytes(bytes);
+          ui.updateSynthVisualControls();
+        },
+      },
+    });
   },
 
   //----------------------
@@ -55,7 +79,10 @@ var app = {
   //----------------------
 
   checkContext() {
-    if (this.context.state == "suspended") {
+    if (
+      this.context instanceof AudioContext &&
+      this.context.state == "suspended"
+    ) {
       this.context.resume();
     }
   },

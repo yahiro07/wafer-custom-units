@@ -1,0 +1,12 @@
+{
+  "name": "shiny-drum-machine",
+  "unitType": "instrument",
+  "outputSignalTypes": "audio",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/GoogleChromeLabs/web-audio-samples.git",
+  "originalAuthor": "Google, Inc",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "Apache License, Version 2.0"
+}

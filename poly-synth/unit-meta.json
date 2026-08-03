@@ -1,0 +1,13 @@
+{
+  "name": "poly-synth",
+  "unitType": "instrument",
+  "category": "synthesizer",
+  "outputSignalTypes": "audio",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/Kyle-Shanks/poly_synth_test",
+  "originalAuthor": "Kyle Shanks",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

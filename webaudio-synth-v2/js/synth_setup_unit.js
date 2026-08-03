@@ -1,19 +1,28 @@
-function setupWebAudioUnit() {
-  window.unitInterface?.completeSetup({
+function setupWaferUnit() {
+  unitInterface?.completeSetup({
     unitAspects: {
       unitType: "instrument",
       categoryHint: "synthesizer",
-      outputs: ["audio"],
-      inputs: ["note"],
+      viewSize: [700, 400],
     },
     noteInput: {
-      noteOn(noteNumber) {
-        ctrl.note_on(noteNumber);
+      noteOn(noteNumber, time) {
+        ctrl.note_on(noteNumber, time);
       },
-      noteOff(noteNumber) {
-        ctrl.note_off(noteNumber);
+      noteOff(noteNumber, time) {
+        ctrl.note_off(noteNumber, time);
+      },
+    },
+    persistence: {
+      emitState() {
+        return ctrl.getParameters();
+      },
+      applyState(states) {
+        ctrl.setParameters(states);
       },
     },
   });
 }
-setupWebAudioUnit();
+$(function () {
+  setupWaferUnit();
+});

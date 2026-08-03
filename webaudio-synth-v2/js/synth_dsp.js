@@ -17,6 +17,8 @@ function init() {
   }
 }
 
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+
 ///////////// Init Parameter /////////////////////
 var stream_length = 1024;
 
@@ -328,8 +330,10 @@ CTL_Filter.prototype.getnode = function () {
 ///////////// SYNTH MAIN /////////////////////
 var WebSynth = function () {
   var self = this;
-  window.checkUnitInterfaceCompatibility?.("wafer-v01");
-  this.context = window.unitInterface?.audioContext ?? new AudioContext();
+  this.context = unitInterface?.audioContext ?? new AudioContext();
+  const destinationNode =
+    unitInterface?.audioOutputNode ?? this.context.destination;
+
   this.vco1 = new VCO(this.context);
   this.vco2 = new VCO(this.context);
   this.mixer = this.context.createScriptProcessor(stream_length, 1, 2);
@@ -345,6 +349,7 @@ var WebSynth = function () {
   this.current_note = null;
   this.goal_pitch1 = this.vco1.pitch;
   this.goal_pitch2 = this.vco2.pitch;
+  this.scheduledEvents = [];
 
   // vco1 -> mixer -> filter -> volume -> delay -> dest
   // vco2 ->
@@ -353,11 +358,17 @@ var WebSynth = function () {
   this.mixer.connect(this.filter.getnode());
   this.filter.connect(this.volume.getnode());
   this.volume.connect(this.delay.getnode());
-  this.delay.connect(
-    window.unitInterface?.audioOutputNode ?? this.context.destination,
-  );
+  this.delay.connect(destinationNode);
 
   this.mixer.onaudioprocess = function (event) {
+    var now = self.context.currentTime;
+    while (
+      self.scheduledEvents.length > 0 &&
+      self.scheduledEvents[0].when <= now
+    ) {
+      self._applyEvent(self.scheduledEvents.shift());
+    }
+
     self.filter.set_eg(self.feg.gain);
     var sin = event.inputBuffer.getChannelData(0);
     var Lch = event.outputBuffer.getChannelData(0);
@@ -411,19 +422,43 @@ WebSynth.prototype.refresh_pitch = function () {
   }
 };
 
-WebSynth.prototype.play = function (n) {
-  if (this.context.state === "suspended") {
-    this.context.resume();
+WebSynth.prototype._applyEvent = function (ev) {
+  if (ev.type === "on") {
+    this.current_note = ev.note;
+    this.update_goal_pitch();
+    this.eg.note_on();
+    this.feg.note_on();
+  } else if (ev.type === "off") {
+    this.eg.note_off();
+    this.feg.note_off();
   }
-  this.current_note = n;
-  this.update_goal_pitch();
-  this.eg.note_on();
-  this.feg.note_on();
 };
 
-WebSynth.prototype.stop = function () {
-  this.eg.note_off();
-  this.feg.note_off();
+WebSynth.prototype._scheduleEvent = function (ev, time) {
+  var when = time ?? this.context.currentTime;
+  if (when <= this.context.currentTime) {
+    this._applyEvent(ev);
+    return;
+  }
+  ev.when = when;
+  this.scheduledEvents.push(ev);
+  this.scheduledEvents.sort(function (a, b) {
+    return a.when - b.when;
+  });
+};
+
+WebSynth.prototype.play = function (n, time) {
+  if (
+    this.context instanceof AudioContext &&
+    this.context.state === "suspended"
+  ) {
+    this.context.resume();
+  }
+  this._scheduleEvent({ type: "on", note: n }, time);
+};
+
+WebSynth.prototype.stop = function (time) {
+  this._scheduleEvent({ type: "off" }, time);
 };
 
 var synth = new WebSynth();

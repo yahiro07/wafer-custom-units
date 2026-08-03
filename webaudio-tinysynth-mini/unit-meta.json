@@ -1,0 +1,12 @@
+{
+  "name": "webaudio-tinysynth-mini",
+  "unitType": "instrument",
+  "category": "synthesizer",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/g200kg/webaudio-tinysynth",
+  "originalAuthor": "g200kg",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "Apache License, Version 2.0"
+}

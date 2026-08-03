@@ -1,0 +1,13 @@
+{
+  "name": "sk-synth",
+  "unitType": "instrument",
+  "category": "synthesizer",
+  "outputSignalTypes": "audio",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/seifkamal/synth.git",
+  "originalAuthor": "Seif Kamal",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

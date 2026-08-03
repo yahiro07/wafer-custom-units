@@ -1,0 +1,1 @@
+(function(){"use strict";class o extends AudioWorkletProcessor{process(n,t){const e=t[0][0];for(let s=0;s<e.length;s++)e[s]=Math.random()*2-1;return!0}}registerProcessor("white-noise-processor",o)})();
