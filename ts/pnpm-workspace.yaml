@@ -4,6 +4,6 @@ allowBuilds:
   "@parcel/watcher": true
   esbuild: true
 minimumReleaseAgeExclude:
-  - wafer-host@0.0.5
+  - wafer-host
 catalog:
-  wafer-host: "^0.0.5"
+  wafer-host: "^0.1.4"
