@@ -16,7 +16,7 @@ async function Init() {
     unitAspects: {
       unitType: "instrument",
       categoryHint: "synthesizer",
-      viewSize: [570, 278],
+      viewSize: [570, 287],
     },
     noteInput: {
       noteOn(noteNumber, time, velocity) {
@@ -78,6 +78,14 @@ function ProgShift(dir) {
   const sel = document.getElementById("prog");
   const n = sel.options.length;
   const next = (((sel.selectedIndex + dir) % n) + n) % n;
+  sel.selectedIndex = next;
+  ProgChange(next);
+}
+
+function ProgRandom() {
+  const sel = document.getElementById("prog");
+  const n = sel.options.length;
+  const next = Math.floor(Math.random() * n);
   sel.selectedIndex = next;
   ProgChange(next);
 }

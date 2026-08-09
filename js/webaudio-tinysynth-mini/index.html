@@ -65,6 +65,7 @@
         height: 24px;
       }
       .progsel {
+        margin-top: 6px;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -79,7 +80,7 @@
           background: #aae;
           color: #fff;
           font-size: 12px;
-          width: 26px;
+          min-width: 26px;
           height: 22px;
           display: flex;
           justify-content: center;
@@ -87,6 +88,15 @@
           border: solid 1px #666;
           border-radius: 2px;
           cursor: pointer;
+          &:hover {
+            opacity: 0.8;
+            transition: opacity 0.2s ease-in-out;
+          }
+        }
+
+        > .random-button {
+          margin-left: 2px;
+          padding: 0 4px;
         }
       }
 
@@ -100,7 +110,7 @@
         color: #000;
       }
       #kb {
-        margin: 12px 0 8px;
+        margin: 14px 0 8px;
       }
     </style>
   </head>
@@ -165,6 +175,9 @@
             ></select>
             <button type="button" onclick="ProgShift(-1)">◀</button>
             <button type="button" onclick="ProgShift(1)">▶</button>
+            <button type="button" class="random-button" onclick="ProgRandom()">
+              Random
+            </button>
           </div>
         </div>
         <webaudio-keyboard id="kb" min="48" width="470"></webaudio-keyboard>
