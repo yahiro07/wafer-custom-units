@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <script src="https://unpkg.com/@webcomponents/custom-elements"></script>
@@ -31,14 +31,6 @@
         user-select: none;
       }
       #container {
-        background: #333;
-        background: linear-gradient(
-          #000 0%,
-          #888 1%,
-          #333 2%,
-          #222 99%,
-          #000 100%
-        );
         background: linear-gradient(
           #004 0%,
           #88c 1%,
@@ -69,15 +61,45 @@
       td:first-child {
         text-align: left;
       }
+      select {
+        height: 24px;
+      }
       .progsel {
+        margin-top: 6px;
         display: flex;
         align-items: center;
         gap: 8px;
         padding-left: 4px;
       }
-      select {
-        height: 24px;
+      .prog-controls {
+        display: flex;
+        gap: 5px;
+
+        > button {
+          all: unset;
+          background: #aae;
+          color: #fff;
+          font-size: 12px;
+          min-width: 26px;
+          height: 22px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border: solid 1px #666;
+          border-radius: 2px;
+          cursor: pointer;
+          &:hover {
+            opacity: 0.8;
+            transition: opacity 0.2s ease-in-out;
+          }
+        }
+
+        > .random-button {
+          margin-left: 2px;
+          padding: 0 4px;
+        }
       }
+
       label {
         display: inline-block;
         background: #ddf;
@@ -88,7 +110,7 @@
         color: #000;
       }
       #kb {
-        margin: 12px 0 8px;
+        margin: 14px 0 8px;
       }
     </style>
   </head>
@@ -146,14 +168,19 @@
         </table>
         <div class="progsel">
           <div>Program:</div>
-          <select id="prog" onchange="ProgChange(this.selectedIndex)"></select>
+          <div class="prog-controls">
+            <select
+              id="prog"
+              onchange="ProgChange(this.selectedIndex)"
+            ></select>
+            <button type="button" onclick="ProgShift(-1)">◀</button>
+            <button type="button" onclick="ProgShift(1)">▶</button>
+            <button type="button" class="random-button" onclick="ProgRandom()">
+              Random
+            </button>
+          </div>
         </div>
-        <webaudio-keyboard
-          id="kb"
-          min="48"
-          width="470"
-          tabindex="1"
-        ></webaudio-keyboard>
+        <webaudio-keyboard id="kb" min="48" width="470"></webaudio-keyboard>
       </div>
     </div>
   </body>

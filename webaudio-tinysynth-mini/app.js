@@ -16,7 +16,7 @@ async function Init() {
     unitAspects: {
       unitType: "instrument",
       categoryHint: "synthesizer",
-      viewSize: [570, 278],
+      viewSize: [570, 287],
     },
     noteInput: {
       noteOn(noteNumber, time, velocity) {
@@ -57,7 +57,7 @@ async function Init() {
 }
 
 function Ctrl() {
-  if (typeof synth != "undefined") {
+  if (typeof synth !== "undefined") {
     synth.masterVol = document.getElementById("vol").value;
     synth.reverbLev = document.getElementById("rev").value;
   }
@@ -72,6 +72,22 @@ function KeyIn(e) {
 
 function ProgChange(p) {
   synth.send([0xc0, p]);
+}
+
+function ProgShift(dir) {
+  const sel = document.getElementById("prog");
+  const n = sel.options.length;
+  const next = (((sel.selectedIndex + dir) % n) + n) % n;
+  sel.selectedIndex = next;
+  ProgChange(next);
+}
+
+function ProgRandom() {
+  const sel = document.getElementById("prog");
+  const n = sel.options.length;
+  const next = Math.floor(Math.random() * n);
+  sel.selectedIndex = next;
+  ProgChange(next);
 }
 
 function SetQuality(n) {
