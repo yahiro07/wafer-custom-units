@@ -555,51 +555,170 @@ function Voice(note, time, velocity) {
 
   // set up the volume and filter envelopes
   var now = time ?? audioContext.currentTime;
-  var envAttackEnd = now + currentEnvA / 20.0;
+  this.startTime = now;
+  this.envAttackDur = currentEnvA / 20.0;
+  this.envDecayTc = currentEnvD / 100.0 + 0.001;
+  this.envSustain = currentEnvS / 100.0;
 
   this.envelope.gain.value = 0.0;
-  this.envelope.gain.setValueAtTime(0.0, now);
-  this.envelope.gain.linearRampToValueAtTime(1.0, envAttackEnd);
-  this.envelope.gain.setTargetAtTime(
-    currentEnvS / 100.0,
-    envAttackEnd,
-    currentEnvD / 100.0 + 0.001,
-  );
+  this.scheduleAmpEnvelope();
 
-  var filterAttackLevel = currentFilterEnv * 72; // Range: 0-7200: 6-octave range
-  var filterSustainLevel = (filterAttackLevel * currentFilterEnvS) / 100.0; // range: 0-7200
-  var filterAttackEnd = currentFilterEnvA / 20.0;
+  // Range: 0-7200: 6-octave range
+  this.filterAttackLevel = currentFilterEnv * 72;
+  this.filterSustainLevel =
+    (this.filterAttackLevel * currentFilterEnvS) / 100.0;
+  this.filterAttackDur = currentFilterEnvA / 20.0;
+  // tweak to get target decay to work properly
+  if (!this.filterAttackDur) this.filterAttackDur = 0.05;
+  this.filterDecayTc = Math.max(currentFilterEnvD / 100.0, 0.001);
 
-  /*	console.log( "filterAttackLevel: " + filterAttackLevel + 
-				 " filterSustainLevel: " + filterSustainLevel +
-				 " filterAttackEnd: " + filterAttackEnd);
-*/
-  if (!filterAttackEnd) filterAttackEnd = 0.05; // tweak to get target decay to work properly
-  this.filter1.detune.setValueAtTime(0, now);
-  this.filter1.detune.linearRampToValueAtTime(
-    filterAttackLevel,
-    now + filterAttackEnd,
-  );
-  this.filter2.detune.setValueAtTime(0, now);
-  this.filter2.detune.linearRampToValueAtTime(
-    filterAttackLevel,
-    now + filterAttackEnd,
-  );
-  this.filter1.detune.setTargetAtTime(
-    filterSustainLevel,
-    now + filterAttackEnd,
-    currentFilterEnvD / 100.0,
-  );
-  this.filter2.detune.setTargetAtTime(
-    filterSustainLevel,
-    now + filterAttackEnd,
-    currentFilterEnvD / 100.0,
-  );
+  this.scheduleFilterEnvelope();
 
   this.osc1.start(now);
   this.osc2.start(now);
   this.modOsc.start(now);
 }
+
+Voice.prototype.ampValueAt = function (t) {
+  var dt = t - this.startTime;
+  if (dt <= 0) return 0;
+  if (this.envAttackDur <= 0) {
+    return (
+      this.envSustain + (1 - this.envSustain) * Math.exp(-dt / this.envDecayTc)
+    );
+  }
+  if (dt < this.envAttackDur) return dt / this.envAttackDur;
+  var decayDt = dt - this.envAttackDur;
+  return (
+    this.envSustain +
+    (1 - this.envSustain) * Math.exp(-decayDt / this.envDecayTc)
+  );
+};
+
+Voice.prototype.filterValueAt = function (t) {
+  var dt = t - this.startTime;
+  if (dt <= 0) return 0;
+  if (dt < this.filterAttackDur) {
+    return (this.filterAttackLevel * dt) / this.filterAttackDur;
+  }
+  var decayDt = dt - this.filterAttackDur;
+  return (
+    this.filterSustainLevel +
+    (this.filterAttackLevel - this.filterSustainLevel) *
+      Math.exp(-decayDt / this.filterDecayTc)
+  );
+};
+
+Voice.prototype.scheduleAmpEnvelope = function () {
+  var g = this.envelope.gain;
+  var t0 = this.startTime;
+  var attackEnd = t0 + this.envAttackDur;
+
+  g.setValueAtTime(0.0, t0);
+  if (this.envAttackDur <= 0) {
+    g.setValueAtTime(1.0, t0);
+    g.setTargetAtTime(this.envSustain, t0, this.envDecayTc);
+  } else {
+    g.linearRampToValueAtTime(1.0, attackEnd);
+    g.setTargetAtTime(this.envSustain, attackEnd, this.envDecayTc);
+  }
+};
+
+Voice.prototype.scheduleFilterEnvelope = function () {
+  var t0 = this.startTime;
+  var attackEnd = t0 + this.filterAttackDur;
+
+  this.filter1.detune.setValueAtTime(0, t0);
+  this.filter2.detune.setValueAtTime(0, t0);
+  this.filter1.detune.linearRampToValueAtTime(
+    this.filterAttackLevel,
+    attackEnd,
+  );
+  this.filter2.detune.linearRampToValueAtTime(
+    this.filterAttackLevel,
+    attackEnd,
+  );
+  this.filter1.detune.setTargetAtTime(
+    this.filterSustainLevel,
+    attackEnd,
+    this.filterDecayTc,
+  );
+  this.filter2.detune.setTargetAtTime(
+    this.filterSustainLevel,
+    attackEnd,
+    this.filterDecayTc,
+  );
+};
+
+// Rebuild ADS up to offTime then release. Used when noteOff is scheduled
+// ahead of time so cancelScheduledValues cannot clobber a not-yet-played ramp.
+Voice.prototype.rebuildAmpEnvelopeWithRelease = function (offTime, releaseTc) {
+  var g = this.envelope.gain;
+  var t0 = this.startTime;
+  var attackEnd = t0 + this.envAttackDur;
+  var v = this.ampValueAt(offTime);
+
+  g.cancelScheduledValues(t0);
+  g.setValueAtTime(0.0, t0);
+
+  if (offTime <= t0) {
+    g.setValueAtTime(0.0, offTime);
+  } else if (this.envAttackDur <= 0) {
+    g.setValueAtTime(1.0, t0);
+    g.setTargetAtTime(this.envSustain, t0, this.envDecayTc);
+  } else if (offTime <= attackEnd) {
+    g.linearRampToValueAtTime(v, offTime);
+  } else {
+    g.linearRampToValueAtTime(1.0, attackEnd);
+    g.setTargetAtTime(this.envSustain, attackEnd, this.envDecayTc);
+  }
+
+  g.setTargetAtTime(0.0, offTime, releaseTc);
+};
+
+Voice.prototype.rebuildFilterEnvelopeWithRelease = function (
+  offTime,
+  releaseTc,
+) {
+  var t0 = this.startTime;
+  var attackEnd = t0 + this.filterAttackDur;
+  var v = this.filterValueAt(offTime);
+
+  this.filter1.detune.cancelScheduledValues(t0);
+  this.filter2.detune.cancelScheduledValues(t0);
+  this.filter1.detune.setValueAtTime(0, t0);
+  this.filter2.detune.setValueAtTime(0, t0);
+
+  if (offTime <= t0) {
+    this.filter1.detune.setValueAtTime(0, offTime);
+    this.filter2.detune.setValueAtTime(0, offTime);
+  } else if (offTime <= attackEnd) {
+    this.filter1.detune.linearRampToValueAtTime(v, offTime);
+    this.filter2.detune.linearRampToValueAtTime(v, offTime);
+  } else {
+    this.filter1.detune.linearRampToValueAtTime(
+      this.filterAttackLevel,
+      attackEnd,
+    );
+    this.filter2.detune.linearRampToValueAtTime(
+      this.filterAttackLevel,
+      attackEnd,
+    );
+    this.filter1.detune.setTargetAtTime(
+      this.filterSustainLevel,
+      attackEnd,
+      this.filterDecayTc,
+    );
+    this.filter2.detune.setTargetAtTime(
+      this.filterSustainLevel,
+      attackEnd,
+      this.filterDecayTc,
+    );
+  }
+
+  this.filter1.detune.setTargetAtTime(0, offTime, releaseTc);
+  this.filter2.detune.setTargetAtTime(0, offTime, releaseTc);
+};
 
 Voice.prototype.setModWaveform = function (value) {
   this.modOsc.type = value;
@@ -664,24 +783,37 @@ Voice.prototype.setFilterMod = function (value) {
 };
 
 Voice.prototype.noteOff = function (time) {
-  var now = time ?? audioContext.currentTime;
-  var release = now + currentEnvR / 10.0;
-  var initFilter = filterFrequencyFromCutoff(
-    this.originalFrequency,
-    (currentFilterCutoff / 100) * (1.0 - currentFilterEnv / 100.0),
-  );
+  var offTime = time ?? audioContext.currentTime;
+  var ctxNow = audioContext.currentTime;
+  var releaseTc = Math.max(currentEnvR / 100, 0.001);
+  var filterReleaseTc = Math.max(currentFilterEnvR / 100.0, 0.001);
+  var stopAt = offTime + Math.max(currentEnvR / 10.0, releaseTc * 5);
 
-  //    console.log("noteoff: now: " + now + " val: " + this.filter1.frequency.value + " initF: " + initFilter + " fR: " + currentFilterEnvR/100 );
-  this.envelope.gain.cancelScheduledValues(now);
-  this.envelope.gain.cancelAndHoldAtTime(now);
-  this.envelope.gain.setTargetAtTime(0.0, now, currentEnvR / 100);
-  this.filter1.detune.cancelScheduledValues(now);
-  this.filter1.detune.setTargetAtTime(0, now, currentFilterEnvR / 100.0);
-  this.filter2.detune.cancelScheduledValues(now);
-  this.filter2.detune.setTargetAtTime(0, now, currentFilterEnvR / 100.0);
+  // Ahead-of-time noteOff (sequencer lookahead): rebuild the envelope so
+  // cancelScheduledValues cannot wipe a not-yet-played attack ramp.
+  // Live noteOff: pin the mathematically computed value, then release.
+  if (this.startTime >= ctxNow - 0.001 && offTime > ctxNow + 0.005) {
+    this.rebuildAmpEnvelopeWithRelease(offTime, releaseTc);
+    this.rebuildFilterEnvelopeWithRelease(offTime, filterReleaseTc);
+  } else {
+    var t = Math.max(offTime, ctxNow);
+    var amp = this.ampValueAt(t);
+    var filt = this.filterValueAt(t);
 
-  this.osc1.stop(release);
-  this.osc2.stop(release);
+    this.envelope.gain.cancelScheduledValues(t);
+    this.envelope.gain.setValueAtTime(amp, t);
+    this.envelope.gain.setTargetAtTime(0.0, t, releaseTc);
+
+    this.filter1.detune.cancelScheduledValues(t);
+    this.filter2.detune.cancelScheduledValues(t);
+    this.filter1.detune.setValueAtTime(filt, t);
+    this.filter2.detune.setValueAtTime(filt, t);
+    this.filter1.detune.setTargetAtTime(0, t, filterReleaseTc);
+    this.filter2.detune.setTargetAtTime(0, t, filterReleaseTc);
+  }
+
+  this.osc1.stop(stopAt);
+  this.osc2.stop(stopAt);
 };
 
 var currentOctave = 3;
