@@ -122,7 +122,6 @@ function frequencyFromNoteNumber(note) {
 }
 
 function noteOn(note, time, velocity = 0.75) {
-  console.log("note on: " + note);
   if (voices[note] != null) {
     voices[note].noteOff(time);
     voices[note] = null;
