@@ -1,6 +1,6 @@
 //plain saw
 const basePreset = {
-  s_glide: 0,
+  s_glide: false,
   k_glide: 0,
   c_freq1: 18,
   c_freq2: 50,
@@ -29,7 +29,7 @@ const basePreset = {
 const presetData = {
   init: basePreset,
   bass: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 0,
     c_freq1: 18,
     c_freq2: 50,
@@ -57,7 +57,7 @@ const presetData = {
     key76: 0,
   },
   bass2: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 22,
     c_freq1: 0,
     c_freq2: 50,
@@ -85,7 +85,7 @@ const presetData = {
     key67: 0,
   },
   bell: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 43,
     c_freq1: 50,
     c_freq2: 66,
@@ -112,7 +112,7 @@ const presetData = {
     key76: 0,
   },
   bell2: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 90,
     c_freq1: 100,
     c_freq2: 100,
@@ -138,7 +138,7 @@ const presetData = {
     key81: 0,
   },
   bell3: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 77,
     c_freq1: 100,
     c_freq2: 100,
@@ -167,7 +167,7 @@ const presetData = {
     key75: 0,
   },
   keys1: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 47,
     c_freq1: 0,
     c_freq2: 54,
@@ -196,7 +196,7 @@ const presetData = {
     key75: 0,
   },
   keys2: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 47,
     c_freq1: 0,
     c_freq2: 54,
@@ -222,7 +222,7 @@ const presetData = {
     key81: 0,
   },
   keys3: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 86,
     c_freq1: 0,
     c_freq2: 0,
@@ -248,7 +248,7 @@ const presetData = {
     key81: 0,
   },
   pluck: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 1,
     c_freq1: 50,
     c_freq2: 50,
@@ -278,7 +278,7 @@ const presetData = {
     key80: 0,
   },
   brass: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 44,
     c_freq1: 22,
     c_freq2: 38,
@@ -306,7 +306,7 @@ const presetData = {
     key67: 0,
   },
   brass2: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 94,
     c_freq1: 0,
     c_freq2: 0,
@@ -333,7 +333,7 @@ const presetData = {
     key76: 0,
   },
   strings: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 0,
     c_freq1: 18,
     c_freq2: 50,
@@ -361,7 +361,7 @@ const presetData = {
     key76: 0,
   },
   lead: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 5,
     c_freq1: 0,
     c_freq2: 0,
@@ -389,7 +389,7 @@ const presetData = {
     key67: 0,
   },
   lead2: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 11,
     c_freq1: 0,
     c_freq2: 60,
@@ -416,7 +416,7 @@ const presetData = {
     key76: 0,
   },
   lead3: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 0,
     c_freq1: 18,
     c_freq2: 50,
@@ -472,7 +472,7 @@ const presetData = {
     key67: 0,
   },
   lead5: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 17,
     c_freq1: 50,
     c_freq2: 50,
@@ -501,7 +501,7 @@ const presetData = {
     key75: 0,
   },
   lead6: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 52,
     c_freq1: 50,
     c_freq2: 50,
@@ -527,7 +527,7 @@ const presetData = {
     key81: 0,
   },
   lead7: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 6,
     c_freq1: 100,
     c_freq2: 50,
@@ -553,7 +553,7 @@ const presetData = {
     key81: 0,
   },
   lead8: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 44,
     c_freq1: 50,
     c_freq2: 50,
@@ -581,7 +581,7 @@ const presetData = {
     key67: 0,
   },
   pad: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 100,
     c_freq1: 0,
     c_freq2: 0,
@@ -609,7 +609,7 @@ const presetData = {
     key67: 0,
   },
   pad2: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 75,
     c_freq1: 50,
     c_freq2: 50,
@@ -637,7 +637,7 @@ const presetData = {
     key67: 0,
   },
   pad3: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 79,
     c_freq1: 0,
     c_freq2: 50,
@@ -665,7 +665,7 @@ const presetData = {
     key67: 0,
   },
   pad4: {
-    s_glide: 0,
+    s_glide: false,
     k_glide: 55,
     c_freq1: 50,
     c_freq2: 50,
