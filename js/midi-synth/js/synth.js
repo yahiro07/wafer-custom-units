@@ -1052,13 +1052,15 @@ function initAudio() {
       },
       applyPreset(presetName) {
         if (presetName === "$reset") {
-          applyPersistedState(getDefaultParameters());
+          const parameters = getDefaultParameters();
+          applyPersistedState({ parameters });
         } else if (presetName === "$random") {
-          console.log("TODO: Randomize params here");
+          const parameters = generateParametersRandomized();
+          applyPersistedState({ parameters });
         } else {
-          const preset = presetData[presetName];
-          if (preset) {
-            applyPersistedState({ parameters: preset });
+          const parameters = presetData[presetName];
+          if (parameters) {
+            applyPersistedState({ parameters });
           }
         }
       },
