@@ -40,7 +40,7 @@ var currentRev = 32;
 var currentVol = 75;
 // end initial patch
 
-Object.assign(window, getDefaultParameters());
+// Object.assign(window, getDefaultParameters());
 
 var keys = new Array(256);
 /* old mapping
