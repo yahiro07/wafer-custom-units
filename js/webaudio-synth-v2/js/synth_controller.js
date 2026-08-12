@@ -191,8 +191,10 @@ Ctrl.prototype.setDspParam = function (key, val) {
     case "k_dly":
       synth.delay.set(val);
       break;
+    default:
+      return;
   }
-  this.parameters[key] = val;
+  this.parameters[key] = this.isSwitchParam(key) ? val > 0 : val;
 };
 
 Ctrl.prototype.getKnobValue = function (o) {
@@ -372,10 +374,21 @@ Ctrl.prototype.stop_demo = function (wait_release) {
   }, wait);
 };
 
+Ctrl.prototype.isSwitchParam = function (id) {
+  return id === "s_glide" || id === "s_osc1" || id === "s_osc2";
+};
+
+Ctrl.prototype.isSynthParam = function (id) {
+  return this.isSwitchParam(id) || id.indexOf("k_") === 0 || id.indexOf("c_") === 0;
+};
+
 Ctrl.prototype.setParameters = function (params) {
   const wrapSetParameter = (id, value) => {
-    const isSwitch = ["s_glide", "s_osc1", "s_osc2"].includes(id);
-    if (isSwitch) {
+    if (!this.isSynthParam(id)) {
+      return;
+    }
+    if (this.isSwitchParam(id)) {
+      value = value > 0;
       this.setSwitchValue(gui.obj(id), value ? 100 : 0);
     } else {
       const isThreeStepKnob = [
@@ -395,7 +408,13 @@ Ctrl.prototype.setParameters = function (params) {
 };
 
 Ctrl.prototype.getParameters = function () {
-  return this.parameters;
+  const params = {};
+  for (const [key, value] of Object.entries(this.parameters)) {
+    if (this.isSynthParam(key)) {
+      params[key] = value;
+    }
+  }
+  return params;
 };
 
 Ctrl.prototype.setDefaultValues = function () {
