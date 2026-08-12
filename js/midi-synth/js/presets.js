@@ -14,7 +14,7 @@ function getDefaultParameters() {
     osc2Octave: 1,
     osc2Detune: 0,
     osc2Mix: 0,
-    filterCutoff: 1,
+    filterCutoff: 14.287712379549449,
     filterQ: 0,
     filterMod: 0,
     filterEnv: 1,
