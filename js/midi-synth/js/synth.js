@@ -40,6 +40,8 @@ var currentRev = 32;
 var currentVol = 75;
 // end initial patch
 
+// Object.assign(window, getDefaultParameters());
+
 var keys = new Array(256);
 /* old mapping
 keys[65] = 60; // = C4 ("middle C")
@@ -1043,6 +1045,25 @@ function initAudio() {
     persistence: {
       emitState: emitPersistedState,
       applyState: applyPersistedState,
+    },
+    presetProvider: {
+      getPresetNames() {
+        return [...Object.keys(presetData), "$reset", "$random"];
+      },
+      applyPreset(presetName) {
+        if (presetName === "$reset") {
+          const parameters = getDefaultParameters();
+          applyPersistedState({ parameters });
+        } else if (presetName === "$random") {
+          const parameters = generateParametersRandomized();
+          applyPersistedState({ parameters });
+        } else {
+          const parameters = presetData[presetName];
+          if (parameters) {
+            applyPersistedState({ parameters });
+          }
+        }
+      },
     },
   });
 }

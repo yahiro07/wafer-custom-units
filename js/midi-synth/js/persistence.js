@@ -1,38 +1,3 @@
-function getDefaultParameters() {
-  return {
-    modWaveform: 0,
-    modFrequency: 2.1,
-    modOsc1: 15,
-    modOsc2: 17,
-    modDouble: false,
-    modQuadruple: false,
-    osc1Waveform: 2,
-    osc1Octave: 0,
-    osc1Detune: 0,
-    osc1Mix: 50.0,
-    osc2Waveform: 2,
-    osc2Octave: 0,
-    osc2Detune: -25,
-    osc2Mix: 50.0,
-    filterCutoff: 8,
-    filterQ: 7.0,
-    filterMod: 21,
-    filterEnv: 56,
-    envA: 2,
-    envD: 15,
-    envS: 68,
-    envR: 5,
-    filterEnvA: 5,
-    filterEnvD: 6,
-    filterEnvS: 5,
-    filterEnvR: 7,
-    drive: 38,
-    reverb: 32,
-    volume: 75,
-    octave: 3,
-  };
-}
-
 function serializableNumber(value, fallback) {
   var number = typeof value === "number" ? value : parseFloat(value);
   return isNaN(number) ? fallback : number;

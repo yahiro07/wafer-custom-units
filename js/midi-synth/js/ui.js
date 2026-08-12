@@ -109,6 +109,14 @@ function createSection(label, x, y, width, height) {
   labelText.className = "sectionLabel";
   labelText.appendChild(document.createTextNode(label));
 
+  if (label === "mod") {
+    //ui action for preset development
+    labelText.addEventListener("click", () => {
+      const presetData = emitPersistedState();
+      console.log(JSON.stringify(presetData, null, 2));
+    });
+  }
+
   container.appendChild(labelText);
   return container;
 }
