@@ -21,6 +21,32 @@ function setupWaferUnit() {
         ctrl.setParameters(states);
       },
     },
+    presetProvider: {
+      getPresetNames() {
+        const presetNames = [...Object.keys(presetData), "$reset", "$random"];
+        if (location.href.includes("localhost")) {
+          presetNames.push("$dump");
+        }
+        return presetNames;
+      },
+      applyPreset(presetName) {
+        if (presetName === "$reset") {
+          // const parameters = getDefaultParameters();
+          // applyPersistedState({ parameters });
+        } else if (presetName === "$random") {
+          // const parameters = generateParametersRandomized();
+          // applyPersistedState({ parameters });
+        } else if (presetName === "$dump") {
+          const preset = ctrl.getParameters();
+          console.log(JSON.stringify(preset, null, 2));
+        } else {
+          const preset = presetData[presetName];
+          if (preset) {
+            ctrl.setParameters(preset);
+          }
+        }
+      },
+    },
   });
 }
 $(function () {
