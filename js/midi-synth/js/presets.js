@@ -1,3 +1,38 @@
+function getDefaultParameters() {
+  return {
+    modWaveform: 2,
+    modFrequency: 0,
+    modOsc1: 0,
+    modOsc2: 0,
+    modDouble: false,
+    modQuadruple: false,
+    osc1Waveform: 2,
+    osc1Octave: 1,
+    osc1Detune: 0,
+    osc1Mix: 100,
+    osc2Waveform: 3,
+    osc2Octave: 1,
+    osc2Detune: 0,
+    osc2Mix: 0,
+    filterCutoff: 1,
+    filterQ: 0,
+    filterMod: 0,
+    filterEnv: 1,
+    envA: 0,
+    envD: 0,
+    envS: 100,
+    envR: 0,
+    filterEnvA: 0,
+    filterEnvD: 0,
+    filterEnvS: 0,
+    filterEnvR: 0,
+    drive: 0,
+    reverb: 0,
+    volume: 64,
+    octave: 3,
+  };
+}
+
 const presetData = {
   basic: {
     modWaveform: 2,
