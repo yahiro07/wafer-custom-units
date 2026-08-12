@@ -31,11 +31,10 @@ function setupWaferUnit() {
       },
       applyPreset(presetName) {
         if (presetName === "$reset") {
-          // const parameters = getDefaultParameters();
-          // applyPersistedState({ parameters });
+          applyPersistedState(basePreset);
         } else if (presetName === "$random") {
-          // const parameters = generateParametersRandomized();
-          // applyPersistedState({ parameters });
+          const preset = generateRandomPreset();
+          ctrl.setParameters(preset);
         } else if (presetName === "$dump") {
           const preset = ctrl.getParameters();
           console.log(JSON.stringify(preset, null, 2));
