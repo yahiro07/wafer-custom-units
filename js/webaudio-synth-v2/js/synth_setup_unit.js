@@ -23,15 +23,15 @@ function setupWaferUnit() {
     },
     presetProvider: {
       getPresetNames() {
-        const presetNames = [...Object.keys(presetData), "$reset", "$random"];
+        const presetNames = [...Object.keys(presetData), "$init", "$random"];
         if (location.href.includes("localhost")) {
           presetNames.push("$dump");
         }
         return presetNames;
       },
       applyPreset(presetName) {
-        if (presetName === "$reset") {
-          applyPersistedState(basePreset);
+        if (presetName === "$init") {
+          ctrl.setParameters(basePreset);
         } else if (presetName === "$random") {
           const preset = generateRandomPreset();
           ctrl.setParameters(preset);
