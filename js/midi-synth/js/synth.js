@@ -1057,7 +1057,11 @@ function initAudio() {
         }
       },
       getCommandNames() {
-        return ["init", "random"];
+        if (location.href.includes("localhost")) {
+          return ["init", "random", "dump"];
+        } else {
+          return ["init", "random"];
+        }
       },
       applyCommand(commandName) {
         if (commandName === "init") {
@@ -1068,6 +1072,9 @@ function initAudio() {
           const parameters = generateParametersRandomized();
           applyPersistedState({ parameters });
           return true;
+        } else if (commandName === "dump") {
+          const parameters = emitPersistedState();
+          console.log(JSON.stringify(parameters, null, 2));
         }
       },
     },
