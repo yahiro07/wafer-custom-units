@@ -23,26 +23,32 @@ function setupWaferUnit() {
     },
     presetProvider: {
       getPresetNames() {
-        const presetNames = [...Object.keys(presetData), "$init", "$random"];
-        if (location.href.includes("localhost")) {
-          presetNames.push("$dump");
-        }
-        return presetNames;
+        return Object.keys(presetData);
       },
       applyPreset(presetName) {
-        if (presetName === "$init") {
+        const preset = presetData[presetName];
+        if (preset) {
+          ctrl.setParameters(preset);
+        }
+      },
+      getCommandNames() {
+        const commandNames = ["init", "random"];
+        if (location.href.includes("localhost")) {
+          commandNames.push("dump");
+        }
+        return commandNames;
+      },
+      applyCommand(commandName) {
+        if (commandName === "init") {
           ctrl.setParameters(basePreset);
-        } else if (presetName === "$random") {
+          return true;
+        } else if (commandName === "random") {
           const preset = generateRandomPreset();
           ctrl.setParameters(preset);
-        } else if (presetName === "$dump") {
+          return true;
+        } else if (commandName === "dump") {
           const preset = ctrl.getParameters();
           console.log(JSON.stringify(preset, null, 2));
-        } else {
-          const preset = presetData[presetName];
-          if (preset) {
-            ctrl.setParameters(preset);
-          }
         }
       },
     },
