@@ -22,6 +22,7 @@ const reverbTypeToBufferMap = {
 
 class Reverb {
   constructor(AC) {
+    this.reverbAvailable = true;
     this.AC = AC;
     this.node = this.AC.createConvolver();
     this.dryGain = new Gain(this.AC);
@@ -42,6 +43,11 @@ class Reverb {
 
   // Setters
   setAmount = (val) => {
+    if (!this.reverbAvailable) {
+      this.dryGain.setGain(1);
+      this.wetGain.setGain(0);
+      return;
+    }
     this.dryGain.setGain(1 - val);
     this.wetGain.setGain(val);
   };
@@ -51,7 +57,12 @@ class Reverb {
     this.AC.decodeAudioData(
       base64ToArrayBuffer(rev),
       (buffer) => (this.node.buffer = buffer),
-      (e) => alert("Error when decoding audio data" + e.err),
+      (e) => {
+        console.warn("Reverb unavailable:", e);
+        this.reverbAvailable = false;
+        this.dryGain.setGain(1);
+        this.wetGain.setGain(0);
+      },
     );
   };
 }
