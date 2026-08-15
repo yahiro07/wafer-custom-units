@@ -1048,20 +1048,33 @@ function initAudio() {
     },
     presetProvider: {
       getPresetNames() {
-        return [...Object.keys(presetData), "$reset", "$random"];
+        return Object.keys(presetData);
       },
       applyPreset(presetName) {
-        if (presetName === "$reset") {
+        const parameters = presetData[presetName];
+        if (parameters) {
+          applyPersistedState({ parameters });
+        }
+      },
+      getCommandNames() {
+        if (location.href.includes("localhost")) {
+          return ["init", "random", "dump"];
+        } else {
+          return ["init", "random"];
+        }
+      },
+      applyCommand(commandName) {
+        if (commandName === "init") {
           const parameters = getDefaultParameters();
           applyPersistedState({ parameters });
-        } else if (presetName === "$random") {
+          return true;
+        } else if (commandName === "random") {
           const parameters = generateParametersRandomized();
           applyPersistedState({ parameters });
-        } else {
-          const parameters = presetData[presetName];
-          if (parameters) {
-            applyPersistedState({ parameters });
-          }
+          return true;
+        } else if (commandName === "dump") {
+          const parameters = emitPersistedState();
+          console.log(JSON.stringify(parameters, null, 2));
         }
       },
     },
