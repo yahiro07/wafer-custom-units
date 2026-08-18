@@ -53,6 +53,7 @@ async function Init() {
         SetQuality(quality);
       },
     },
+    automationInput,
   });
 }
 
