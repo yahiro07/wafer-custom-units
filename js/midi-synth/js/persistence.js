@@ -81,6 +81,219 @@ function setKnobValue(id, value, fire) {
   return false;
 }
 
+function setFilterCutoffKnob(log2Hz, fire) {
+  var el = $("fFreq");
+  if (!el) return false;
+  // After ready(), log knobs store min/max/value in log2 space.
+  var usesLog2 =
+    typeof el.setValue === "function" &&
+    el.log &&
+    el.maxval != null &&
+    el.max !== el.maxval;
+  var knobValue = usesLog2 ? log2Hz : Math.pow(2, log2Hz);
+  return setKnobValue("fFreq", knobValue, fire);
+}
+
+function setSelectIndex(id, index) {
+  var el = $(id);
+  if (el) el.selectedIndex = index;
+}
+
+function getParameter(id) {
+  switch (id) {
+    case "modWaveform":
+      return currentModWaveform;
+    case "modFrequency":
+      return currentModFrequency;
+    case "modOsc1":
+      return currentModOsc1;
+    case "modOsc2":
+      return currentModOsc2;
+    case "modDouble":
+      return !!moDouble;
+    case "modQuadruple":
+      return !!moQuadruple;
+    case "osc1Waveform":
+      return currentOsc1Waveform;
+    case "osc1Octave":
+      return currentOsc1Octave;
+    case "osc1Detune":
+      return currentOsc1Detune;
+    case "osc1Mix":
+      return currentOsc1Mix;
+    case "osc2Waveform":
+      return currentOsc2Waveform;
+    case "osc2Octave":
+      return currentOsc2Octave;
+    case "osc2Detune":
+      return currentOsc2Detune;
+    case "osc2Mix":
+      return currentOsc2Mix;
+    case "filterCutoff":
+      return currentFilterCutoff;
+    case "filterQ":
+      return currentFilterQ;
+    case "filterMod":
+      return currentFilterMod;
+    case "filterEnv":
+      return currentFilterEnv;
+    case "envA":
+      return currentEnvA;
+    case "envD":
+      return currentEnvD;
+    case "envS":
+      return currentEnvS;
+    case "envR":
+      return currentEnvR;
+    case "filterEnvA":
+      return currentFilterEnvA;
+    case "filterEnvD":
+      return currentFilterEnvD;
+    case "filterEnvS":
+      return currentFilterEnvS;
+    case "filterEnvR":
+      return currentFilterEnvR;
+    case "drive":
+      return currentDrive;
+    case "reverb":
+      return currentRev;
+    case "volume":
+      return currentVol;
+    case "octave":
+      return currentOctave;
+    default:
+      return;
+  }
+}
+
+function setParameter(id, value) {
+  switch (id) {
+    case "modWaveform":
+      onUpdateModWaveform({ target: { selectedIndex: value } });
+      setSelectIndex("modwave", currentModWaveform);
+      return;
+    case "modFrequency":
+      onUpdateModFrequency(value);
+      setKnobValue("mFreq", currentModFrequency, false);
+      return;
+    case "modOsc1":
+      onUpdateModOsc1(value);
+      setKnobValue("modOsc1", currentModOsc1, false);
+      return;
+    case "modOsc2":
+      onUpdateModOsc2(value);
+      setKnobValue("modOsc2", currentModOsc2, false);
+      return;
+    case "modDouble":
+      moDouble = !!value;
+      changeModMultiplier();
+      return;
+    case "modQuadruple":
+      moQuadruple = !!value;
+      changeModMultiplier();
+      return;
+    case "osc1Waveform":
+      onUpdateOsc1Wave({ target: { selectedIndex: value } });
+      setSelectIndex("osc1wave", currentOsc1Waveform);
+      return;
+    case "osc1Octave":
+      onUpdateOsc1Octave({ target: { selectedIndex: value } });
+      setSelectIndex("osc1int", currentOsc1Octave);
+      return;
+    case "osc1Detune":
+      onUpdateOsc1Detune({ target: { value: value } });
+      setKnobValue("osc1detune", currentOsc1Detune, false);
+      return;
+    case "osc1Mix":
+      onUpdateOsc1Mix(value);
+      setKnobValue("osc1mix", currentOsc1Mix, false);
+      return;
+    case "osc2Waveform":
+      onUpdateOsc2Wave({ target: { selectedIndex: value } });
+      setSelectIndex("osc2wave", currentOsc2Waveform);
+      return;
+    case "osc2Octave":
+      onUpdateOsc2Octave({ target: { selectedIndex: value } });
+      setSelectIndex("osc2int", currentOsc2Octave);
+      return;
+    case "osc2Detune":
+      onUpdateOsc2Detune({ target: { value: value } });
+      setKnobValue("osc2detune", currentOsc2Detune, false);
+      return;
+    case "osc2Mix":
+      onUpdateOsc2Mix({ target: { value: value } });
+      setKnobValue("osc2mix", currentOsc2Mix, false);
+      return;
+    case "filterCutoff":
+      onUpdateFilterCutoff(value);
+      setFilterCutoffKnob(currentFilterCutoff, false);
+      return;
+    case "filterQ":
+      onUpdateFilterQ(value);
+      setKnobValue("fQ", currentFilterQ, false);
+      return;
+    case "filterMod":
+      onUpdateFilterMod(value);
+      setKnobValue("fMod", currentFilterMod, false);
+      return;
+    case "filterEnv":
+      onUpdateFilterEnv({ target: { value: value } });
+      setKnobValue("fEnv", currentFilterEnv, false);
+      return;
+    case "envA":
+      onUpdateEnvA({ target: { value: value } });
+      setKnobValue("vA", currentEnvA, false);
+      return;
+    case "envD":
+      onUpdateEnvD({ target: { value: value } });
+      setKnobValue("vD", currentEnvD, false);
+      return;
+    case "envS":
+      onUpdateEnvS({ target: { value: value } });
+      setKnobValue("vS", currentEnvS, false);
+      return;
+    case "envR":
+      onUpdateEnvR({ target: { value: value } });
+      setKnobValue("vR", currentEnvR, false);
+      return;
+    case "filterEnvA":
+      onUpdateFilterEnvA({ target: { value: value } });
+      setKnobValue("fA", currentFilterEnvA, false);
+      return;
+    case "filterEnvD":
+      onUpdateFilterEnvD({ target: { value: value } });
+      setKnobValue("fD", currentFilterEnvD, false);
+      return;
+    case "filterEnvS":
+      onUpdateFilterEnvS({ target: { value: value } });
+      setKnobValue("fS", currentFilterEnvS, false);
+      return;
+    case "filterEnvR":
+      onUpdateFilterEnvR({ target: { value: value } });
+      setKnobValue("fR", currentFilterEnvR, false);
+      return;
+    case "drive":
+      if (waveshaper) onUpdateDrive(value);
+      else currentDrive = value;
+      setKnobValue("drive", currentDrive, false);
+      return;
+    case "reverb":
+      if (revGain && revBypassGain) onUpdateReverb({ target: { value: value } });
+      else currentRev = value;
+      setKnobValue("reverb", currentRev, false);
+      return;
+    case "volume":
+      if (volNode) onUpdateVolume({ target: { value: value } });
+      else currentVol = value;
+      setKnobValue("volume", currentVol, false);
+      return;
+    case "octave":
+      currentOctave = value;
+      setSelectIndex("kbd_oct", currentOctave);
+      return;
+  }
+}
+
 function areKnobsReady() {
   var knob = $("mFreq");
   return knob && typeof knob.setValue === "function";
@@ -103,7 +316,7 @@ function syncSynthUI() {
   $("osc2int").selectedIndex = currentOsc2Octave;
   setKnobValue("osc2detune", currentOsc2Detune, false);
   setKnobValue("osc2mix", currentOsc2Mix, false);
-  setKnobValue("fFreq", Math.pow(2, currentFilterCutoff), false);
+  setFilterCutoffKnob(currentFilterCutoff, false);
   setKnobValue("fQ", currentFilterQ, false);
   setKnobValue("fMod", currentFilterMod, false);
   setKnobValue("fEnv", currentFilterEnv, false);

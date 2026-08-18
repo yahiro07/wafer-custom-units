@@ -11,7 +11,9 @@ import presetData from "./presetData";
 import {
   extractParameters,
   parsePersistedState,
+  PARAMETER_KEYS,
 } from "./persistence";
+import { createAutomationInput } from "./automation";
 import {
   ComponentContainer,
   SynthContainer,
@@ -107,6 +109,7 @@ class Synth extends React.Component {
           self.applyPersistedState(state);
         },
       },
+      automationInput: createAutomationInput(self),
     });
   }
 
@@ -234,6 +237,36 @@ class Synth extends React.Component {
       },
       this.syncNodesToState,
     );
+  };
+
+  getParameter = (id) => {
+    if (!PARAMETER_KEYS.includes(id)) {
+      return;
+    }
+    return this.state[id];
+  };
+
+  setParameter = (id, value) => {
+    if (!PARAMETER_KEYS.includes(id)) {
+      return;
+    }
+    this.setState({ [id]: value }, () => {
+      this.syncNodesToState();
+      if (
+        (id === "sub1Offset" || id === "sub2Offset") &&
+        this.state.noteHeld
+      ) {
+        const offset = this.state[id];
+        const newFreq = getFreqFromNote(
+          this.quantizeNote(this.state.noteHeld + offset),
+        );
+        if (id === "sub1Offset") {
+          this.sub1.setFreq(newFreq);
+        } else {
+          this.sub2.setFreq(newFreq);
+        }
+      }
+    });
   };
 
   // Analyser Functions

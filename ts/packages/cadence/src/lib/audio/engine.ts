@@ -21,6 +21,42 @@ const PARAM_FLOAT_KEYS = [
 
 const STATE_BYTE_LENGTH = 1 + PARAM_FLOAT_KEYS.length * 4;
 
+function clamp01(value: number): number {
+  return Math.min(1, Math.max(0, value));
+}
+
+type LinearSpec = { type: "linear"; min: number; max: number };
+type EnumSpec = { type: "enum"; steps: number };
+type AutomationSpec = LinearSpec | EnumSpec;
+
+const AUTOMATION_PARAM_MAP = {
+  waveform: { type: "enum", steps: 4 },
+  cutoff: { type: "linear", min: 200, max: 8000 },
+  resonance: { type: "linear", min: 0, max: 20 },
+  delayTime: { type: "linear", min: 0, max: 1.5 },
+  delayFeedback: { type: "linear", min: 0, max: 0.85 },
+  volume: { type: "linear", min: 0, max: 1 },
+  attack: { type: "linear", min: 0.001, max: 1 },
+  decay: { type: "linear", min: 0.001, max: 1 },
+  sustain: { type: "linear", min: 0, max: 1 },
+  release: { type: "linear", min: 0.05, max: 2 },
+} as const satisfies Record<keyof EngineParams, AutomationSpec>;
+
+function toNormalized(spec: AutomationSpec, internal: number): number {
+  if (spec.type === "enum") {
+    return internal / (spec.steps - 1);
+  }
+  return (internal - spec.min) / (spec.max - spec.min);
+}
+
+function fromNormalized(spec: AutomationSpec, value: number): number {
+  const normalized = clamp01(value);
+  if (spec.type === "enum") {
+    return Math.round(normalized * (spec.steps - 1));
+  }
+  return spec.min + normalized * (spec.max - spec.min);
+}
+
 function encodeEngineParams(params: EngineParams): Uint8Array {
   const bytes = new Uint8Array(STATE_BYTE_LENGTH);
   const view = new DataView(bytes.buffer);
@@ -150,6 +186,53 @@ export class AudioEngine {
           self.applyStateBytes(stateBytes);
         },
       },
+      automationInput: {
+        getParameterSpecs() {
+          return [
+            { id: "waveform", steps: 4 },
+            { id: "cutoff" },
+            { id: "resonance" },
+            { id: "delayTime" },
+            { id: "delayFeedback" },
+            { id: "volume" },
+            { id: "attack" },
+            { id: "decay" },
+            { id: "sustain" },
+            { id: "release" },
+          ];
+        },
+        getParameter(id: string) {
+          const spec = AUTOMATION_PARAM_MAP[id as keyof EngineParams];
+          if (!spec) {
+            return;
+          }
+          const internal = self.getParameter(id);
+          if (internal === undefined) {
+            return;
+          }
+          if (spec.type === "enum") {
+            const index = WAVEFORMS.indexOf(
+              internal as EngineParams["waveform"],
+            );
+            return toNormalized(spec, index < 0 ? 0 : index);
+          }
+          return toNormalized(spec, internal as number);
+        },
+        setParameter(id: string, value: number) {
+          const spec = AUTOMATION_PARAM_MAP[id as keyof EngineParams];
+          if (!spec) {
+            return;
+          }
+          if (spec.type === "enum") {
+            const waveform = WAVEFORMS[fromNormalized(spec, value)];
+            if (waveform) {
+              self.setParameter(id, waveform);
+            }
+            return;
+          }
+          self.setParameter(id, fromNormalized(spec, value));
+        },
+      },
     });
   }
 
@@ -196,6 +279,22 @@ export class AudioEngine {
     for (const voice of this.voices.values()) {
       voice.setWaveform(params.waveform);
     }
+  }
+
+  getParameter(id: string): EngineParams[keyof EngineParams] | undefined {
+    if (!(id in AUTOMATION_PARAM_MAP)) {
+      return;
+    }
+    return this.params[id as keyof EngineParams];
+  }
+
+  setParameter(id: string, value: EngineParams[keyof EngineParams]): void {
+    if (!(id in AUTOMATION_PARAM_MAP)) {
+      return;
+    }
+    const next = { ...this.params, [id]: value };
+    this.setParams(next);
+    this.onParamsChange?.(next);
   }
 
   /** Start a note keyed by a stable id; re-triggers replace the prior voice. */

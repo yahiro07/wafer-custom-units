@@ -12,6 +12,7 @@ import {
   applyPersistedState,
   emitPersistedState,
 } from "./store/utils/persistence";
+import { createAutomationInput } from "./store/utils/automation";
 
 function App() {
   const selectedPresetName = useSynthSelectors.useSelectedPresetName();
@@ -46,6 +47,7 @@ function App() {
           emitState: emitPersistedState,
           applyState: applyPersistedState,
         },
+        automationInput: createAutomationInput(),
       });
     }
   }, [synth]);
