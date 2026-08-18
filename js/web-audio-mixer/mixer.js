@@ -318,6 +318,70 @@
     }
   };
 
+  var AUTOMATION_PARAM_MAP = {
+    ch1Volume: { type: "linear", min: 0, max: 1.3 },
+    ch1Pan: { type: "linear", min: -1, max: 1 },
+    ch2Volume: { type: "linear", min: 0, max: 1.3 },
+    ch2Pan: { type: "linear", min: -1, max: 1 },
+    ch3Volume: { type: "linear", min: 0, max: 1.3 },
+    ch3Pan: { type: "linear", min: -1, max: 1 },
+    ch4Volume: { type: "linear", min: 0, max: 1.3 },
+    ch4Pan: { type: "linear", min: -1, max: 1 },
+    masterVolume: { type: "linear", min: 0, max: 1.3 },
+  };
+
+  function clamp01(value) {
+    return Math.min(1, Math.max(0, value));
+  }
+
+  function toNormalized(spec, internal) {
+    return ((internal ?? spec.min) - spec.min) / (spec.max - spec.min);
+  }
+
+  function fromNormalized(spec, value) {
+    var normalized = clamp01(value);
+    return spec.min + normalized * (spec.max - spec.min);
+  }
+
+  Mixer.prototype.getParameter = function (id) {
+    if (id === "masterVolume") {
+      return this.masterGain.gain.value;
+    }
+    var match = id.match(/^ch([1-4])(Volume|Pan)$/);
+    if (!match) {
+      return;
+    }
+    var channel = this.channels[Number(match[1]) - 1];
+    if (match[2] === "Volume") {
+      return channel.currGain;
+    }
+    return channel.panner.pan.value;
+  };
+
+  Mixer.prototype.setParameter = function (id, value) {
+    if (id === "masterVolume") {
+      this.masterGain.gain.value = value;
+      setFaderFromVolume(this.masterFader, value, 285);
+      return;
+    }
+    var match = id.match(/^ch([1-4])(Volume|Pan)$/);
+    if (!match) {
+      return;
+    }
+    var channel = this.channels[Number(match[1]) - 1];
+    if (match[2] === "Volume") {
+      channel.currGain = value;
+      setFaderFromVolume(channel.faderControl, value, 295);
+      channel.enableDisableChannels();
+      return;
+    }
+    var pan = value;
+    if (pan < -1) pan = -1;
+    if (pan > 1) pan = 1;
+    channel.panner.pan.value = pan;
+    setDialFromChangeVal(channel.pannerControl, pan * 31);
+  };
+
   function Channel(input, trackName, mixer, ctx, count) {
     this.count = count;
     this.mixer = mixer;
@@ -517,6 +581,27 @@
         },
         applyStateBytes(stateBytes) {
           daw.mixer.applyStateBytes(stateBytes);
+        },
+      },
+      automationInput: {
+        getParameterSpecs() {
+          return Object.keys(AUTOMATION_PARAM_MAP).map(function (id) {
+            return { id: id };
+          });
+        },
+        getParameter(id) {
+          var spec = AUTOMATION_PARAM_MAP[id];
+          if (!spec) {
+            return;
+          }
+          return toNormalized(spec, daw.mixer.getParameter(id));
+        },
+        setParameter(id, value) {
+          var spec = AUTOMATION_PARAM_MAP[id];
+          if (!spec) {
+            return;
+          }
+          daw.mixer.setParameter(id, fromNormalized(spec, value));
         },
       },
       cleanup() {
