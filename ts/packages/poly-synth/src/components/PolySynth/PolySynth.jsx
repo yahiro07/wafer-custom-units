@@ -12,7 +12,9 @@ import {
   applyParameters,
   createApplyPersistedState,
   extractParameters,
+  PARAMETER_KEYS,
 } from "src/util/persistence";
+import { createAutomationInput } from "src/util/automation";
 import { getNoteInfo, WAVEFORM, FILTER, REVERB } from "src/util/util";
 import { THEMES } from "src/styles/themes";
 
@@ -222,6 +224,22 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
         resetSynthPos();
       },
     }),
+    getParameter(id) {
+      if (!PARAMETER_KEYS.includes(id)) {
+        return;
+      }
+      return this.emitPersistedState().parameters[id];
+    },
+    setParameter(id, value) {
+      const setter = parameterSetters[id];
+      if (!setter) {
+        return;
+      }
+      setter(value);
+      if (id === "polyphony") {
+        resetSynthPos();
+      }
+    },
   };
 
   const octaveUp = () => {
@@ -305,6 +323,7 @@ const PolySynth = ({ className, setTheme, currentTheme }) => {
           persistenceRef.current.applyPersistedState(state);
         },
       },
+      automationInput: createAutomationInput(() => persistenceRef.current),
     });
   };
 

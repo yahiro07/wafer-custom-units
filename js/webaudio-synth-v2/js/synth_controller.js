@@ -382,29 +382,37 @@ Ctrl.prototype.isSynthParam = function (id) {
   return this.isSwitchParam(id) || id.indexOf("k_") === 0 || id.indexOf("c_") === 0;
 };
 
-Ctrl.prototype.setParameters = function (params) {
-  const wrapSetParameter = (id, value) => {
-    if (!this.isSynthParam(id)) {
-      return;
-    }
-    if (this.isSwitchParam(id)) {
-      value = value > 0;
-      this.setSwitchValue(gui.obj(id), value ? 100 : 0);
-    } else {
-      const isThreeStepKnob = [
-        "c_freq1",
-        "c_freq2",
-        "c_wave1",
-        "c_wave2",
-      ].includes(id);
-      this.normalKnob = !isThreeStepKnob;
-      this.setKnobValue(gui.obj(id), value);
-    }
-    this.setDspParam(id, value);
-  };
-  for (const [key, value] of Object.entries(params)) {
-    wrapSetParameter(key, value);
+Ctrl.prototype.setParameter = function (id, value) {
+  if (!this.isSynthParam(id)) {
+    return;
   }
+  if (this.isSwitchParam(id)) {
+    value = value > 0;
+    this.setSwitchValue(gui.obj(id), value ? 100 : 0);
+  } else {
+    const isThreeStepKnob = [
+      "c_freq1",
+      "c_freq2",
+      "c_wave1",
+      "c_wave2",
+    ].includes(id);
+    this.normalKnob = !isThreeStepKnob;
+    this.setKnobValue(gui.obj(id), value);
+  }
+  this.setDspParam(id, value);
+};
+
+Ctrl.prototype.setParameters = function (params) {
+  for (const [key, value] of Object.entries(params)) {
+    this.setParameter(key, value);
+  }
+};
+
+Ctrl.prototype.getParameter = function (id) {
+  if (!this.isSynthParam(id)) {
+    return;
+  }
+  return this.parameters[id];
 };
 
 Ctrl.prototype.getParameters = function () {

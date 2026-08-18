@@ -368,6 +368,96 @@ function setStates(states) {
   updateHarmonicsDisplay();
 }
 
+function getParameter(id) {
+  switch (id) {
+    case "attack":
+      return engine.adsr.attack;
+    case "decay":
+      return engine.adsr.decay;
+    case "sustain":
+      return engine.adsr.sustain;
+    case "release":
+      return engine.adsr.release;
+    case "reverb":
+      return engine.reverbMix;
+    case "volume":
+      return engine.volume;
+    default:
+      return;
+  }
+}
+
+function setParameter(id, value) {
+  switch (id) {
+    case "attack":
+      engine.adsr.attack = value;
+      document.getElementById("attack").value = value * 500;
+      return;
+    case "decay":
+      engine.adsr.decay = value;
+      document.getElementById("decay").value = value * 500;
+      return;
+    case "sustain":
+      engine.adsr.sustain = value;
+      document.getElementById("sustain").value = value * 100;
+      return;
+    case "release":
+      engine.adsr.release = value;
+      document.getElementById("release").value = value * 250;
+      return;
+    case "reverb":
+      engine.setReverb(value);
+      document.getElementById("reverb").value = value * 100;
+      return;
+    case "volume":
+      engine.setVolume(value);
+      document.getElementById("vol").value = value * 100;
+      return;
+  }
+}
+
+function clamp01(value) {
+  return Math.min(1, Math.max(0, value));
+}
+
+const AUTOMATION_PARAM_MAP = {
+  attack: { min: 0, max: 2 },
+  decay: { min: 0, max: 2 },
+  sustain: { min: 0, max: 1 },
+  release: { min: 0, max: 4 },
+  reverb: { min: 0, max: 1 },
+  volume: { min: 0, max: 1 },
+};
+
+const automationInput = {
+  getParameterSpecs() {
+    return [
+      { id: "attack" },
+      { id: "decay" },
+      { id: "sustain" },
+      { id: "release" },
+      { id: "reverb" },
+      { id: "volume" },
+    ];
+  },
+  getParameter(id) {
+    const spec = AUTOMATION_PARAM_MAP[id];
+    if (!spec) {
+      return;
+    }
+    const internal = getParameter(id);
+    return ((internal ?? spec.min) - spec.min) / (spec.max - spec.min);
+  },
+  setParameter(id, value) {
+    const spec = AUTOMATION_PARAM_MAP[id];
+    if (!spec) {
+      return;
+    }
+    const normalized = clamp01(value);
+    setParameter(id, spec.min + normalized * (spec.max - spec.min));
+  },
+};
+
 // ── Event Listeners ──
 document.addEventListener("DOMContentLoaded", () => {
   buildPresetSelector();
@@ -487,6 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
         emitState: getStates,
         applyState: setStates,
       },
+      automationInput,
     });
   } else {
     // Computer keyboard

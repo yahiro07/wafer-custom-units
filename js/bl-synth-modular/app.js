@@ -41,6 +41,7 @@ async function initApp() {
       emitState: emitPersistedState,
       applyState: applyPersistedState,
     },
+    automationInput,
   });
 }
 
@@ -110,6 +111,35 @@ function applySynthState(params) {
   document.getElementById("masterVolumeVal").textContent =
     masterVolume.toFixed(2);
   drawEnvelope();
+}
+
+function getParameter(id) {
+  if (!(id in synth.params)) {
+    return;
+  }
+  return synth.params[id];
+}
+
+function setParameter(id, value) {
+  if (!(id in synth.params)) {
+    return;
+  }
+  synth.setParam(id, value);
+  if (id === "masterVolume") {
+    document.getElementById("masterVolume").value = value;
+    document.getElementById("masterVolumeVal").textContent =
+      Number(value).toFixed(2);
+    return;
+  }
+  const el = document.querySelector(`[data-param="${id}"]`);
+  if (el) {
+    el.value = value;
+    const display = document.querySelector(`[data-for="${id}"]`);
+    if (display) display.textContent = formatVal(id, value);
+  }
+  if (["attack", "decay", "sustain", "release"].includes(id)) {
+    drawEnvelope();
+  }
 }
 
 function applyPersistedState(state) {
