@@ -46,7 +46,6 @@ function generateRandomPreset() {
     k_amo: randInt(0, 100),
     k_fa: maybe(0.3, randInt(1, 100)),
     k_fd: randInt(0, maybe2(0.8, 50, 100)),
-    k_fd: randInt(0, 100),
     k_fs: randInt(0, 100),
     k_la: maybe(0.3, randInt(1, 100)),
     k_ld: randInt(0, maybe2(0.8, 30, 100)),
