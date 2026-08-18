@@ -26,9 +26,9 @@ Add the source URLs of the units you want to use to the Vite plugin configuratio
 
 ```ts
 export const unitSourceUrls = [
-  "https://cdn.jsdelivr.net/gh/yahiro07/wafer-custom-units@r19/webaudio-tinysynth-mini/",
-  "https://cdn.jsdelivr.net/gh/yahiro07/wafer-custom-units@r19/shiny-drum-machine/",
-  "https://cdn.jsdelivr.net/gh/yahiro07/wafer-custom-units@r19/midi-synth/",
+  "https://github.com/yahiro07/wafer-custom-units/tree/r19/webaudio-tinysynth-mini/",
+  "https://github.com/yahiro07/wafer-custom-units/tree/r19/shiny-drum-machine/",
+  "https://github.com/yahiro07/wafer-custom-units/tree/r19/midi-synth/",
   // ...
 ];
 ```
