@@ -1046,6 +1046,7 @@ function initAudio() {
       emitState: emitPersistedState,
       applyState: applyPersistedState,
     },
+    automationInput,
     presetProvider: {
       getPresetNames() {
         return Object.keys(presetData);
