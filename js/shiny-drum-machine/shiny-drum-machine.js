@@ -13,6 +13,8 @@ import {
   parsePersistedState,
 } from "./shiny-drum-machine-persistence.js";
 
+import { createAutomationInput } from "./shiny-drum-machine-automation.js";
+
 import {
   DemoButtons,
   EffectPicker,
@@ -169,6 +171,11 @@ function init() {
         loadBeat(beat);
       },
     },
+    automationInput: createAutomationInput(() => ({
+      beat: theBeat,
+      ui,
+      player,
+    })),
   });
 }
 

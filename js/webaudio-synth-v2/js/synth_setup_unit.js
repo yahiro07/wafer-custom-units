@@ -21,6 +21,7 @@ function setupWaferUnit() {
         ctrl.setParameters(states);
       },
     },
+    automationInput,
     presetProvider: {
       getPresetNames() {
         return Object.keys(presetData);
