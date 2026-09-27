@@ -101,7 +101,6 @@ class SidechainCompressorProcessor extends AudioWorkletProcessor {
     this.port.postMessage("initialized");
   }
 
-  sampleRate = 48000;
   firstTime = true;
   useSidechain = true;
   useLogging = false;
@@ -196,9 +195,9 @@ class SidechainCompressorProcessor extends AudioWorkletProcessor {
 
   comp_ratio_const = 1.0 - 1.0 / this.ratio;
 
-  attack_const = Math.exp(-1.0 / (this.attack_time * this.sampleRate));
-  release_const = Math.exp(-1.0 / (this.release_time * this.sampleRate));
-  level_lp_const = Math.exp(-1.0 / (this.attack_time * this.sampleRate));
+  attack_const = Math.exp(-1.0 / (this.attack_time * sampleRate));
+  release_const = Math.exp(-1.0 / (this.release_time * sampleRate));
+  level_lp_const = Math.exp(-1.0 / (this.attack_time * sampleRate));
 
   prev_level_lp_pow = 1.0e-6;
   level_dB = 0.0;
@@ -215,9 +214,9 @@ class SidechainCompressorProcessor extends AudioWorkletProcessor {
   c2 = 0;
 
   update(signal: number) {
-    this.attack_const = Math.exp(-1.0 / (this.attack_time * this.sampleRate));
-    this.release_const = Math.exp(-1.0 / (this.release_time * this.sampleRate));
-    this.level_lp_const = Math.exp(-1.0 / (this.attack_time * this.sampleRate));
+    this.attack_const = Math.exp(-1.0 / (this.attack_time * sampleRate));
+    this.release_const = Math.exp(-1.0 / (this.release_time * sampleRate));
+    this.level_lp_const = Math.exp(-1.0 / (this.attack_time * sampleRate));
     this.one_minus_attack_const = 1 - this.attack_const;
     this.one_minus_release_const = 1 - this.release_const;
     this.comp_ratio_const = 1.0 - 1.0 / this.ratio;

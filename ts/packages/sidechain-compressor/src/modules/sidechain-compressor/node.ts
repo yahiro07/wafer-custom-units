@@ -33,9 +33,6 @@ export class SidechainCompressorNode extends window.AudioWorkletNode {
   constructor(
     context: AudioContext,
     audioWorkletNodeOptions: AudioWorkletNodeOptions = {
-      processorOptions: {
-        sampleRate: context.sampleRate,
-      },
       numberOfInputs: 2,
       numberOfOutputs: 1,
       outputChannelCount: [2],
