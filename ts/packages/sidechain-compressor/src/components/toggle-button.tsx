@@ -18,13 +18,11 @@ const ToggleButton = (props: {
   };
 }) => {
   props = { ...ToggleButton.defaultProps, ...props };
-  const [toggle, setToggle] = useState(false);
   const { defaultChecked, onChange, disabled, className } = props;
+  const [toggle, setToggle] = useState(!!defaultChecked);
 
   useEffect(() => {
-    if (defaultChecked) {
-      setToggle(defaultChecked);
-    }
+    setToggle(!!defaultChecked);
   }, [defaultChecked]);
 
   const triggerToggle = () => {

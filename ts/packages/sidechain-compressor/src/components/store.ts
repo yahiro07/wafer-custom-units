@@ -11,25 +11,6 @@ const initialState = {
   bypass: false,
 };
 
-function loadState(): { compressor: typeof initialState } | undefined {
-  try {
-    const serializedState = localStorage.getItem("state");
-    if (serializedState) {
-      return JSON.parse(serializedState);
-    }
-  } catch {
-    console.warn("[state]: load failed");
-  }
-}
-function saveState<T extends Record<string, any>>(state: T) {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem("state", serializedState);
-  } catch {
-    console.warn("[state]: save failed");
-  }
-}
-
 export const slice = createSlice({
   name: "compressor",
   initialState,
@@ -58,18 +39,16 @@ export const slice = createSlice({
     setBypass: (state, action: { payload: boolean }) => {
       state.bypass = action.payload;
     },
+    setParameters: (_state, action: { payload: typeof initialState }) => {
+      return action.payload;
+    },
   },
 });
 
 export const store = configureStore({
-  preloadedState: loadState(),
   reducer: {
     compressor: slice.reducer,
   },
-});
-
-store.subscribe(() => {
-  saveState(store.getState());
 });
 
 export type StoreState = ReturnType<(typeof store)["getState"]>;
@@ -83,4 +62,5 @@ export const {
   setRelease,
   setSidechain,
   setBypass,
+  setParameters,
 } = slice.actions;

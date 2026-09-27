@@ -9,7 +9,8 @@ https://github.com/jadujoel/sidechain-compressor-audio-worklet
 ## Modification in this fork
 
 - Simplify project structure with single package
-- Support Wafer protocol (audio input, side-chain input, audio output)
+- Support Wafer protocol (audio input, side-chain input, audio output, state persistence)
+- Make layout fixed placement
 
 ## Quickstart
 

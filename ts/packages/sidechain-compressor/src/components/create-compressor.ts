@@ -1,5 +1,6 @@
 import { queryUnitInterface } from "wafer-host/unit-types";
 import { SidechainCompressorInsert } from "../modules/sidechain-compressor";
+import { persistence } from "./persistence";
 
 export async function createCompressor() {
   const unitInterface = queryUnitInterface("wafer-v01");
@@ -25,6 +26,7 @@ export async function createCompressor() {
       unitType: "effect",
       viewSize: [776, 256],
     },
+    persistence,
     cleanup() {
       inputNode.disconnect(compressorNode);
       sideChainInputNode.disconnect(compressorNode);
