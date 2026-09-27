@@ -221,7 +221,14 @@ export function Compressor() {
             </div>
           </div>
 
-          <div className={join(styles.frame, styles.grey, styles.toggles)}>
+          <div
+            className={join(
+              styles.frame,
+              styles.grey,
+              styles.toggles,
+              styles.narrow,
+            )}
+          >
             <div className={join(styles.toggle)}>
               <ToggleButton
                 defaultChecked={state.sidechain}

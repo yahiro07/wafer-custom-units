@@ -13,8 +13,7 @@ export async function createCompressor() {
   const sideChainInputNode =
     unitInterface?.createAdditionalAudioInputNode("SC") ??
     audioContext.createGain();
-  const outputNode =
-    unitInterface?.audioOutputNode ?? audioContext.destination;
+  const outputNode = unitInterface?.audioOutputNode ?? audioContext.destination;
   const compressorNode = compressor.node;
 
   inputNode.connect(compressorNode, 0, 0);
@@ -24,7 +23,7 @@ export async function createCompressor() {
   unitInterface?.completeSetup({
     unitAspects: {
       unitType: "effect",
-      viewSize: [942, 260],
+      viewSize: [776, 256],
     },
     cleanup() {
       inputNode.disconnect(compressorNode);
