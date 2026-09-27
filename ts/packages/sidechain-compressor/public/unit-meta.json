@@ -1,6 +1,6 @@
 {
   "name": "sidechain-compressor",
-  "outputSignalTypes": "audio",
+  "unitType": "effect",
   "protocol": "wafer-v01",
   "integrationFormat": "iframe",
   "originalRepositoryUrl": "https://github.com/jadujoel/sidechain-compressor-audio-worklet",

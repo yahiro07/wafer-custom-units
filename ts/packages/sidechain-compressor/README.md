@@ -16,6 +16,7 @@ https://github.com/jadujoel/sidechain-compressor-audio-worklet
 ```bash
 pnpm install
 pnpm run dev
+pnpm run build
 ```
 
 ## License
