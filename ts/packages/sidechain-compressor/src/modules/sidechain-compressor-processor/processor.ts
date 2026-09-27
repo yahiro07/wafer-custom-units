@@ -7,7 +7,13 @@ type ParameterRecord = Record<SidechainCompressorParameterKeys, Float32Array>;
  * @extends AudioWorkletProcessor
  */
 class SidechainCompressorProcessor extends AudioWorkletProcessor {
-  static get parameterDescriptors(): readonly AudioParamDescriptor[] {
+  static get parameterDescriptors(): readonly {
+    name: string;
+    defaultValue: number;
+    minValue: number;
+    maxValue: number;
+    automationRate: "k-rate";
+  }[] {
     return [
       {
         name: "threshold",
@@ -58,9 +64,8 @@ class SidechainCompressorProcessor extends AudioWorkletProcessor {
    * @param {Object} options AudioWorkletNodeOptions object passed from the
    * AudioWorkletNode constructor.
    */
-  constructor(options?: AudioWorkletNodeOptions) {
-    super(options);
-    this.sampleRate = options?.processorOptions?.sampleRate || 48000;
+  constructor() {
+    super();
     this.port.onmessage = (messageEvent: MessageEvent<any>) => {
       const data = messageEvent.data;
       switch (data) {
@@ -109,7 +114,7 @@ class SidechainCompressorProcessor extends AudioWorkletProcessor {
    * @param  {Record<string, Float32Array>} parameters data.
    * @return {Boolean} Active source flag.
    */
-  override process(
+  process(
     inputs: Float32Array[][],
     outputs: Float32Array[][],
     parameters: ParameterRecord,
@@ -166,6 +171,7 @@ class SidechainCompressorProcessor extends AudioWorkletProcessor {
         output[1][i] = inputR * (1 - mix) + compressedR * mix;
       }
     } catch (e) {
+      // oxlint-disable-next-line no-unused-expressions
       this.useLogging && console.debug(e);
     }
     if (this.firstTime) {

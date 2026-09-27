@@ -1,6 +1,17 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
-function loadState() {
+const initialState = {
+  threshold: -36,
+  ratio: 4,
+  attack: 0.044,
+  release: 0.07,
+  mix: 1,
+  gain: 0,
+  sidechain: true,
+  bypass: false,
+};
+
+function loadState(): { compressor: typeof initialState } | undefined {
   try {
     const serializedState = localStorage.getItem("state");
     if (serializedState) {
@@ -18,17 +29,6 @@ function saveState<T extends Record<string, any>>(state: T) {
     console.warn("[state]: save failed");
   }
 }
-
-const initialState = {
-  threshold: -36,
-  ratio: 4,
-  attack: 0.044,
-  release: 0.07,
-  mix: 1,
-  gain: 0,
-  sidechain: true,
-  bypass: false,
-};
 
 export const slice = createSlice({
   name: "compressor",
