@@ -8,12 +8,16 @@ function setupWaferUnit() {
     },
     noteInput: {
       noteOn(note, time) {
-        if (note >= conf.basenote && note < conf.basenote + conf.num_note) {
+        if (28 <= note && note < 39) {
+          m.noteOn(note + 12, 50, time);
+        } else if (40 <= note && note < 53) {
           m.noteOn(note, 100, time);
         }
       },
       noteOff(note, time) {
-        if (note >= conf.basenote && note < conf.basenote + conf.num_note) {
+        if (28 <= note && note < 39) {
+          m.noteOff(note + 12, time);
+        } else if (40 <= note && note < 53) {
           m.noteOff(note, time);
         }
       },
