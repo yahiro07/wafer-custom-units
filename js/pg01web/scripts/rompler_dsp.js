@@ -7,15 +7,18 @@
  */
 
 var conf = {
-  url: 'http://aikelab.net/pg01/',
+  url: "http://aikelab.net/pg01/",
   x: 180,
   y: -5,
   basenote: 40,
   num_note: 13,
-  num_mp3: 21
+  num_mp3: 21,
 };
 
-window.AudioContext = window.AudioContext || window.webkitAudioContext;
+const unitInterface = window.queryUnitInterface?.("wafer-v01");
+const audioContext = unitInterface?.audioContext ?? new AudioContext();
+const destinationNode =
+  unitInterface?.audioOutputNode ?? audioContext.destination;
 
 /////////////////////////////////////////////////////
 var SampleBuffer = function (ctx, url, callback) {
@@ -36,13 +39,15 @@ SampleBuffer.prototype.loadBuffer = function (callback) {
       request.response,
       function (buffer) {
         if (!buffer) {
-          console.log('error decode buffer: ' + self.url);
+          console.log("error decode buffer: " + self.url);
           return;
         }
         self.buffer = buffer;
         m.ready_mp3++;
         if (m.ready_mp3 < conf.num_mp3)
-          $("#lcd").text("loading ... (" + m.ready_mp3 + "/" + conf.num_mp3 + ")");
+          $("#lcd").text(
+            "loading ... (" + m.ready_mp3 + "/" + conf.num_mp3 + ")",
+          );
         else {
           //					lcd.show('load OK');
         }
@@ -51,17 +56,17 @@ SampleBuffer.prototype.loadBuffer = function (callback) {
         }
       },
       function () {
-        console.log('error decoding process: ' + self.url);
+        console.log("error decoding process: " + self.url);
         return;
-      }
+      },
     );
-  }
+  };
   request.onerror = function () {
-    alert('BufferLoader: XHR error');
-  }
+    alert("BufferLoader: XHR error");
+  };
 
   request.send();
-}
+};
 
 /////////////////////////////////////////////////////
 var Key = function (ctx, urls, layer, rel_smp) {
@@ -98,10 +103,9 @@ Key.prototype.noteOn = function (ctx, layer) {
       this.src.connect(this.next_node);
       this.src.start(0);
     }
-    // Žb’èFƒŒƒCƒ„[ƒ[ƒimutej‚Íd‚Ë‚Änote on‰Â”\‚Æ‚·‚é
+    // ï¿½bï¿½ï¿½Fï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½[ï¿½ï¿½ï¿½imuteï¿½jï¿½Ídï¿½Ë‚ï¿½note onï¿½Â”\ï¿½Æ‚ï¿½ï¿½ï¿½
     this.layer = layer;
-    if (this.layer > 0)
-      this.playing = true;
+    if (this.layer > 0) this.playing = true;
   }
 };
 
@@ -119,14 +123,11 @@ Key.prototype.noteOff = function (ctx) {
         this.src.start(0);
       }
     }
-
   }
 };
 
-
 /////////////////////////////////////////////////////
 var MasterTrack = function (ctx) {
-
   this.comp = ctx.createDynamicsCompressor();
   this.fader = ctx.createGain();
   this.fader.gain.value = 50 / 100;
@@ -146,12 +147,11 @@ var MasterTrack = function (ctx) {
   // Lch
   this.fader.connect(this.subgain);
   this.subgain.connect(this.Lch);
-  this.Lch.connect(ctx.destination);
+  this.Lch.connect(destinationNode);
   // Rch
   this.fader.connect(this.delay);
   this.delay.connect(this.Rch);
-  this.Rch.connect(ctx.destination);
-
+  this.Rch.connect(destinationNode);
 };
 
 MasterTrack.prototype.get_node = function () {
@@ -159,34 +159,42 @@ MasterTrack.prototype.get_node = function () {
 };
 
 MasterTrack.prototype.gain = function (val) {
-  if (val != null)
-    this.fader.gain.value = val / 100;
-  else
-    this.fader.gain.value = 50 / 100;
+  if (val != null) this.fader.gain.value = val / 100;
+  else this.fader.gain.value = 50 / 100;
 };
-
 
 /////////////////////////////////////////////////////
 var Rompler = function () {
   this.ready_mp3 = 0;
-  this.ctx = new AudioContext();
+  this.ctx = audioContext;
   this.master = new MasterTrack(this.ctx);
 
   this.keys = new Array(conf.num_note);
   for (var i = 0; i < conf.num_note; i++) {
     var note = ("0" + i).slice(-2);
-    this.keys[i] = new Key(this.ctx,
-      [note + "0000.mp3", note + "0001.mp3", note + "0002.mp3", note + "0003.mp3",
-      note + "0101.mp3", note + "0101.mp3", note + "0102.mp3", note + "0103.mp3"],
+    this.keys[i] = new Key(
+      this.ctx,
+      [
+        note + "0000.mp3",
+        note + "0001.mp3",
+        note + "0002.mp3",
+        note + "0003.mp3",
+        note + "0101.mp3",
+        note + "0101.mp3",
+        note + "0102.mp3",
+        note + "0103.mp3",
+      ],
       2,
-      note + "01re.mp3"
+      note + "01re.mp3",
     );
     this.keys[i].connect(this.master.get_node());
   }
 
   // check & retry
   var self = this;
-  setTimeout(function () { self.check_data(); }, 5000);
+  setTimeout(function () {
+    self.check_data();
+  }, 5000);
 };
 
 Rompler.prototype.check_data = function () {
@@ -201,22 +209,22 @@ Rompler.prototype.check_data = function () {
   }
   if (err_cnt != 0) {
     var self = this;
-    setTimeout(function () { self.check_data(); }, 1500);
+    setTimeout(function () {
+      self.check_data();
+    }, 1500);
   }
 };
-
-
 
 Rompler.prototype.mastergain = function (val) {
   this.master.gain(val);
 };
 
-Rompler.prototype.noteOn = function (note, vel) {
+Rompler.prototype.noteOn = function (note, vel, time) {
   var layer = vel >= 64 ? 1 : 0;
   this.keys[note - conf.basenote].noteOn(this.ctx, layer);
 };
 
-Rompler.prototype.noteOff = function (note) {
+Rompler.prototype.noteOff = function (note, time) {
   this.keys[note - conf.basenote].noteOff(this.ctx);
 };
 
@@ -226,8 +234,4 @@ Rompler.prototype.resetRoundrobin = function (note) {
   }
 };
 
-
-
-
 var m = new Rompler();
-
