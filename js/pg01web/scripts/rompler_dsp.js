@@ -87,6 +87,7 @@ var Key = function (ctx, urls, layer, rel_smp) {
   this.playing = false;
   this.next_node = null;
   this.layer = 0;
+  this.hold_count = 0;
 };
 
 Key.prototype.connect = function (next_node) {
@@ -221,11 +222,18 @@ Rompler.prototype.mastergain = function (val) {
 
 Rompler.prototype.noteOn = function (note, vel, time) {
   var layer = vel >= 64 ? 1 : 0;
-  this.keys[note - conf.basenote].noteOn(this.ctx, layer);
+  const key = this.keys[note - conf.basenote];
+  key.noteOn(this.ctx, layer);
+  key.hold_count++;
 };
 
 Rompler.prototype.noteOff = function (note, time) {
-  this.keys[note - conf.basenote].noteOff(this.ctx);
+  const key = this.keys[note - conf.basenote];
+  if (key.hold_count > 0) {
+    if (--key.hold_count === 0) {
+      key.noteOff(this.ctx);
+    }
+  }
 };
 
 Rompler.prototype.resetRoundrobin = function (note) {
