@@ -94,7 +94,8 @@ Key.prototype.connect = function (next_node) {
   this.next_node = next_node;
 };
 
-Key.prototype.noteOn = function (ctx, layer) {
+Key.prototype.noteOn = function (ctx, layer, time) {
+  time = Math.max(time ?? 0, ctx.currentTime);
   if (!this.playing) {
     this.src = ctx.createBufferSource();
     var smp = this.cur_smp + this.layer_smp * layer;
@@ -102,7 +103,7 @@ Key.prototype.noteOn = function (ctx, layer) {
       this.src.buffer = this.sample[smp].buffer;
       this.cur_smp = (this.cur_smp + 1) % this.layer_smp;
       this.src.connect(this.next_node);
-      this.src.start(0);
+      this.src.start(time);
     }
     // �b��F���C���[�[���imute�j�͏d�˂�note on�\�Ƃ���
     this.layer = layer;
@@ -110,9 +111,10 @@ Key.prototype.noteOn = function (ctx, layer) {
   }
 };
 
-Key.prototype.noteOff = function (ctx) {
+Key.prototype.noteOff = function (ctx, time) {
+  time = Math.max(time ?? 0, ctx.currentTime);
   if (this.playing) {
-    this.src.stop(0);
+    this.src.stop(time);
     this.playing = false;
 
     // release note
@@ -121,7 +123,7 @@ Key.prototype.noteOff = function (ctx) {
       if (this.rel_smp.buffer != null) {
         this.src.buffer = this.rel_smp.buffer;
         this.src.connect(this.next_node);
-        this.src.start(0);
+        this.src.start(time);
       }
     }
   }
@@ -223,7 +225,7 @@ Rompler.prototype.mastergain = function (val) {
 Rompler.prototype.noteOn = function (note, vel, time) {
   var layer = vel >= 64 ? 1 : 0;
   const key = this.keys[note - conf.basenote];
-  key.noteOn(this.ctx, layer);
+  key.noteOn(this.ctx, layer, time);
   key.hold_count++;
 };
 
@@ -231,7 +233,7 @@ Rompler.prototype.noteOff = function (note, time) {
   const key = this.keys[note - conf.basenote];
   if (key.hold_count > 0) {
     if (--key.hold_count === 0) {
-      key.noteOff(this.ctx);
+      key.noteOff(this.ctx, time);
     }
   }
 };
