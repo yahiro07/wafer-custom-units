@@ -22,15 +22,6 @@ function setupWaferUnit() {
         }
       },
     },
-    // persistence: {
-    //   emitState() {
-    //     return ctrl.getParameters();
-    //   },
-    //   applyState(states) {
-    //     ctrl.setParameters(states);
-    //   },
-    // },
-    // automationInput,
   });
 }
 setupWaferUnit();
