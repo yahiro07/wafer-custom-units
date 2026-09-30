@@ -88,44 +88,65 @@ var Key = function (ctx, urls, layer, rel_smp) {
   this.next_node = null;
   this.layer = 0;
   this.hold_count = 0;
+  this.body = null;
+  this.release = null;
 };
 
 Key.prototype.connect = function (next_node) {
   this.next_node = next_node;
 };
 
-Key.prototype.noteOn = function (ctx, layer, time) {
-  time = Math.max(time ?? 0, ctx.currentTime);
-  if (!this.playing) {
-    this.src = ctx.createBufferSource();
-    var smp = this.cur_smp + this.layer_smp * layer;
-    if (this.sample[smp].buffer != null) {
-      this.src.buffer = this.sample[smp].buffer;
-      this.cur_smp = (this.cur_smp + 1) % this.layer_smp;
-      this.src.connect(this.next_node);
-      this.src.start(time);
-    }
-    // �b��F���C���[�[���imute�j�͏d�˂�note on�\�Ƃ���
-    this.layer = layer;
-    if (this.layer > 0) this.playing = true;
+Key.prototype._spawn = function (ctx, buffer, time) {
+  var src = ctx.createBufferSource();
+  var gain = ctx.createGain();
+  src.buffer = buffer;
+  src.connect(gain);
+  gain.connect(this.next_node);
+  gain.gain.setValueAtTime(1, time);
+  src.start(time);
+  return { src: src, gain: gain, time: time, stopAt: null };
+};
+
+// stop() can be called only once, so an earlier cutoff uses the gain.
+Key.prototype._silence = function (voice, time) {
+  if (!voice) return;
+  var at = Math.max(time, voice.time);
+  voice.gain.gain.cancelScheduledValues(at);
+  voice.gain.gain.setValueAtTime(0, at);
+  if (voice.stopAt == null) {
+    voice.src.stop(at);
+    voice.stopAt = at;
   }
 };
 
-Key.prototype.noteOff = function (ctx, time) {
+Key.prototype.noteOn = function (ctx, layer, time) {
   time = Math.max(time ?? 0, ctx.currentTime);
-  if (this.playing) {
-    this.src.stop(time);
-    this.playing = false;
+  if (this.playing) return;
 
-    // release note
-    if (this.layer > 0) {
-      this.src = ctx.createBufferSource();
-      if (this.rel_smp.buffer != null) {
-        this.src.buffer = this.rel_smp.buffer;
-        this.src.connect(this.next_node);
-        this.src.start(time);
-      }
-    }
+  this._silence(this.body, time);
+  this._silence(this.release, time);
+  this.body = null;
+  this.release = null;
+
+  var smp = this.cur_smp + this.layer_smp * layer;
+  if (this.sample[smp].buffer != null) {
+    this.body = this._spawn(ctx, this.sample[smp].buffer, time);
+    this.cur_smp = (this.cur_smp + 1) % this.layer_smp;
+  }
+  this.layer = layer;
+  if (this.layer > 0) this.playing = true;
+};
+
+Key.prototype.noteOff = function (ctx, time) {
+  var requested = Math.max(time ?? 0, ctx.currentTime);
+  if (!this.playing || !this.body) return;
+
+  var stopAt = Math.max(requested, this.body.time);
+  this._silence(this.body, stopAt);
+  this.playing = false;
+
+  if (this.layer > 0 && requested >= this.body.time && this.rel_smp.buffer != null) {
+    this.release = this._spawn(ctx, this.rel_smp.buffer, stopAt);
   }
 };
 
