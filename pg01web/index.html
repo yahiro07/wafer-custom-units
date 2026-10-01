@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Power Chord Guitars PG01 for Web</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+
+    <script src="./scripts/lib/jqskin.panel.js"></script>
+    <script src="./scripts/lib/jqskin.knob.js"></script>
+    <script src="./scripts/lib/jqskin.keypad.js"></script>
+
+    <style>
+      body {
+        background-color: #000010;
+        color: #dddddd;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      #draw {
+        width: 670px;
+        height: 360px;
+      }
+      .block div {
+        margin-right: 15px;
+        float: left;
+      }
+      #instruction {
+        font-size: 13px;
+        position: absolute;
+        z-index: 2;
+        left: 30px;
+        top: 288px;
+      }
+    </style>
+    <script src="./scripts/rompler_dsp.js"></script>
+    <script src="./scripts/rompler_gui.js"></script>
+    <script src="./scripts/rompler_unit.js"></script>
+  </head>
+
+  <body>
+    <div id="draw">
+      <img
+        id="panel"
+        src="./images/panel.png"
+        style="position: absolute; left: 20px; top: 40px"
+      /><img
+        id="ms_vol"
+        src="./images/knob1.png"
+        style="
+          position: absolute;
+          left: 570px;
+          top: -525px;
+          clip: rect(600px, 40px, 640px, 0px);
+        "
+      /><img
+        id="fr0"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 20px;
+          top: 217px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr1"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 60px;
+          top: 217px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr2"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 132px;
+          top: 217px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr3"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 196.8px;
+          top: 217px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr4"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 255.12px;
+          top: 217px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr5_6"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 309.941px;
+          top: 217px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr6_6"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 361.472px;
+          top: 217px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr7_6"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 409.912px;
+          top: 217px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr5"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 20px;
+          top: 201px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr6"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 60px;
+          top: 201px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr7"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 132px;
+          top: 201px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr8"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 196.8px;
+          top: 201px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr9"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 255.12px;
+          top: 201px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr10"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 309.941px;
+          top: 201px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr11"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 361.472px;
+          top: 201px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr12"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 409.912px;
+          top: 201px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr13"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 455.445px;
+          top: 201px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr14"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 498.247px;
+          top: 201px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr15"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 20px;
+          top: 185px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr16"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 60px;
+          top: 185px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr17"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 132px;
+          top: 185px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr18"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 196.8px;
+          top: 185px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr19"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 255.12px;
+          top: 185px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr20"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 309.941px;
+          top: 185px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr21"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 361.472px;
+          top: 185px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr22"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 409.912px;
+          top: 185px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr23"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 455.445px;
+          top: 185px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      /><img
+        id="fr24"
+        src="./images/dot.png"
+        style="
+          position: absolute;
+          left: 498.247px;
+          top: 185px;
+          clip: rect(0px, 36px, 12px, 0px);
+        "
+      />
+      <div
+        id="sfm_d"
+        style="
+          position: absolute;
+          left: 500px;
+          top: 280px;
+          width: 150px;
+          height: 30px;
+        "
+      >
+        <a id="sfm_a" href="http://soundfrostmusic.com/jp/" target="_blank"
+          ><img
+            id="sfm_img"
+            src="./images/space.gif"
+            style="width: 150px; height: 30px"
+        /></a>
+      </div>
+      <div id="instruction">Note Range: E1-D#2(Mute), E2-E3(Sustain)</div>
+    </div>
+  </body>
+</html>

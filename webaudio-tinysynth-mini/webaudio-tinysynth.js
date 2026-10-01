@@ -2166,10 +2166,14 @@ const unitInterface = window.queryUnitInterface?.("wafer-v01");
         t = this._tsConv(t);
         for (let i = this.notetab.length - 1; i >= 0; --i) {
           const nt = this.notetab[i];
-          if (t >= nt.t && nt.ch == ch && nt.n == n && nt.f == 0) {
-            nt.f = 1;
-            if (this.sustain[ch] < 64) this._releaseNote(nt, t);
+          if (nt.ch != ch || nt.n != n || nt.f != 0) continue;
+          if (t < nt.t) {
+            this._pruneNote(nt);
+            this.notetab.splice(i, 1);
+            continue;
           }
+          nt.f = 1;
+          if (this.sustain[ch] < 64) this._releaseNote(nt, t);
         }
       },
       noteOn: (ch, n, v, t) => {
