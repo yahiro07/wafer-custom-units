@@ -14,8 +14,10 @@ export const unitWrapper = {
   },
   createChannelInputNode(channelId) {
     return (
-      unitInterface?.createAdditionalAudioInputNode(channelId) ??
-      audioContext.createGain()
+      unitInterface?.createAdditionalAudioInputNode(
+        channelId,
+        channelId.replace("ch", ""),
+      ) ?? audioContext.createGain()
     );
   },
   getMasterOutputNode() {

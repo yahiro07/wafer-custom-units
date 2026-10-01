@@ -11,16 +11,16 @@
   // }
   const audioContext = unitInterface?.audioContext ?? new AudioContext();
   const ch1Input =
-    unitInterface?.createAdditionalAudioInputNode("ch1") ??
+    unitInterface?.createAdditionalAudioInputNode("ch1", "1") ??
     audioContext.createGain();
   const ch2Input =
-    unitInterface?.createAdditionalAudioInputNode("ch2") ??
+    unitInterface?.createAdditionalAudioInputNode("ch2", "2") ??
     audioContext.createGain();
   const ch3Input =
-    unitInterface?.createAdditionalAudioInputNode("ch3") ??
+    unitInterface?.createAdditionalAudioInputNode("ch3", "3") ??
     audioContext.createGain();
   const ch4Input =
-    unitInterface?.createAdditionalAudioInputNode("ch4") ??
+    unitInterface?.createAdditionalAudioInputNode("ch4", "4") ??
     audioContext.createGain();
   const masterOutput =
     unitInterface?.audioOutputNode ?? audioContext.destination;
