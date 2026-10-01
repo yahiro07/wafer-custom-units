@@ -60,10 +60,42 @@ export class Knob extends Component<KnobProps, State> {
     const { degrees, min, max, value } = this.props;
     this.startAngle = (360 - degrees) / 2;
     this.endAngle = this.startAngle + degrees;
-    this.currentDeg = Math.floor(
+    this.currentDeg = this.valueToDeg(min, max, value);
+    this.state = { deg: this.currentDeg };
+  }
+
+  valueToDeg(min: number, max: number, value: number) {
+    return Math.floor(
       convertRange(min, max, this.startAngle, this.endAngle, value),
     );
-    this.state = { deg: this.currentDeg };
+  }
+
+  override componentDidUpdate(prevProps: KnobProps) {
+    if (
+      prevProps.value === this.props.value &&
+      prevProps.min === this.props.min &&
+      prevProps.max === this.props.max
+    ) {
+      return;
+    }
+
+    const valueFromDeg = convertRange(
+      this.startAngle,
+      this.endAngle,
+      this.props.min,
+      this.props.max,
+      this.currentDeg,
+    );
+    if (Math.abs(valueFromDeg - this.props.value) < 1e-6) {
+      return;
+    }
+
+    this.currentDeg = this.valueToDeg(
+      this.props.min,
+      this.props.max,
+      this.props.value,
+    );
+    this.setState({ deg: this.currentDeg });
   }
 
   startDrag = (e: MouseEvent | TouchEvent) => {
