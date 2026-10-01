@@ -1,0 +1,11 @@
+{
+  "name": "sidechain-compressor",
+  "unitType": "effect",
+  "protocol": "wafer-v01",
+  "integrationFormat": "iframe",
+  "originalRepositoryUrl": "https://github.com/jadujoel/sidechain-compressor-audio-worklet",
+  "originalAuthor": "Joel Löf",
+  "forkedRepositoryUrl": "https://github.com/yahiro07/wafer-custom-units",
+  "forkedAuthor": "yahiro",
+  "license": "MIT"
+}

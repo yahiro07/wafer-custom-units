@@ -6,4 +6,4 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - wafer-host
 catalog:
-  wafer-host: "^0.1.11"
+  wafer-host: "^0.1.17"
