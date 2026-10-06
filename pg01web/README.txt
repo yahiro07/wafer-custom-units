@@ -34,3 +34,9 @@
   PowerChord Guitars No.01 Drive to Hell for KONTAKT4.2
   http://www.dlmarket.jp/product_info.php/products_id/139440/language/en
 
+7. MODIFICATION
+  This project is forked and adapted to the Wafer protocol.
+  Porting: yahiro
+
+  The note range is adjusted for a basic MIDI keyboard.
+  (It does not follow the original guitar's pitch range.)
